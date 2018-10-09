@@ -130,6 +130,9 @@ public class WindowManager implements Closeable {
 
     public void update() {
         GLFW.glfwPollEvents();
+    }
+
+    public void swapBuffers(){
         GLFW.glfwSwapBuffers(mainContext);
     }
 

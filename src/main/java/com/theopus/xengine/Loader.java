@@ -31,7 +31,8 @@ public class Loader {
 
         MemoryUtil.memFree(buffer);
         /*
-         stride - offset between values in array,
+         offset - offset for value in data pack,
+         stride - offset for instanced loading,
          normalized - normalize floating point numbers
          pointer
          */
