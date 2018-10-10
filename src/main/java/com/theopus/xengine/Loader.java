@@ -11,10 +11,16 @@ import java.io.InputStream;
 import java.nio.ByteBuffer;
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
+import java.util.ArrayList;
+import java.util.List;
 
 public class Loader {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(Loader.class);
+
+    private List<Integer> vao = new ArrayList<>();
+    private List<Integer> vbo = new ArrayList<>();
+    private List<Integer> textures = new ArrayList<>();
 
 
     protected int writeInVao(int attributeNumber, int coordinatesSize, float[] data) {
@@ -40,6 +46,7 @@ public class Loader {
 
         GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, 0);
         LOGGER.info("Write vertex buffer in vao. vbo:{}, attr:{}, size:{}, dataLength:{}", vboID, attributeNumber, coordinatesSize, data.length);
+        vbo.add(vboID);
         return vboID;
     }
 
@@ -57,6 +64,7 @@ public class Loader {
         intBuffer.clear();
         MemoryUtil.memFree(intBuffer);
         LOGGER.info("Write indices buffer in vao. vbo:{}, dataLength:{}", vboID, indices.length);
+        vbo.add(vboID);
         return vboID;
     }
 
@@ -67,6 +75,7 @@ public class Loader {
     protected int createVAO() {
         int vaoID = GL30.glGenVertexArrays();
         LOGGER.info("Created vao id:{}", vaoID);
+        vao.add(vaoID);
         return vaoID;
     }
 
@@ -107,9 +116,17 @@ public class Loader {
             GL11.glBindTexture(GL11.GL_TEXTURE_2D, 0);
             LOGGER.info("Loaded texture. id:{}, width:{}, height:{}, size:{}", textureId, width, height, byteBuffer.limit());
             Texture texture = new Texture(textureId, width, height);
+            textures.add(textureId);
             return texture;
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
     }
+
+    public void cleanup(){
+        vao.forEach(GL30::glDeleteVertexArrays);
+        vbo.forEach(GL30::glDeleteBuffers);
+        textures.forEach(GL15::glDeleteTextures);
+    }
+
 }
