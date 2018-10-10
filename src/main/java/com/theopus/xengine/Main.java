@@ -1,22 +1,15 @@
 package com.theopus.xengine;
 
 import org.joml.Vector4f;
-import org.lwjgl.BufferUtils;
-import org.lwjgl.PointerBuffer;
-import org.lwjgl.glfw.GLFW;
 import org.lwjgl.opengl.GL11;
-import org.lwjgl.util.remotery.Remotery;
-import org.lwjgl.util.remotery.RemoteryGL;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.nio.ByteBuffer;
-import java.nio.IntBuffer;
-import java.util.concurrent.CompletableFuture;
+import java.io.IOException;
 
 public class Main {
     private static final Logger LOGGER = LoggerFactory.getLogger(Main.class);
-    public static void main(String[] args) throws InterruptedException {
+    public static void main(String[] args) throws InterruptedException, IOException {
 
         WindowManager wm = new WindowManager(
                 new WindowConfig(600, 400, new Vector4f(0.8f, 0.8f, 0.8f, 1), false, 0),
@@ -26,40 +19,37 @@ public class Main {
         );
 //
 //
-
         wm.createWindow();
         wm.showWindow();
-        wm.deatachContext();
+
+        EntityLoader entityLoader = new EntityLoader();
+
+        Entity entity = entityLoader.loadEntity(
+                new float[]{
+                        -0.5f, 0.5f, 0,
+                        -0.5f, -0.5f, 0,
+                        0.5f, 0.5f, 0,
+
+                        -0.5f, -0.5f, 0,
+                        0.5f, -0.5f, 0,
+                        0.5f, 0.5f, 0,
+
+                }, 6
+        );
 
 
-        Scheduler scheduler = new Scheduler();
-
-
-        CallbackTask<Object> renderingTask = CallbackTask.of(() -> {
-            GL11.glClear(GL11.GL_COLOR_BUFFER_BIT);
-            wm.swapBuffers();
-            LOGGER.info("Rendering Task");
-            Thread.sleep(1);
-            return null;
-        });
-
-        renderingTask.callback(() -> scheduler.scheduleTask(renderingTask));
-
-        CallbackTask<Object> mainCtxInit = CallbackTask.of(() -> {
-            wm.attachMainContext();
-            LOGGER.info("Inited Context");
-            return null;
-        }).callback(() -> scheduler.scheduleTask(renderingTask));
-
-
-        scheduler.scheduleTask(mainCtxInit);
+        StaticShader staticShader = new StaticShader("static.vert", "static.frag");
+        Render render = new Render(staticShader);
 
 
         while (!wm.windowShouldClose()) {
+            GL11.glClear(GL11.GL_COLOR_BUFFER_BIT);
+
+            render.render(entity);
             wm.update();
+            wm.swapBuffers();
         }
 
 
-        scheduler.close();
     }
 }
