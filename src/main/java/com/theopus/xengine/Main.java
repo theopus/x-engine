@@ -82,12 +82,19 @@ public class Main {
             wm.update();
         }
 
-        Thread.sleep(10000);
+        scheduler.drain();
+        scheduler.setAccepting(true);
+
         scheduler.propose(renderSystem.closeTask());
+        scheduler.operate();
+        scheduler.operate();
+        scheduler.operate();
+        scheduler.drain();
 
 
         wm.attachMainContext();
         renderTraitLoader.cleanup();
+        scheduler.close();
         wm.close();
     }
 }

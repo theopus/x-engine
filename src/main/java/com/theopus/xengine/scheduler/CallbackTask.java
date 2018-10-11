@@ -8,18 +8,15 @@ class CallbackTask extends SchedulerTask{
     public CallbackTask(SchedulerTask task) {
         super(task.getThreadType(), task.isRepeatable());
         this.task = task;
+        this.setId(task.getId());
         this.callback = Callback.empty;
     }
 
     public CallbackTask(SchedulerTask task, Callback callback) {
         super(task.getThreadType(), task.isRepeatable());
         this.task = task;
+        this.setId(task.getId());
         this.callback = callback;
-    }
-
-    public CallbackTask andAfter(Callback callback){
-        this.callback = callback;
-        return this;
     }
 
     @Override

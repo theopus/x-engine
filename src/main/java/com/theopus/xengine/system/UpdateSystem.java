@@ -30,7 +30,7 @@ public class UpdateSystem implements System {
 
     @Override
     public void process() {
-        entityList.forEach(entity -> entity.getPositionTrait().setRotZ(accelerate+=1f));
+        entityList.forEach(entity -> entity.getPositionTrait().setRotZ(accelerate+=0.001f));
         entityList.forEach(entity -> {
             Maths.applyTransformations(
                     entity.getPositionTrait().getPosition(),
