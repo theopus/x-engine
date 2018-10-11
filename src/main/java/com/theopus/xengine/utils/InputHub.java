@@ -1,4 +1,4 @@
-package com.theopus.xengine;
+package com.theopus.xengine.utils;
 
 import org.lwjgl.glfw.*;
 

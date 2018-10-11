@@ -1,10 +1,12 @@
 package com.theopus.xengine;
 
 import com.theopus.xengine.entity.EntityManager;
+import com.theopus.xengine.scheduler.Scheduler;
 import com.theopus.xengine.system.RenderSystem;
 import com.theopus.xengine.system.UpdateSystem;
 import com.theopus.xengine.trait.PositionTrait;
 import com.theopus.xengine.trait.RenderTrait;
+import com.theopus.xengine.utils.OpsCounter;
 import org.joml.Vector4f;
 import org.lwjgl.glfw.GLFWKeyCallback;
 import org.lwjgl.system.Configuration;
@@ -57,41 +59,33 @@ public class Main {
                 }, 6
         );
 
+        Scheduler scheduler = new Scheduler();
+
+
+        wm.deatachContext();
 
         Entity entity = new Entity(renderTrait, new PositionTrait());
-        StaticShader staticShader = new StaticShader("static.vert", "static.frag");
-        Render render = new Render(staticShader);
 
         RenderSystem renderSystem = new RenderSystem(
-                wm, render, renderTrait
+                wm, scheduler, renderTrait
         );
 
-        UpdateSystem updateSystem = new UpdateSystem(entity);
+        UpdateSystem updateSystem = new UpdateSystem(wm, entity);
 
 
-        wm.deatachContext();
+        scheduler.propose(renderSystem.prepareTask());
+        scheduler.propose(updateSystem.task());
 
 
-        AtomicBoolean flag = new AtomicBoolean(true);
-        new Thread(() -> {
-            wm.attachMainContext();
-            while (flag.get()){
-                renderSystem.process();
-            }
-            staticShader.cleanup();
-            wm.deatachContext();
-        }).start();
-
-
-        wm.attachSideContext();
         while (!wm.windowShouldClose()) {
-
-            updateSystem.process();
-            wm.printGLErrors();
+            scheduler.operate();
             wm.update();
         }
-        flag.set(false);
-        wm.deatachContext();
+
+        Thread.sleep(10000);
+        scheduler.propose(renderSystem.closeTask());
+
+
         wm.attachMainContext();
         renderTraitLoader.cleanup();
         wm.close();

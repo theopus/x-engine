@@ -1,9 +1,9 @@
 package com.theopus.xengine;
 
+import com.theopus.xengine.utils.InputHub;
 import org.joml.Vector4f;
 import org.lwjgl.glfw.*;
 import org.lwjgl.opengl.*;
-import org.lwjgl.system.Configuration;
 import org.lwjgl.system.MemoryStack;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

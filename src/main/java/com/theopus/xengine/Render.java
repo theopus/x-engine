@@ -27,4 +27,8 @@ public class Render {
         GL20.glDisableVertexAttribArray(0);
         GL30.glBindVertexArray(0);
     }
+
+    public void cleanup() {
+        staticShader.cleanup();
+    }
 }
