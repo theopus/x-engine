@@ -7,10 +7,10 @@ public class Vao {
     private final Vbo[] vbos;
     private final Attribute[] attributes;
 
-    public Vao() {
-        this.id = 0;
-        this.ebo = null;
-        this.vbos = null;
-        this.attributes = null;
+    public Vao(int id, Vbo ebo, Vbo[] vbos, Attribute[] attributes) {
+        this.id = id;
+        this.ebo = ebo;
+        this.vbos = vbos;
+        this.attributes = attributes;
     }
 }

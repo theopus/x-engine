@@ -16,12 +16,12 @@ public class VaoBuilder {
         return this;
     }
 
-    public VaoBuilder setVbos(Vbo[] vbos) {
+    public VaoBuilder setVbos(Vbo... vbos) {
         this.vbos = vbos;
         return this;
     }
 
-    public VaoBuilder setAttributes(Attribute[] attributes) {
+    public VaoBuilder setAttributes(Attribute... attributes) {
         this.attributes = attributes;
         return this;
     }
