@@ -9,6 +9,7 @@ public class PositionTrait implements Trait {
     private float rotY;
     private float rotZ;
     private float scale = 1f;
+    private float rotSpeed = 0;
 
     public Vector3f getPosition() {
         return position;
@@ -48,5 +49,13 @@ public class PositionTrait implements Trait {
 
     public void setScale(float scale) {
         this.scale = scale;
+    }
+
+    public void setRotSpeed(float rotSpeed) {
+        this.rotSpeed = rotSpeed;
+    }
+
+    public float getRotSpeed() {
+        return rotSpeed;
     }
 }

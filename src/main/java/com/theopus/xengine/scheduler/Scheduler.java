@@ -38,10 +38,9 @@ public class Scheduler implements AutoCloseable {
             task = wrapCleanFuture(task, task.getId());
         }
         task = task.isRepeatable() ? wrapRepeatable(task) : task;
-        System.out.println(task.getId());
         proposed.offer(task);
     }
-s
+
     public void operate() {
         SchedulerTask task = proposed.poll();
         if (task != null) {
@@ -77,13 +76,15 @@ s
 
     private SchedulerTask wrapRepeatable(SchedulerTask task) {
         task.setRepeatable(false);
-        return task.andThen(() -> this.propose(task));
+        CallbackTask callbackWrap = new CallbackTask(task);
+        return callbackWrap.withCallback(() -> {
+            this.propose(callbackWrap);
+        });
     }
 
     private SchedulerTask wrapCleanFuture(SchedulerTask task, long id) {
-        return task.andThen(() -> {
-            this.runningTasks.remove(id);
-        });
+        CallbackTask callbackWrap = new CallbackTask(task);
+        return callbackWrap.withCallback(() -> this.runningTasks.remove(id));
     }
 
     @Override

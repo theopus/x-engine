@@ -19,6 +19,12 @@ class CallbackTask extends SchedulerTask{
         this.callback = callback;
     }
 
+
+    public CallbackTask withCallback(Callback callback){
+        this.callback = callback;
+        return this;
+    }
+
     @Override
     public void run() {
         task.run();

@@ -26,7 +26,6 @@ public class Loader {
     protected int writeInVao(int attributeNumber, int coordinatesSize, float[] data) {
         int vboID = GL15.glGenBuffers();
         LOGGER.info("Created vbo:{}", vboID);
-
         GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, vboID);
 
         FloatBuffer buffer = MemoryUtil.memAllocFloat(data.length);

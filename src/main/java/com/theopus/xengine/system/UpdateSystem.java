@@ -30,16 +30,14 @@ public class UpdateSystem implements System {
 
     @Override
     public void process() {
-        entityList.forEach(entity -> entity.getPositionTrait().setRotZ(accelerate+=0.001f));
-        entityList.forEach(entity -> {
-            Maths.applyTransformations(
-                    entity.getPositionTrait().getPosition(),
-                    entity.getPositionTrait().getRotX(),
-                    entity.getPositionTrait().getRotY(),
-                    entity.getPositionTrait().getRotZ(),
-                    entity.getPositionTrait().getScale(),
-                    entity.getRenderTrait().getTransformation());
-        });
+        entityList.forEach(entity -> entity.getPositionTrait().setRotZ(entity.getPositionTrait().getRotZ()+entity.getPositionTrait().getRotSpeed()));
+        entityList.forEach(entity -> Maths.applyTransformations(
+                entity.getPositionTrait().getPosition(),
+                entity.getPositionTrait().getRotX(),
+                entity.getPositionTrait().getRotY(),
+                entity.getPositionTrait().getRotZ(),
+                entity.getPositionTrait().getScale(),
+                entity.getRenderTrait().getTransformation()));
         ups.operateAndLog();
     }
 
