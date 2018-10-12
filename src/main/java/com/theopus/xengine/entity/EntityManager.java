@@ -3,6 +3,7 @@ package com.theopus.xengine.entity;
 import com.theopus.xengine.trait.PositionTrait;
 import com.theopus.xengine.trait.RenderTrait;
 import com.theopus.xengine.trait.Trait;
+import com.theopus.xengine.utils.Reflection;
 
 import java.util.BitSet;
 import java.util.HashMap;
@@ -31,13 +32,11 @@ public class EntityManager {
         }
         T t;
         if (tClass == RenderTrait.class){
-            RenderTrait renderTrait = RenderTrait.class.newInstance();
-            renderTraitMap.put(entity, renderTrait);
-            t = (T) renderTrait;
+            t = Reflection.newInstance(tClass);
+            renderTraitMap.put(entity, (RenderTrait) t);
         } else if (tClass == PositionTrait.class){
-            PositionTrait positionTrait = PositionTrait.class.newInstance();
-            positionTraitMap.put(entity, positionTrait);
-            t = (T) positionTrait;
+            t = Reflection.newInstance(tClass);
+            positionTraitMap.put(entity, (PositionTrait) t);
         } else {
             throw new RuntimeException("Not supported = " + tClass);
         }
