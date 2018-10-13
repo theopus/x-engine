@@ -7,15 +7,23 @@ public class StateManagerTest {
 
     @Test
     public void name() {
-        StateManager manager = new StateManager(new EntityManager(new TraitManager(
-                ImmutableMap.of(
-                        RenderTrait.class, RenderTraitEditor.class,
-                        PositionTrait.class, PositionTraitEditor.class
-                )
-        )));
-        State state = manager.acquireLastState(StateManager.LockType.READ_ONLY);
-        manager.getLastFrame();
-        manager.updateState(state);
+
+        EntityManagerFactory factory = new EntityManagerFactory(ImmutableMap.of(
+                RenderTrait.class, RenderTraitEditor.class,
+                PositionTrait.class, PositionTraitEditor.class
+        ));
+
+
+        StateManager manager = new StateManager(factory,3);
+
+
+        State write = manager.forWrite();
+        State read = manager.forRead();
+
+        manager.release(write);
+        manager.release(read);
+
+        System.out.println(manager.getStates());
 
 
     }

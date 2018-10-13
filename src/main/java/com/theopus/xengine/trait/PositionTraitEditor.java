@@ -20,4 +20,13 @@ public class PositionTraitEditor extends TraitEditor<PositionTrait> {
     public List<Transformation<PositionTrait>> transformations(){
         return transformations;
     }
+
+    public void copy(int entityId, PositionTrait from) {
+        Transformation<PositionTrait> action = (mapper) -> {
+            PositionTrait to = mapper.get(entityId);
+            from.duplicateTo(to);
+        };
+        transformations.add(action);
+        action.transform(mapper);
+    }
 }

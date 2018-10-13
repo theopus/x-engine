@@ -52,7 +52,6 @@ public class RenderSystem implements System {
         return configurer;
     }
 
-
     public SchedulerTask prepareTask(){
         return new RenderTask(false){
 

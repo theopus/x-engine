@@ -11,11 +11,12 @@ public class UpdateSystem implements System {
 
     private Configurer configurer;
     private TraitMapper<RenderTrait> rmapper;
+
     private TraitMapper<PositionTrait> pmapper;
 
     private RenderTraitEditor reditor;
-    private PositionTraitEditor peditor;
 
+    private PositionTraitEditor peditor;
 
     private static final Logger LOGGER = LoggerFactory.getLogger(UpdateSystem.class);
     private final OpsCounter ups;
@@ -29,7 +30,9 @@ public class UpdateSystem implements System {
     public void process() {
         PositionTrait positionTrait = pmapper.get(0);
         RenderTrait renderTrait = rmapper.get(0);
-        LOGGER.info("{}{}", positionTrait.getRotZ(), renderTrait.getTransformation());
+
+        peditor.copy(0, positionTrait);
+        reditor.copy(0, renderTrait);
 
 
         peditor.rotateZ(0, 1f);

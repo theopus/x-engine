@@ -1,5 +1,7 @@
 package com.theopus.xengine.scheduler;
 
+import com.theopus.xengine.system.Configurer;
+import com.theopus.xengine.trait.State;
 import com.theopus.xengine.trait.StateManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -26,21 +28,22 @@ public class Scheduler implements AutoCloseable {
 
     private StateManager manager;
 
-    private ExecutorService mainContext = Executors.newSingleThreadExecutor();
-    private ExecutorService sideContext = Executors.newSingleThreadExecutor();
-    private ExecutorService work = Executors.newSingleThreadExecutor();
+    private ExecutorService mainContext = new ThreadPoolExecutor(1, 1, 60, TimeUnit.SECONDS, new LinkedBlockingQueue<>());
+    private ExecutorService sideContext = new ThreadPoolExecutor(1, 1, 60, TimeUnit.SECONDS, new LinkedBlockingQueue<>());
+    private ExecutorService work = new ThreadPoolExecutor(1, 1, 60, TimeUnit.SECONDS, new LinkedBlockingQueue<>());
 
     private BlockingQueue<SchedulerTask> proposed = new LinkedBlockingQueue<>();
     private BlockingQueue<SchedulerTask> waiting = new LinkedBlockingQueue<>();
+    private BlockingQueue<State> states = new LinkedBlockingQueue<>();
 
     private Map<Long, Future<?>> runningTasks = new ConcurrentSkipListMap<>();
     private long nextTaskId = 0;
 
     public void propose(SchedulerTask task) {
-        if (!accepting){
+        if (!accepting) {
             return;
         }
-        if(task.getId() == 0){
+        if (task.getId() == 0) {
             task.setId(++nextTaskId);
             task = wrapCleanFuture(task, task.getId());
         }
@@ -48,30 +51,55 @@ public class Scheduler implements AutoCloseable {
         proposed.offer(task);
     }
 
-    public void operate() {
+    public void operate() throws InterruptedException {
+        for (State state = states.poll(); state != null ; state = states.poll()) {
+            manager.release(state);
+        }
+
         SchedulerTask task = proposed.poll();
         if (task != null) {
 
-            manager.getState().attachTo(task.getSystem());
+            Configurer configurer = task.getSystem().configurer();
+            switch (configurer.type()) {
+                case READ_ONLY:
+                    State onlyRead = manager.forRead();
+                    task = wrapFreeStatePut(task, onlyRead);
+                    configurer.setRead(onlyRead);
+                    break;
+                case READ_WRITE:
+                    State write = manager.forWrite();
+                    task = wrapFreeStatePut(task, write);
+                    State read = manager.forRead();
+                    task = wrapFreeStatePut(task, read);
+
+                    configurer.setRead(read);
+                    configurer.setWrite(write);
+                    break;
+                default:
+                    proposed.add(task);
+                    return;
+            }
 
             switch (task.getThreadType()) {
                 case MAIN_CONTEXT:
-                    runningTasks.put(task.getId(),mainContext.submit(task));
+                    runningTasks.put(task.getId(), mainContext.submit(task));
                     break;
                 case SIDE_CONTEXT:
-                    runningTasks.put(task.getId(),sideContext.submit(task));
+                    runningTasks.put(task.getId(), sideContext.submit(task));
                     break;
                 case WORK:
-                    runningTasks.put(task.getId(),work.submit(task));
+                    runningTasks.put(task.getId(), work.submit(task));
                     break;
                 case ANY:
-                    runningTasks.put(task.getId(),work.submit(task));
+                    runningTasks.put(task.getId(), work.submit(task));
                     break;
             }
         }
+
+//        Thread.sleep(1000);
     }
 
-    public void drain(){
+    public void drain() {
         LOGGER.info("Drain initiated.");
         accepting = false;
         runningTasks.values().forEach(future -> {
@@ -82,6 +110,10 @@ public class Scheduler implements AutoCloseable {
                 e.printStackTrace();
             }
         });
+    }
+
+    private SchedulerTask wrapFreeStatePut(SchedulerTask task, State state){
+        return task.andThen(() -> this.states.add(state));
     }
 
     private SchedulerTask wrapRepeatable(SchedulerTask task) {
@@ -101,7 +133,7 @@ public class Scheduler implements AutoCloseable {
         sideContext.shutdown();
         work.shutdown();
 
-        while (!(mainContext.isTerminated() && sideContext.isTerminated() && work.isTerminated())){
+        while (!(mainContext.isTerminated() && sideContext.isTerminated() && work.isTerminated())) {
             Thread.sleep(10);
         }
     }

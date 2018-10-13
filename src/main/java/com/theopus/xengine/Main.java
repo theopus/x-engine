@@ -1,10 +1,10 @@
 package com.theopus.xengine;
 
 import com.google.common.collect.ImmutableMap;
-import com.theopus.xengine.trait.*;
 import com.theopus.xengine.scheduler.Scheduler;
 import com.theopus.xengine.system.RenderSystem;
 import com.theopus.xengine.system.UpdateSystem;
+import com.theopus.xengine.trait.*;
 import org.joml.Vector4f;
 import org.lwjgl.glfw.GLFWKeyCallback;
 import org.lwjgl.system.Configuration;
@@ -35,22 +35,21 @@ public class Main {
         wm.createWindow();
         wm.showWindow();
 
-        StateManager stateManager = new StateManager(
-                new EntityManager(
-                        new TraitManager(
-                        ImmutableMap.of(
-                                RenderTrait.class, RenderTraitEditor.class,
-                                PositionTrait.class, PositionTraitEditor.class
-                        ))
+        EntityManagerFactory factory = new EntityManagerFactory(ImmutableMap.of(
+                RenderTrait.class, RenderTraitEditor.class,
+                PositionTrait.class, PositionTraitEditor.class
         ));
 
+        StateManager stateManager = new StateManager(factory, 5);
         Scheduler scheduler = new Scheduler(stateManager);
 
+        State state = stateManager.forWrite();
 
-        int e = stateManager.getState().getEm().createEntity();
+
+        int e = state.getEm().createEntity();
 
 
-        RenderTrait trait = stateManager.getState().getMapper(RenderTrait.class).get(e);
+        RenderTrait trait = state.getMapper(RenderTrait.class).get(e);
 
         RenderTraitLoader renderTraitLoader = new RenderTraitLoader();
 
@@ -80,13 +79,17 @@ public class Main {
         UpdateSystem updateSystem = new UpdateSystem();
 
 
-        scheduler.propose(renderSystem.prepareTask());
+        stateManager.release(state);
+
         scheduler.propose(updateSystem.task());
+
+        scheduler.propose(renderSystem.prepareTask());
 
 
         while (!wm.windowShouldClose()) {
             scheduler.operate();
             wm.update();
+            Thread.sleep(1);
         }
 
         scheduler.drain();

@@ -1,7 +1,6 @@
 package com.theopus.xengine.scheduler;
 
 import com.theopus.xengine.system.System;
-import com.theopus.xengine.trait.State;
 
 public abstract class SchedulerTask implements Runnable {
 
@@ -15,7 +14,6 @@ public abstract class SchedulerTask implements Runnable {
         this.threadType = threadType;
         this.repeatable = repeatable;
     }
-
 
     public SchedulerTask(Scheduler.ThreadType threadType, boolean repeatable, System system) {
         this.threadType = threadType;

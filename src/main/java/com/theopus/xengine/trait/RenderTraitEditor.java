@@ -33,6 +33,15 @@ public class RenderTraitEditor extends TraitEditor<RenderTrait> {
         action.transform(mapper);
     }
 
+    public void copy(int entityId, RenderTrait from) {
+        Transformation<RenderTrait> action = (mapper) -> {
+            RenderTrait to = mapper.get(entityId);
+            from.duplicateTo(to);
+        };
+        transformations.add(action);
+        action.transform(mapper);
+    }
+
     private List<Transformation<RenderTrait>> transformations(){
         return transformations;
     }
