@@ -57,4 +57,5 @@ dependencies {
     compile group: 'org.apache.logging.log4j', name: 'log4j-core', version: '2.11.1'
     compile group: 'org.apache.logging.log4j', name: 'log4j-slf4j-impl', version: '2.11.1'
     compile "org.l33tlabs.twl:pngdecoder:1.0"
+    compile group: 'com.google.guava', name: 'guava', version: '19.0'
 }

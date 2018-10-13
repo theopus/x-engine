@@ -1,16 +1,26 @@
 package com.theopus.xengine.scheduler;
 
+import com.theopus.xengine.system.System;
+import com.theopus.xengine.trait.State;
+
 public abstract class SchedulerTask implements Runnable {
 
     private long id;
     private Scheduler.ThreadType threadType;
     private boolean repeatable;
+    private System system;
     private int perSecCap = 60;
-
 
     public SchedulerTask(Scheduler.ThreadType threadType, boolean repeatable) {
         this.threadType = threadType;
         this.repeatable = repeatable;
+    }
+
+
+    public SchedulerTask(Scheduler.ThreadType threadType, boolean repeatable, System system) {
+        this.threadType = threadType;
+        this.repeatable = repeatable;
+        this.system = system;
     }
 
     public SchedulerTask andThen(Callback callback){
@@ -47,5 +57,14 @@ public abstract class SchedulerTask implements Runnable {
 
     public void setPerSecCap(int perSecCap) {
         this.perSecCap = perSecCap;
+    }
+
+    public SchedulerTask setSystem(System system){
+        this.system = system;
+        return this;
+    }
+
+    public System getSystem() {
+        return system;
     }
 }

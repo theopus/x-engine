@@ -1,12 +1,10 @@
 package com.theopus.xengine;
 
-import com.theopus.xengine.entity.EntityManager;
+import com.google.common.collect.ImmutableMap;
+import com.theopus.xengine.trait.*;
 import com.theopus.xengine.scheduler.Scheduler;
 import com.theopus.xengine.system.RenderSystem;
 import com.theopus.xengine.system.UpdateSystem;
-import com.theopus.xengine.trait.PositionTrait;
-import com.theopus.xengine.trait.RenderTrait;
-import com.theopus.xengine.utils.OpsCounter;
 import org.joml.Vector4f;
 import org.lwjgl.glfw.GLFWKeyCallback;
 import org.lwjgl.system.Configuration;
@@ -14,7 +12,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 public class Main {
     private static final Logger LOGGER = LoggerFactory.getLogger(Main.class);
@@ -38,12 +35,25 @@ public class Main {
         wm.createWindow();
         wm.showWindow();
 
-        EntityManager entityManager = new EntityManager();
+        StateManager stateManager = new StateManager(
+                new EntityManager(
+                        new TraitManager(
+                        ImmutableMap.of(
+                                RenderTrait.class, RenderTraitEditor.class,
+                                PositionTrait.class, PositionTraitEditor.class
+                        ))
+        ));
 
-        int e = entityManager.createEntity();
-        RenderTrait trait = entityManager.createTrait(e, RenderTrait.class);
+        Scheduler scheduler = new Scheduler(stateManager);
+
+
+        int e = stateManager.getState().getEm().createEntity();
+
+
+        RenderTrait trait = stateManager.getState().getMapper(RenderTrait.class).get(e);
 
         RenderTraitLoader renderTraitLoader = new RenderTraitLoader();
+
 
         RenderTrait renderTrait = renderTraitLoader.loadEntity(
                 trait,
@@ -59,18 +69,15 @@ public class Main {
                 }, 6
         );
 
-        Scheduler scheduler = new Scheduler();
+
 
 
         wm.deatachContext();
 
-        Entity entity = new Entity(renderTrait, new PositionTrait());
-
         RenderSystem renderSystem = new RenderSystem(
-                wm, scheduler, renderTrait
+                wm, scheduler
         );
-
-        UpdateSystem updateSystem = new UpdateSystem(wm, entity);
+        UpdateSystem updateSystem = new UpdateSystem();
 
 
         scheduler.propose(renderSystem.prepareTask());

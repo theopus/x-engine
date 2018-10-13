@@ -2,14 +2,14 @@ package com.theopus.xengine.trait;
 
 import org.joml.Vector3f;
 
-public class PositionTrait implements Trait {
+public class PositionTrait extends Trait {
 
     private Vector3f position = new Vector3f();
     private float rotX;
     private float rotY;
     private float rotZ;
     private float scale = 1f;
-    private float rotSpeed = 0;
+    private float rotSpeed = 0.001f;
 
     public Vector3f getPosition() {
         return position;

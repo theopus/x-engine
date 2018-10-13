@@ -1,5 +1,7 @@
 package com.theopus.xengine.scheduler;
 
+import com.theopus.xengine.system.System;
+
 class CallbackTask extends SchedulerTask{
 
     private final SchedulerTask task;
@@ -23,6 +25,11 @@ class CallbackTask extends SchedulerTask{
     public CallbackTask withCallback(Callback callback){
         this.callback = callback;
         return this;
+    }
+
+    @Override
+    public System getSystem() {
+        return task.getSystem();
     }
 
     @Override

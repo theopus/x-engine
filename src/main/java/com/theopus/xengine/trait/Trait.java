@@ -1,7 +1,5 @@
 package com.theopus.xengine.trait;
 
-public interface Trait {
-
-    default void test(){
-    }
+public abstract class Trait {
+    public Trait() {}
 }

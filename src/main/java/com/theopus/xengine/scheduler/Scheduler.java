@@ -1,5 +1,6 @@
 package com.theopus.xengine.scheduler;
 
+import com.theopus.xengine.trait.StateManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -11,6 +12,10 @@ public class Scheduler implements AutoCloseable {
     private static final Logger LOGGER = LoggerFactory.getLogger(Scheduler.class);
     private boolean accepting = true;
 
+    public Scheduler(StateManager stateManager) {
+        this.manager = stateManager;
+    }
+
     public void setAccepting(boolean accepting) {
         this.accepting = accepting;
     }
@@ -18,6 +23,8 @@ public class Scheduler implements AutoCloseable {
     public enum ThreadType {
         MAIN_CONTEXT, SIDE_CONTEXT, WORK, ANY
     }
+
+    private StateManager manager;
 
     private ExecutorService mainContext = Executors.newSingleThreadExecutor();
     private ExecutorService sideContext = Executors.newSingleThreadExecutor();
@@ -44,6 +51,9 @@ public class Scheduler implements AutoCloseable {
     public void operate() {
         SchedulerTask task = proposed.poll();
         if (task != null) {
+
+            manager.getState().attachTo(task.getSystem());
+
             switch (task.getThreadType()) {
                 case MAIN_CONTEXT:
                     runningTasks.put(task.getId(),mainContext.submit(task));
@@ -76,10 +86,8 @@ public class Scheduler implements AutoCloseable {
 
     private SchedulerTask wrapRepeatable(SchedulerTask task) {
         task.setRepeatable(false);
-        CallbackTask callbackWrap = new CallbackTask(task);
-        return callbackWrap.withCallback(() -> {
-            this.propose(callbackWrap);
-        });
+        final CallbackTask callbackWrap = new CallbackTask(task);
+        return callbackWrap.withCallback(() -> this.propose(callbackWrap));
     }
 
     private SchedulerTask wrapCleanFuture(SchedulerTask task, long id) {

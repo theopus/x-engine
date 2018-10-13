@@ -6,40 +6,50 @@ import com.theopus.xengine.WindowManager;
 import com.theopus.xengine.scheduler.Scheduler;
 import com.theopus.xengine.scheduler.SchedulerTask;
 import com.theopus.xengine.trait.RenderTrait;
+import com.theopus.xengine.trait.TraitMapper;
 import com.theopus.xengine.utils.OpsCounter;
 import org.lwjgl.opengl.GL11;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 
 public class RenderSystem implements System {
 
+    private final OpsCounter fps;
+    private TraitMapper<RenderTrait> renderMapper;
+    private RenderSystemConfigurer configurer;
+
     private static final Logger LOGGER = LoggerFactory.getLogger(RenderSystem.class);
 
-    private final OpsCounter fps;
     private WindowManager wm;
     private Render render;
     private final Scheduler scheduler;
-    private List<RenderTrait> traits = new ArrayList<>();
 
-    public RenderSystem(WindowManager wm, Scheduler scheduler, RenderTrait ... traitsArr) {
+
+
+    public RenderSystem(WindowManager wm, Scheduler scheduler) {
         this.wm = wm;
         this.scheduler = scheduler;
-        traits.addAll(Arrays.asList(traitsArr));
+        this.configurer = new RenderSystemConfigurer(this);
         fps = new OpsCounter("FrameRender");
     }
 
     @Override
     public void process() {
+        RenderTrait renderTrait = renderMapper.get(0);
         GL11.glClear(GL11.GL_COLOR_BUFFER_BIT);
-        traits.forEach(renderTrait -> render.render(renderTrait));
+
+        render.render(renderTrait);
+
         wm.swapBuffers();
         wm.printGLErrors();
         fps.operateAndLog();
+    }
+
+    @Override
+    public Configurer configurer() {
+        return configurer;
     }
 
 
@@ -62,7 +72,7 @@ public class RenderSystem implements System {
                 render = new Render(staticShader);
                 scheduler.propose(renderTask());
             }
-        };
+        }.setSystem(this);
     }
 
 
@@ -73,7 +83,7 @@ public class RenderSystem implements System {
             public void run() {
                 process();
             }
-        };
+        }.setSystem(this);
     }
 
     public SchedulerTask closeTask(){
@@ -85,7 +95,11 @@ public class RenderSystem implements System {
                 render.cleanup();
                 wm.deatachContext();
             }
-        };
+        }.setSystem(this);
+    }
+
+    public void setRenderMapper(TraitMapper<RenderTrait> renderMapper) {
+        this.renderMapper = renderMapper;
     }
 
 

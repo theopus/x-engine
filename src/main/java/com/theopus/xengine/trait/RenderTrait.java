@@ -2,7 +2,7 @@ package com.theopus.xengine.trait;
 
 import org.joml.Matrix4f;
 
-public class RenderTrait implements Trait {
+public class RenderTrait extends Trait {
 
     private int vaoId;
     private int vertexCount;

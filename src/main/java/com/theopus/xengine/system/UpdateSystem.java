@@ -1,56 +1,81 @@
 package com.theopus.xengine.system;
 
-import com.theopus.xengine.Entity;
-import com.theopus.xengine.WindowManager;
 import com.theopus.xengine.scheduler.Scheduler;
 import com.theopus.xengine.scheduler.SchedulerTask;
-import com.theopus.xengine.utils.Maths;
+import com.theopus.xengine.trait.*;
 import com.theopus.xengine.utils.OpsCounter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-
 public class UpdateSystem implements System {
 
+    private Configurer configurer;
+    private TraitMapper<RenderTrait> rmapper;
+    private TraitMapper<PositionTrait> pmapper;
+
+    private RenderTraitEditor reditor;
+    private PositionTraitEditor peditor;
+
+
     private static final Logger LOGGER = LoggerFactory.getLogger(UpdateSystem.class);
-
     private final OpsCounter ups;
-    private List<Entity> entityList = new ArrayList<>();
-    private float accelerate;
-    private WindowManager wm;
 
-    public UpdateSystem(WindowManager wm, Entity ... entity) {
-        this.wm = wm;
-        entityList.addAll(Arrays.asList(entity));
+    public UpdateSystem() {
+        configurer = new UpdateSystemConfigurer(this);
         ups = new OpsCounter("Updates");
     }
 
     @Override
     public void process() {
-        entityList.forEach(entity -> entity.getPositionTrait().setRotZ(entity.getPositionTrait().getRotZ()+entity.getPositionTrait().getRotSpeed()));
-        entityList.forEach(entity -> Maths.applyTransformations(
-                entity.getPositionTrait().getPosition(),
-                entity.getPositionTrait().getRotX(),
-                entity.getPositionTrait().getRotY(),
-                entity.getPositionTrait().getRotZ(),
-                entity.getPositionTrait().getScale(),
-                entity.getRenderTrait().getTransformation()));
+        PositionTrait positionTrait = pmapper.get(0);
+        RenderTrait renderTrait = rmapper.get(0);
+        LOGGER.info("{}{}", positionTrait.getRotZ(), renderTrait.getTransformation());
+
+
+        peditor.rotateZ(0, 1f);
+        reditor.transformWith(0, positionTrait.getPosition(),
+                positionTrait.getRotX(),
+                positionTrait.getRotY(),
+                positionTrait.getRotZ(),
+                positionTrait.getScale()
+        );
+
         ups.operateAndLog();
     }
 
-    public SchedulerTask task(){
+    public SchedulerTask task() {
         return new SchedulerTask(Scheduler.ThreadType.ANY, true) {
             @Override
             public void run() {
                 try {
-                process();
-                } catch (Exception e){
+                    process();
+                } catch (Exception e) {
                     e.printStackTrace();
                 }
             }
-        };
+        }.setSystem(this);
+    }
+
+
+    public void setReditor(RenderTraitEditor reditor) {
+        this.reditor = reditor;
+    }
+
+    @Override
+    public Configurer configurer() {
+        return configurer;
+    }
+
+    public void setRenderMapper(TraitMapper<RenderTrait> mapper) {
+        this.rmapper = mapper;
+    }
+
+
+    public void setPositionEditor(PositionTraitEditor peditor) {
+        this.peditor = peditor;
+    }
+
+    public void setPositionMapper(TraitMapper<PositionTrait> pmapper) {
+        this.pmapper = pmapper;
     }
 }
