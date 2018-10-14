@@ -1,13 +1,17 @@
 package com.theopus.xengine.system;
 
-import com.theopus.xengine.trait.*;
+import com.theopus.xengine.trait.RenderTrait;
+import com.theopus.xengine.trait.State;
+import com.theopus.xengine.trait.StateManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class RenderSystemConfigurer implements Configurer{
+public class RenderSystemConfigurer implements Configurer {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(RenderSystemConfigurer.class);
 
+    private int lastReadFrame = 0;
+    private int diff = 0;
 
     private RenderSystem renderSystem;
 
@@ -22,13 +26,19 @@ public class RenderSystemConfigurer implements Configurer{
 
     @Override
     public void setRead(State state) {
-//        LOGGER.info("Render system {}", state.getFrame());
+        diff = Math.max(state.getFrame() - lastReadFrame, diff);
+        LOGGER.info("Frames draw was {} now {}", lastReadFrame, state.getFrame());
+        LOGGER.info("Render system dif {}", state.getFrame() - lastReadFrame);
+
+//        LOGGER.debug("Render system max dif {}", diff);
+        lastReadFrame = state.getFrame();
 
         renderSystem.setRenderMapper(state.getMapper(RenderTrait.class));
     }
 
     @Override
-    public void setWrite(State state) {
+    public void setWrite(State read, State state) {
 
     }
+
 }

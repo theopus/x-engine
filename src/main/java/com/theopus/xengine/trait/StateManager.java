@@ -30,8 +30,9 @@ public class StateManager {
             int targetFrame = state.getTargetFrame();
             if (targetFrame <= lastFrame) {
                 LOGGER.debug("Found conflict, expected to be {}->{}, but got {}.", state.getFrame(), state.getTargetFrame(), lastFrame);
-                LOGGER.debug("Skipped for now.");
-                //todo perform merging
+//                LOGGER.debug("Skipped for now.");
+                State lastState = forRead();
+
                 state.setFrame(lastFrame);
             } else {
                 lastFrame = targetFrame;
@@ -39,6 +40,7 @@ public class StateManager {
             }
         }
         state.setLock(LockType.FREE);
+        state.clearFrame();
         states.remove(state);
         states.add(state);
         LOGGER.debug("After release state {}", state);

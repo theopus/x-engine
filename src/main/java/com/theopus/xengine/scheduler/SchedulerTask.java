@@ -1,14 +1,20 @@
 package com.theopus.xengine.scheduler;
 
+import com.google.common.util.concurrent.RateLimiter;
 import com.theopus.xengine.system.System;
+import com.theopus.xengine.trait.State;
 
 public abstract class SchedulerTask implements Runnable {
 
     private long id;
     private Scheduler.ThreadType threadType;
     private boolean repeatable;
-    private System system;
+    protected System system;
     private int perSecCap = 60;
+
+
+    private RateLimiter rateLimiter = RateLimiter.create(120);
+    protected State state;
 
     public SchedulerTask(Scheduler.ThreadType threadType, boolean repeatable) {
         this.threadType = threadType;
@@ -62,7 +68,25 @@ public abstract class SchedulerTask implements Runnable {
         return this;
     }
 
+    public RateLimiter getRateLimiter() {
+        return rateLimiter;
+    }
+
+    public SchedulerTask setRateLimiter(RateLimiter rateLimiter){
+        this.rateLimiter = rateLimiter;
+        return this;
+    }
+
+    public SchedulerTask setState(State state){
+        this.state = state;
+        return this;
+    }
+
     public System getSystem() {
         return system;
+    }
+
+    protected State getState(){
+        return state;
     }
 }

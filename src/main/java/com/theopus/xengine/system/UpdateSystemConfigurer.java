@@ -21,19 +21,22 @@ public class UpdateSystemConfigurer implements Configurer{
 
     @Override
     public void setRead(State state) {
-        LOGGER.debug("Read {}", state.getFrame());
-
-        updateSystem.setRenderMapper(state.getMapper(RenderTrait.class));
-        updateSystem.setPositionMapper(state.getMapper(PositionTrait.class));
+        //read
     }
 
     @Override
-    public void setWrite(State state) {
-        LOGGER.debug("Write {}", state.getFrame());
-        TraitEditor<RenderTrait> editor = state.getEditor(RenderTrait.class);
+    public void setWrite(State read, State write) {
+
+        read.getEm().copyTo(write.getEm());
+
+        updateSystem.setRenderMapper(write.getMapper(RenderTrait.class));
+        updateSystem.setPositionMapper(write.getMapper(PositionTrait.class));
+
+        LOGGER.debug("Write {}", write.getTargetFrame());
+        TraitEditor<RenderTrait> editor = write.getEditor(RenderTrait.class);
         updateSystem.setReditor((RenderTraitEditor) editor);
 
-        TraitEditor<PositionTrait> peditor = state.getEditor(PositionTrait.class);
+        TraitEditor<PositionTrait> peditor = write.getEditor(PositionTrait.class);
         updateSystem.setPositionEditor((PositionTraitEditor) peditor);
     }
 

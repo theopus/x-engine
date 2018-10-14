@@ -2,7 +2,7 @@ package com.theopus.xengine.trait;
 
 import org.joml.Vector3f;
 
-public class PositionTrait extends Trait implements IDuplicate<PositionTrait> {
+public class PositionTrait extends Trait<PositionTrait> implements IDuplicate<PositionTrait> {
 
     private Vector3f position = new Vector3f();
     private float rotX;

@@ -1,6 +1,8 @@
 package com.theopus.xengine.scheduler;
 
+import com.google.common.util.concurrent.RateLimiter;
 import com.theopus.xengine.system.System;
+import com.theopus.xengine.trait.State;
 
 class CallbackTask extends SchedulerTask{
 
@@ -30,6 +32,20 @@ class CallbackTask extends SchedulerTask{
     @Override
     public System getSystem() {
         return task.getSystem();
+    }
+
+    @Override
+    public RateLimiter getRateLimiter() {
+        return task.getRateLimiter();
+    }
+
+    @Override
+    public SchedulerTask setState(State state) {
+        return task.setState(state);
+    }
+
+    public State getState(){
+        return task.getState();
     }
 
     @Override

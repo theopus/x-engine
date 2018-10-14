@@ -28,9 +28,9 @@ public class Scheduler implements AutoCloseable {
 
     private StateManager manager;
 
-    private ExecutorService mainContext = new ThreadPoolExecutor(1, 1, 60, TimeUnit.SECONDS, new LinkedBlockingQueue<>());
-    private ExecutorService sideContext = new ThreadPoolExecutor(1, 1, 60, TimeUnit.SECONDS, new LinkedBlockingQueue<>());
-    private ExecutorService work = new ThreadPoolExecutor(1, 1, 60, TimeUnit.SECONDS, new LinkedBlockingQueue<>());
+    private ExecutorService mainContext = Executors.newFixedThreadPool(1);
+    private ExecutorService sideContext = Executors.newFixedThreadPool(1);
+    private ExecutorService work = Executors.newFixedThreadPool(4);
 
     private BlockingQueue<SchedulerTask> proposed = new LinkedBlockingQueue<>();
     private BlockingQueue<SchedulerTask> waiting = new LinkedBlockingQueue<>();
@@ -52,28 +52,38 @@ public class Scheduler implements AutoCloseable {
     }
 
     public void operate() throws InterruptedException {
-        for (State state = states.poll(); state != null ; state = states.poll()) {
+        for (State state = states.poll(); state != null; state = states.poll()) {
             manager.release(state);
         }
 
-        SchedulerTask task = proposed.poll();
+        SchedulerTask task = proposed.poll(5, TimeUnit.MILLISECONDS);
         if (task != null) {
+            boolean shouldRun = task.getRateLimiter().tryAcquire();
 
+            if (!shouldRun){
+                proposed.add(task);
+                return;
+            }
             Configurer configurer = task.getSystem().configurer();
             switch (configurer.type()) {
                 case READ_ONLY:
                     State onlyRead = manager.forRead();
                     task = wrapFreeStatePut(task, onlyRead);
                     configurer.setRead(onlyRead);
+                    task.setState(onlyRead);
                     break;
                 case READ_WRITE:
                     State write = manager.forWrite();
+                    if (write == null) {
+                        proposed.add(task);
+                        return;
+                    }
                     task = wrapFreeStatePut(task, write);
                     State read = manager.forRead();
                     task = wrapFreeStatePut(task, read);
 
-                    configurer.setRead(read);
-                    configurer.setWrite(write);
+                    configurer.setWrite(read,write);
+                    task.setState(write);
                     break;
                 default:
                     proposed.add(task);
@@ -95,8 +105,6 @@ public class Scheduler implements AutoCloseable {
                     break;
             }
         }
-
-//        Thread.sleep(1000);
     }
 
     public void drain() {
@@ -112,7 +120,7 @@ public class Scheduler implements AutoCloseable {
         });
     }
 
-    private SchedulerTask wrapFreeStatePut(SchedulerTask task, State state){
+    private SchedulerTask wrapFreeStatePut(SchedulerTask task, State state) {
         return task.andThen(() -> this.states.add(state));
     }
 

@@ -1,6 +1,7 @@
 package com.theopus.xengine;
 
 import com.google.common.collect.ImmutableMap;
+import com.google.common.util.concurrent.RateLimiter;
 import com.theopus.xengine.scheduler.Scheduler;
 import com.theopus.xengine.system.RenderSystem;
 import com.theopus.xengine.system.UpdateSystem;
@@ -40,8 +41,11 @@ public class Main {
                 PositionTrait.class, PositionTraitEditor.class
         ));
 
-        StateManager stateManager = new StateManager(factory, 5);
+        StateManager stateManager = new StateManager(factory, 3);
         Scheduler scheduler = new Scheduler(stateManager);
+
+
+
 
         State state = stateManager.forWrite();
 
@@ -86,10 +90,12 @@ public class Main {
         scheduler.propose(renderSystem.prepareTask());
 
 
+        RateLimiter limiter = RateLimiter.create(1024);
+
         while (!wm.windowShouldClose()) {
+            limiter.acquire();
             scheduler.operate();
             wm.update();
-            Thread.sleep(1);
         }
 
         scheduler.drain();

@@ -1,12 +1,8 @@
 package com.theopus.xengine.trait;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class PositionTraitEditor extends TraitEditor<PositionTrait> {
-
-    private List<Transformation<PositionTrait>> transformations = new ArrayList<>();
-
 
     public void rotateZ(int entityId, float rotZ) {
         Transformation<PositionTrait> action = (mapper) -> {

@@ -2,7 +2,7 @@ package com.theopus.xengine.trait;
 
 import org.joml.Matrix4f;
 
-public class RenderTrait extends Trait implements IDuplicate<RenderTrait> {
+public class RenderTrait extends Trait<RenderTrait> implements IDuplicate<RenderTrait> {
 
     private int vaoId;
     private int vertexCount;

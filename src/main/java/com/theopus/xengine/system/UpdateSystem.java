@@ -1,11 +1,15 @@
 package com.theopus.xengine.system;
 
+import com.google.common.util.concurrent.RateLimiter;
+import com.theopus.xengine.scheduler.EntitesTask;
 import com.theopus.xengine.scheduler.Scheduler;
 import com.theopus.xengine.scheduler.SchedulerTask;
 import com.theopus.xengine.trait.*;
 import com.theopus.xengine.utils.OpsCounter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.stream.IntStream;
 
 public class UpdateSystem implements System {
 
@@ -27,13 +31,8 @@ public class UpdateSystem implements System {
     }
 
     @Override
-    public void process() {
+    public void process(IntStream entities) {
         PositionTrait positionTrait = pmapper.get(0);
-        RenderTrait renderTrait = rmapper.get(0);
-
-        peditor.copy(0, positionTrait);
-        reditor.copy(0, renderTrait);
-
 
         peditor.rotateZ(0, 1f);
         reditor.transformWith(0, positionTrait.getPosition(),
@@ -47,16 +46,9 @@ public class UpdateSystem implements System {
     }
 
     public SchedulerTask task() {
-        return new SchedulerTask(Scheduler.ThreadType.ANY, true) {
-            @Override
-            public void run() {
-                try {
-                    process();
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            }
-        }.setSystem(this);
+        return new EntitesTask(Scheduler.ThreadType.ANY, true, this)
+                .setSystem(this)
+                .setRateLimiter(RateLimiter.create(60));
     }
 
 
@@ -67,6 +59,16 @@ public class UpdateSystem implements System {
     @Override
     public Configurer configurer() {
         return configurer;
+    }
+
+
+    Class[] classes = new Class[]{
+            RenderTrait.class, PositionTrait.class
+    };
+
+    @Override
+    public Class<? extends Trait>[] toPass() {
+        return classes;
     }
 
     public void setRenderMapper(TraitMapper<RenderTrait> mapper) {

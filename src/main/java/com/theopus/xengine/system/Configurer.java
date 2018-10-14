@@ -8,6 +8,5 @@ public interface Configurer {
     StateManager.LockType type();
 
     void setRead(State state);
-    void setWrite(State state);
-
+    void setWrite(State read, State state);
 }

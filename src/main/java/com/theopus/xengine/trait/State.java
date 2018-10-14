@@ -40,7 +40,7 @@ public class State implements Comparable<State> {
 
     @Override
     public int compareTo(State o) {
-        return o.frame - this.frame;
+        return Integer.compareUnsigned(o.frame, this.frame);
     }
 
     public StateManager.LockType getLock() {
@@ -66,6 +66,14 @@ public class State implements Comparable<State> {
                 '}';
     }
 
+    public int getId() {
+        return id;
+    }
+
+    public StateManager.LockType getLockType() {
+        return lockType;
+    }
+
     public int getTargetFrame() {
         return targetFrame;
     }
@@ -76,5 +84,9 @@ public class State implements Comparable<State> {
 
     public int getFrame() {
         return frame;
+    }
+
+    public void clearFrame() {
+        em.clearEditors();
     }
 }

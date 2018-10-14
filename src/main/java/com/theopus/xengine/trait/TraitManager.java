@@ -2,8 +2,10 @@ package com.theopus.xengine.trait;
 
 import com.theopus.xengine.utils.Reflection;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.stream.Stream;
 
 public class TraitManager {
 
@@ -17,9 +19,21 @@ public class TraitManager {
         }
     }
 
-
     @SuppressWarnings("unchecked")
     public <T extends Trait> TraitMapper<T> getMapper(Class<T> traitClass) {
         return mappers.get(traitClass);
+    }
+
+    public Collection<TraitMapper> traitMappers(){
+        return mappers.values();
+    }
+
+    public Stream<TraitEditor> traitEditors(){
+        return traitMappers().stream().map(TraitMapper::getEditor);
+    }
+
+
+    public void clearEditors(){
+        mappers.values().forEach(TraitMapper::clearEditor);
     }
 }

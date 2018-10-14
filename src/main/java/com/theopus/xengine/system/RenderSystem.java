@@ -3,9 +3,11 @@ package com.theopus.xengine.system;
 import com.theopus.xengine.Render;
 import com.theopus.xengine.StaticShader;
 import com.theopus.xengine.WindowManager;
+import com.theopus.xengine.scheduler.EntitesTask;
 import com.theopus.xengine.scheduler.Scheduler;
 import com.theopus.xengine.scheduler.SchedulerTask;
 import com.theopus.xengine.trait.RenderTrait;
+import com.theopus.xengine.trait.Trait;
 import com.theopus.xengine.trait.TraitMapper;
 import com.theopus.xengine.utils.OpsCounter;
 import org.lwjgl.opengl.GL11;
@@ -13,6 +15,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
+import java.util.stream.IntStream;
 
 public class RenderSystem implements System {
 
@@ -27,7 +30,6 @@ public class RenderSystem implements System {
     private final Scheduler scheduler;
 
 
-
     public RenderSystem(WindowManager wm, Scheduler scheduler) {
         this.wm = wm;
         this.scheduler = scheduler;
@@ -36,15 +38,17 @@ public class RenderSystem implements System {
     }
 
     @Override
-    public void process() {
-        RenderTrait renderTrait = renderMapper.get(0);
-        GL11.glClear(GL11.GL_COLOR_BUFFER_BIT);
+    public void process(IntStream entities) {
+        entities.forEach(id -> {
+            RenderTrait renderTrait = renderMapper.get(0);
+            GL11.glClear(GL11.GL_COLOR_BUFFER_BIT);
 
-        render.render(renderTrait);
+            render.render(renderTrait);
 
-        wm.swapBuffers();
-        wm.printGLErrors();
-        fps.operateAndLog();
+            wm.swapBuffers();
+            wm.printGLErrors();
+            fps.operateAndLog();
+        });
     }
 
     @Override
@@ -52,8 +56,8 @@ public class RenderSystem implements System {
         return configurer;
     }
 
-    public SchedulerTask prepareTask(){
-        return new RenderTask(false){
+    public SchedulerTask prepareTask() {
+        return new RenderTask(false) {
 
             @Override
             public void run() {
@@ -75,18 +79,12 @@ public class RenderSystem implements System {
     }
 
 
-    public SchedulerTask renderTask(){
-        return new RenderTask(true){
-
-            @Override
-            public void run() {
-                process();
-            }
-        }.setSystem(this);
+    public SchedulerTask renderTask() {
+        return new RenderEntityTask(this);
     }
 
-    public SchedulerTask closeTask(){
-        return new RenderTask(false){
+    public SchedulerTask closeTask() {
+        return new RenderTask(false) {
 
             @Override
             public void run() {
@@ -97,15 +95,32 @@ public class RenderSystem implements System {
         }.setSystem(this);
     }
 
+    Class[] classes = new Class[]{
+            RenderTrait.class
+    };
+
+    @Override
+    public Class<? extends Trait>[] toPass() {
+        return classes;
+    }
+
+
     public void setRenderMapper(TraitMapper<RenderTrait> renderMapper) {
         this.renderMapper = renderMapper;
     }
 
 
-    public abstract class RenderTask extends SchedulerTask{
+    public abstract class RenderTask extends SchedulerTask {
 
         public RenderTask(boolean repeatable) {
             super(Scheduler.ThreadType.MAIN_CONTEXT, repeatable);
+        }
+    }
+
+    public class RenderEntityTask extends EntitesTask {
+
+        public RenderEntityTask(System system) {
+            super(Scheduler.ThreadType.MAIN_CONTEXT, true, system);
         }
     }
 }

@@ -3,12 +3,9 @@ package com.theopus.xengine.trait;
 import com.theopus.xengine.utils.Maths;
 import org.joml.Vector3f;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class RenderTraitEditor extends TraitEditor<RenderTrait> {
-
-    private List<Transformation<RenderTrait>> transformations = new ArrayList<>();
 
     public RenderTraitEditor() {
     }
@@ -40,9 +37,5 @@ public class RenderTraitEditor extends TraitEditor<RenderTrait> {
         };
         transformations.add(action);
         action.transform(mapper);
-    }
-
-    private List<Transformation<RenderTrait>> transformations(){
-        return transformations;
     }
 }

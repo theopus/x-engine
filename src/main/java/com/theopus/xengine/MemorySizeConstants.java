@@ -8,7 +8,7 @@ public class MemorySizeConstants {
     public static final int VEC3_FLOAT = FLOAT * 3;
     public static final int VEC4_FLOAT = FLOAT * 4;
     public static final int VEC3_INT = FLOAT * 3;
-    public static final int MAT4_FLOAT = FLOAT * 16;
+    public static final int MAT4_FLOAT = VEC4_FLOAT * 4;
 
 
 }

@@ -44,11 +44,23 @@ public class TraitMapper<Trait extends com.theopus.xengine.trait.Trait> {
         return traits.remove(entityId);
     }
 
-    public BitSet traits() {
+    public BitSet traitsBits() {
         return available;
+    }
+
+    public Map<Integer, Trait> traits() {
+        return traits;
     }
 
     public TraitEditor<Trait> getEditor() {
         return editor;
+    }
+
+    public void clearEditor(){
+        editor.clear();
+    }
+
+    public Class<Trait> getTraitClass() {
+        return traitClass;
     }
 }
