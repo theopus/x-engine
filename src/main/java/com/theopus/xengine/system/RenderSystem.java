@@ -1,12 +1,13 @@
 package com.theopus.xengine.system;
 
+import com.google.common.util.concurrent.RateLimiter;
 import com.theopus.xengine.Render;
 import com.theopus.xengine.StaticShader;
 import com.theopus.xengine.WindowManager;
 import com.theopus.xengine.scheduler.EntitesTask;
 import com.theopus.xengine.scheduler.Scheduler;
 import com.theopus.xengine.scheduler.SchedulerTask;
-import com.theopus.xengine.trait.RenderTrait;
+import com.theopus.xengine.trait.custom.RenderTrait;
 import com.theopus.xengine.trait.Trait;
 import com.theopus.xengine.trait.TraitMapper;
 import com.theopus.xengine.utils.OpsCounter;
@@ -40,15 +41,19 @@ public class RenderSystem implements System {
     @Override
     public void process(IntStream entities) {
         entities.forEach(id -> {
-            RenderTrait renderTrait = renderMapper.get(0);
-            GL11.glClear(GL11.GL_COLOR_BUFFER_BIT);
-
+            RenderTrait renderTrait = renderMapper.get(id);
             render.render(renderTrait);
-
-            wm.swapBuffers();
-            wm.printGLErrors();
-            fps.operateAndLog();
         });
+        wm.printGLErrors();
+        fps.operateAndLog();
+        wm.swapBuffers();
+        GL11.glClear(GL11.GL_COLOR_BUFFER_BIT);
+
+        try {
+            Thread.sleep(10);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
@@ -80,7 +85,7 @@ public class RenderSystem implements System {
 
 
     public SchedulerTask renderTask() {
-        return new RenderEntityTask(this);
+        return new RenderEntityTask(this).setRateLimiter(RateLimiter.create(Double.MAX_VALUE));
     }
 
     public SchedulerTask closeTask() {

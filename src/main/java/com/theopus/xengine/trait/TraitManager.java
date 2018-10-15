@@ -36,4 +36,12 @@ public class TraitManager {
     public void clearEditors(){
         mappers.values().forEach(TraitMapper::clearEditor);
     }
+
+    public void reApplyTransformations() {
+        for (TraitMapper traitMapper : mappers.values()) {
+            TraitEditor<? extends Trait> editor = traitMapper.getEditor();
+            editor.transformations.forEach(transformation -> transformation.transform(traitMapper));
+        }
+
+    }
 }

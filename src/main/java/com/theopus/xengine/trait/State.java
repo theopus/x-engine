@@ -2,7 +2,9 @@ package com.theopus.xengine.trait;
 
 import com.theopus.xengine.system.System;
 
-public class State implements Comparable<State> {
+import java.util.Comparator;
+
+public class State{
 
     private final int id;
     private int frame;
@@ -36,11 +38,6 @@ public class State implements Comparable<State> {
 
     public EntityManager getEm() {
         return em;
-    }
-
-    @Override
-    public int compareTo(State o) {
-        return Integer.compareUnsigned(o.frame, this.frame);
     }
 
     public StateManager.LockType getLock() {
@@ -88,5 +85,21 @@ public class State implements Comparable<State> {
 
     public void clearFrame() {
         em.clearEditors();
+    }
+
+    public static class FrameComparator implements Comparator<State>{
+
+        @Override
+        public int compare(State o1, State o2) {
+            return Integer.compareUnsigned(o2.getFrame(), o1.getFrame());
+        }
+    }
+
+    public static class TargetFrameComparator implements Comparator<State>{
+
+        @Override
+        public int compare(State o1, State o2) {
+            return Integer.compareUnsigned(o1.getTargetFrame(), o2.getTargetFrame());
+        }
     }
 }

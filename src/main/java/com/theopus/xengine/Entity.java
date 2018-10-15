@@ -1,8 +1,7 @@
 package com.theopus.xengine;
 
-import com.theopus.xengine.trait.PositionTrait;
-import com.theopus.xengine.trait.RenderTrait;
-import org.joml.Vector3f;
+import com.theopus.xengine.trait.custom.PositionTrait;
+import com.theopus.xengine.trait.custom.RenderTrait;
 
 public class Entity {
 

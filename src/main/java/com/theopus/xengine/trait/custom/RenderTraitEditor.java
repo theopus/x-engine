@@ -1,5 +1,7 @@
-package com.theopus.xengine.trait;
+package com.theopus.xengine.trait.custom;
 
+import com.theopus.xengine.trait.TraitEditor;
+import com.theopus.xengine.trait.Transformation;
 import com.theopus.xengine.utils.Maths;
 import org.joml.Vector3f;
 

@@ -4,7 +4,7 @@ import com.theopus.xengine.opengl.Attribute;
 import com.theopus.xengine.opengl.Vao;
 import com.theopus.xengine.opengl.VaoBuilder;
 import com.theopus.xengine.opengl.Vbo;
-import com.theopus.xengine.trait.RenderTrait;
+import com.theopus.xengine.trait.custom.RenderTrait;
 import org.lwjgl.opengl.GL15;
 
 public class RenderTraitLoader extends Loader {

@@ -1,9 +1,11 @@
 package com.theopus.xengine.trait;
 
 import com.google.common.collect.ImmutableMap;
+import com.theopus.xengine.trait.custom.PositionTrait;
+import com.theopus.xengine.trait.custom.PositionTraitEditor;
+import com.theopus.xengine.trait.custom.RenderTrait;
+import com.theopus.xengine.trait.custom.RenderTraitEditor;
 import org.junit.Test;
-
-import java.util.BitSet;
 
 public class StateManagerTest {
 
@@ -17,16 +19,6 @@ public class StateManagerTest {
 
         EntityManager em = factory.create();
 
-        TraitMapper<RenderTrait> rM = em.getManager().getMapper(RenderTrait.class);
-        TraitMapper<PositionTrait> pM = em.getManager().getMapper(PositionTrait.class);
-
-        rM.get(0);
-        pM.get(0);
-        rM.get(1);
-        pM.get(1);
-
-        BitSet bitSet = em.entitiesWith(RenderTrait.class);
-
-        System.out.println(bitSet);
+        em.reApplyTransformations();
     }
 }

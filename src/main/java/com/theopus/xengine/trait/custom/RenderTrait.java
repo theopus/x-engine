@@ -1,5 +1,7 @@
-package com.theopus.xengine.trait;
+package com.theopus.xengine.trait.custom;
 
+import com.theopus.xengine.trait.IDuplicate;
+import com.theopus.xengine.trait.Trait;
 import org.joml.Matrix4f;
 
 public class RenderTrait extends Trait<RenderTrait> implements IDuplicate<RenderTrait> {

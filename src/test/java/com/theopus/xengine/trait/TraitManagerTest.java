@@ -1,6 +1,10 @@
 package com.theopus.xengine.trait;
 
 import com.google.common.collect.ImmutableMap;
+import com.theopus.xengine.trait.custom.PositionTrait;
+import com.theopus.xengine.trait.custom.PositionTraitEditor;
+import com.theopus.xengine.trait.custom.RenderTrait;
+import com.theopus.xengine.trait.custom.RenderTraitEditor;
 import org.joml.Vector3f;
 import org.junit.Test;
 

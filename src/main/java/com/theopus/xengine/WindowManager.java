@@ -186,4 +186,9 @@ public class WindowManager implements Closeable {
     public int getHeight() {
         return height;
     }
+
+    public void setCallbacK(GLFWKeyCallback glfwKeyCallback) {
+        GLFWKeyCallback was = GLFW.glfwSetKeyCallback(mainContext, glfwKeyCallback);
+        was.free();
+    }
 }

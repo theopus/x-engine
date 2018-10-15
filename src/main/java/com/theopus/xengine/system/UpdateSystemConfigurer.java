@@ -1,6 +1,10 @@
 package com.theopus.xengine.system;
 
 import com.theopus.xengine.trait.*;
+import com.theopus.xengine.trait.custom.PositionTrait;
+import com.theopus.xengine.trait.custom.PositionTraitEditor;
+import com.theopus.xengine.trait.custom.RenderTrait;
+import com.theopus.xengine.trait.custom.RenderTraitEditor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -32,7 +36,7 @@ public class UpdateSystemConfigurer implements Configurer{
         updateSystem.setRenderMapper(write.getMapper(RenderTrait.class));
         updateSystem.setPositionMapper(write.getMapper(PositionTrait.class));
 
-        LOGGER.debug("Write {}", write.getTargetFrame());
+        LOGGER.debug("Updating {}->{}, on copy from {}", write.getFrame(), write.getTargetFrame(), read.getFrame());
         TraitEditor<RenderTrait> editor = write.getEditor(RenderTrait.class);
         updateSystem.setReditor((RenderTraitEditor) editor);
 

@@ -5,6 +5,10 @@ import com.theopus.xengine.scheduler.EntitesTask;
 import com.theopus.xengine.scheduler.Scheduler;
 import com.theopus.xengine.scheduler.SchedulerTask;
 import com.theopus.xengine.trait.*;
+import com.theopus.xengine.trait.custom.PositionTrait;
+import com.theopus.xengine.trait.custom.PositionTraitEditor;
+import com.theopus.xengine.trait.custom.RenderTrait;
+import com.theopus.xengine.trait.custom.RenderTraitEditor;
 import com.theopus.xengine.utils.OpsCounter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -32,16 +36,20 @@ public class UpdateSystem implements System {
 
     @Override
     public void process(IntStream entities) {
-        PositionTrait positionTrait = pmapper.get(0);
+        entities.forEach(value -> {
+//            LOGGER.info("{} \n {}", value, );
+            
+            PositionTrait positionTrait = pmapper.get(value);
 
-        peditor.rotateZ(0, 1f);
-        reditor.transformWith(0, positionTrait.getPosition(),
-                positionTrait.getRotX(),
-                positionTrait.getRotY(),
-                positionTrait.getRotZ(),
-                positionTrait.getScale()
-        );
+            peditor.rotateZ(value, positionTrait.getRotSpeed());
+            reditor.transformWith(value, positionTrait.getPosition(),
+                    positionTrait.getRotX(),
+                    positionTrait.getRotY(),
+                    positionTrait.getRotZ(),
+                    positionTrait.getScale()
+            );
 
+        });
         ups.operateAndLog();
     }
 

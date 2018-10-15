@@ -3,9 +3,17 @@ package com.theopus.xengine;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.util.concurrent.RateLimiter;
 import com.theopus.xengine.scheduler.Scheduler;
+import com.theopus.xengine.system.InputSystem;
 import com.theopus.xengine.system.RenderSystem;
 import com.theopus.xengine.system.UpdateSystem;
-import com.theopus.xengine.trait.*;
+import com.theopus.xengine.trait.EntityManagerFactory;
+import com.theopus.xengine.trait.State;
+import com.theopus.xengine.trait.StateManager;
+import com.theopus.xengine.trait.custom.PositionTrait;
+import com.theopus.xengine.trait.custom.PositionTraitEditor;
+import com.theopus.xengine.trait.custom.RenderTrait;
+import com.theopus.xengine.trait.custom.RenderTraitEditor;
+import org.joml.Vector3f;
 import org.joml.Vector4f;
 import org.lwjgl.glfw.GLFWKeyCallback;
 import org.lwjgl.system.Configuration;
@@ -33,6 +41,7 @@ public class Main {
 
         );
 
+
         wm.createWindow();
         wm.showWindow();
 
@@ -43,8 +52,6 @@ public class Main {
 
         StateManager stateManager = new StateManager(factory, 3);
         Scheduler scheduler = new Scheduler(stateManager);
-
-
 
 
         State state = stateManager.forWrite();
@@ -72,8 +79,21 @@ public class Main {
                 }, 6
         );
 
+        RenderTrait renderTrait1 = state.getMapper(RenderTrait.class).get(1);
+        renderTrait.duplicateTo(renderTrait1);
+        RenderTrait renderTrait2 = state.getMapper(RenderTrait.class).get(2);
+        renderTrait.duplicateTo(renderTrait2);
+        RenderTrait renderTrait3 = state.getMapper(RenderTrait.class).get(3);
+        renderTrait.duplicateTo(renderTrait3);
 
+        PositionTrait positionTrait0 = state.getMapper(PositionTrait.class).get(0);
 
+        PositionTrait positionTrait1 = state.getMapper(PositionTrait.class).get(1);
+        positionTrait1.setPosition(new Vector3f(-1, -1, 0));
+        PositionTrait positionTrait2 = state.getMapper(PositionTrait.class).get(2);
+        positionTrait2.setPosition(new Vector3f(1, -1, 0));
+        PositionTrait positionTrait3 = state.getMapper(PositionTrait.class).get(3);
+        positionTrait3.setPosition(new Vector3f(1, 1, 0));
 
         wm.deatachContext();
 
@@ -89,8 +109,18 @@ public class Main {
 
         scheduler.propose(renderSystem.prepareTask());
 
+        InputSystem inputSystem = new InputSystem();
 
-        RateLimiter limiter = RateLimiter.create(1024);
+        wm.setCallbacK(new GLFWKeyCallback() {
+            @Override
+            public void invoke(long window, int key, int scancode, int action, int mods) {
+                if (action == 1 || action == 0) {
+                    scheduler.propose(inputSystem.task(key, action));
+                }
+            }
+        });
+
+        RateLimiter limiter = RateLimiter.create(2048);
 
         while (!wm.windowShouldClose()) {
             limiter.acquire();

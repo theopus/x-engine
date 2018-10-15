@@ -13,7 +13,8 @@ public class StateManager {
 
     private final EntityManagerFactory factory;
     private int lastFrame = 1;
-    private PriorityQueue<State> states = new PriorityQueue<>();
+    private int frameToBePrepared = 1;
+    private PriorityQueue<State> states = new PriorityQueue<>(new State.FrameComparator());
 
 
     public StateManager(EntityManagerFactory factory, int statesCount) {
@@ -29,15 +30,25 @@ public class StateManager {
         if (state.getLock() == LockType.READ_WRITE) {
             int targetFrame = state.getTargetFrame();
             if (targetFrame <= lastFrame) {
-                LOGGER.debug("Found conflict, expected to be {}->{}, but got {}.", state.getFrame(), state.getTargetFrame(), lastFrame);
-//                LOGGER.debug("Skipped for now.");
+                LOGGER.warn("Found conflict, expected to be {}->{}, but got {}.", state.getFrame(), state.getTargetFrame(), lastFrame);
                 State lastState = forRead();
+                lastState.getEm().copyTo(state.getEm());
+                state.getEm().reApplyTransformations();
+                release(lastState);
 
+                lastFrame += 1;
                 state.setFrame(lastFrame);
+                frameToBePrepared++;
+
+                LOGGER.info("Eventually set frame {}", lastFrame);
             } else {
                 lastFrame = targetFrame;
                 state.setFrame(lastFrame);
+                LOGGER.debug("Released {} frame", lastFrame);
             }
+
+            LOGGER.debug("Last frame {}", lastFrame);
+            
         }
         state.setLock(LockType.FREE);
         state.clearFrame();
@@ -73,7 +84,8 @@ public class StateManager {
                 }
                 state.setLock(LockType.READ_WRITE);
                 LOGGER.debug("Got state for write {}, applied write lock", state);
-                state.setTargetFrame(lastFrame + 1);
+                state.setTargetFrame(++frameToBePrepared);
+                LOGGER.debug("Target frame {}", state.getTargetFrame());
                 return state;
             }
         }

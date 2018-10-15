@@ -1,6 +1,6 @@
 package com.theopus.xengine;
 
-import com.theopus.xengine.trait.RenderTrait;
+import com.theopus.xengine.trait.custom.RenderTrait;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL20;
 import org.lwjgl.opengl.GL30;

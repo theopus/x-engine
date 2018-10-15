@@ -57,4 +57,8 @@ public class EntityManager {
         }
         return newSet;
     }
+
+    public void reApplyTransformations() {
+        manager.reApplyTransformations();
+    }
 }

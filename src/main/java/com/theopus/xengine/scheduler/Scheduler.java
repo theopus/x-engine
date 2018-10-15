@@ -34,7 +34,7 @@ public class Scheduler implements AutoCloseable {
 
     private BlockingQueue<SchedulerTask> proposed = new LinkedBlockingQueue<>();
     private BlockingQueue<SchedulerTask> waiting = new LinkedBlockingQueue<>();
-    private BlockingQueue<State> states = new LinkedBlockingQueue<>();
+    private BlockingQueue<State> states = new PriorityBlockingQueue<>(10,new State.TargetFrameComparator());
 
     private Map<Long, Future<?>> runningTasks = new ConcurrentSkipListMap<>();
     private long nextTaskId = 0;
@@ -56,7 +56,7 @@ public class Scheduler implements AutoCloseable {
             manager.release(state);
         }
 
-        SchedulerTask task = proposed.poll(5, TimeUnit.MILLISECONDS);
+        SchedulerTask task = proposed.poll();
         if (task != null) {
             boolean shouldRun = task.getRateLimiter().tryAcquire();
 
