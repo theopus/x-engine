@@ -6,9 +6,6 @@ public enum Status {
     SUBMITTED,
     RUNNING,
 
-    WAITING,
-    THROTLED,
-
     COMPLETED,
     FINISHED,
 

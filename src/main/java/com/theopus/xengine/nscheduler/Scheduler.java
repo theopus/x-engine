@@ -35,12 +35,14 @@ public class Scheduler {
             Task task = iterator.next();
             switch (task.getStatus()) {
                 case NEW:
+                    //acquire lock
                     if (task.throttle()) {
                         feeder.feed(task);
                     }
                     break;
 
                 case COMPLETED:
+                    //release lock
                     if (cycle && task.isCycled()){
                         task.setStatus(Status.NEW);
                     } else {
