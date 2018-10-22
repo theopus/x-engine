@@ -21,7 +21,7 @@ public class TraitManagerTest {
         );
 
         EntityManager em = new EntityManager(traitManager);
-        RenderTraitEditor editor = (RenderTraitEditor) em.getManager().getMapper(RenderTrait.class).getEditor();
+        RenderTraitEditor editor = (RenderTraitEditor) em.getTraitManger().getMapper(RenderTrait.class).getEditor();
 
 
         int entityId = 0;

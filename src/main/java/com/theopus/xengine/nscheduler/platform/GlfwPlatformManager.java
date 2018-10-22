@@ -1,5 +1,7 @@
-package com.theopus.xengine;
+package com.theopus.xengine.nscheduler.platform;
 
+import com.theopus.xengine.WindowConfig;
+import com.theopus.xengine.nscheduler.Context;
 import com.theopus.xengine.utils.InputHub;
 import org.joml.Vector4f;
 import org.lwjgl.glfw.*;
@@ -8,16 +10,15 @@ import org.lwjgl.system.MemoryStack;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.Closeable;
 import java.nio.IntBuffer;
 
 import static org.lwjgl.opengl.GL11.GL_FALSE;
 import static org.lwjgl.opengl.GL11.GL_TRUE;
 import static org.lwjgl.system.MemoryUtil.NULL;
 
-public class WindowManager implements Closeable {
-    
-    private static final Logger LOGGER = LoggerFactory.getLogger(WindowManager.class);
+public class GlfwPlatformManager implements PlatformManager {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(GlfwPlatformManager.class);
 
     private InputHub hub;
     private Vector4f color;
@@ -31,7 +32,7 @@ public class WindowManager implements Closeable {
     private long sideContext;
     private GLCapabilities sideCapabilities;
 
-    public WindowManager(WindowConfig windowConfig, InputHub hub) {
+    public GlfwPlatformManager(WindowConfig windowConfig, InputHub hub) {
         this.width = windowConfig.getWidth();
         this.height = windowConfig.getHeight();
         this.hub = hub;
@@ -39,7 +40,8 @@ public class WindowManager implements Closeable {
         this.vSync = windowConfig.getvSync();
         this.primitiveCompatible = windowConfig.isPrimitivesCompatible();
     }
-    public WindowManager(WindowConfig windowConfig, GLFWKeyCallback listener) {
+
+    public GlfwPlatformManager(WindowConfig windowConfig, GLFWKeyCallback listener) {
         this.width = windowConfig.getWidth();
         this.height = windowConfig.getHeight();
         this.color = windowConfig.getColor();
@@ -48,7 +50,7 @@ public class WindowManager implements Closeable {
         this.listener = listener;
     }
 
-    public WindowManager(int width, int height) {
+    public GlfwPlatformManager(int width, int height) {
         this.width = width;
         this.height = height;
         this.color = new Vector4f(0, 0, 0, 1);
@@ -78,7 +80,7 @@ public class WindowManager implements Closeable {
         mainContext = GLFW.glfwCreateWindow(width, height, "xEngine", NULL, NULL);
         sideContext = GLFW.glfwCreateWindow(width, height, "", NULL, mainContext);
 
-        if (listener != null){
+        if (listener != null) {
             listener = GLFW.glfwSetKeyCallback(mainContext, listener);
         }
         if (hub != null) {
@@ -108,51 +110,71 @@ public class WindowManager implements Closeable {
         mainCapabilities = GL.createCapabilities();
         LOGGER.info("Created capabilietes for mainContext OPENGL");
         GLFW.glfwMakeContextCurrent(sideContext);
-        sideCapabilities= GL.createCapabilities();
+        sideCapabilities = GL.createCapabilities();
 
-        deatachContext();
+        detachContext();
         attachMainContext();
 
         GLFW.glfwSwapInterval(vSync);
         GL11.glClearColor(color.x, color.y, color.z, color.w);
     }
 
-    public void update() {
-        GLFW.glfwPollEvents();
-    }
-
-    public void swapBuffers(){
-        GLFW.glfwSwapBuffers(mainContext);
-    }
-
-    public void deatachContext(){
+    public void detachContext() {
         LOGGER.info("Detached from cp:  {}", GL.getCapabilities());
         GLFW.glfwMakeContextCurrent(NULL);
         GL.setCapabilities(null);
     }
 
-    public void attachMainContext(){
-        GLFW.glfwMakeContextCurrent(mainContext);
-        GL.setCapabilities(mainCapabilities);
-        LOGGER.info("Attached to main context with cp: {}", GL.getCapabilities());
-    }
-
-    public void attachSideContext(){
-        GLFW.glfwMakeContextCurrent(sideContext);
-        GL.setCapabilities(sideCapabilities);
-        LOGGER.info("Attached to side context with cp: {}", GL.getCapabilities());
-    }
 
     public void showWindow() {
         GLFW.glfwShowWindow(mainContext);
     }
 
-    public void setClearColor(float r, float g, float b, float a) {
-        GL11.glClearColor(r, g, b, a);
+    @Override
+    public void processEvents() {
+        int errorCode = GL11.glGetError();
+        if (errorCode != 0) {
+            LOGGER.info("OpenGL Error: {}", errorCode);
+        }
+        GLFW.glfwPollEvents();
+    }
+
+    @Override
+    public void refreshWindow() {
+        GLFW.glfwSwapBuffers(mainContext);
+    }
+
+    @Override
+    public boolean shouldClose() {
+        return GLFW.glfwWindowShouldClose(mainContext);
+    }
+
+    @Override
+    public void createContext(Context context) {
+        //TODO
+    }
+
+    @Override
+    public void attachContext(Context context) {
+        switch (context) {
+            case MAIN:
+                attachMainContext();
+                break;
+            case SIDE:
+                attachSideContext();
+                break;
+            default:
+                LOGGER.info("Requested context does not exist{}", context);
+        }
+    }
+
+
+    public void setCallback(GLFWKeyCallback glfwKeyCallback) {
+        GLFWKeyCallback was = GLFW.glfwSetKeyCallback(mainContext, glfwKeyCallback);
+        was.free();
     }
 
     public void close() {
-
         Callbacks.glfwFreeCallbacks(mainContext);
         Callbacks.glfwFreeCallbacks(sideContext);
 
@@ -167,28 +189,15 @@ public class WindowManager implements Closeable {
         GL.destroy();
     }
 
-    public boolean windowShouldClose() {
-        return GLFW.glfwWindowShouldClose(mainContext);
+    private void attachMainContext() {
+        GLFW.glfwMakeContextCurrent(mainContext);
+        GL.setCapabilities(mainCapabilities);
+        LOGGER.info("Attached to main context with cp: {}", GL.getCapabilities());
     }
 
-
-    public void printGLErrors(){
-        int errorCode = GL11.glGetError();
-        if (errorCode != 0){
-            LOGGER.info("OpenGL Error: {}", errorCode);
-        }
-    }
-
-    public int getWidth() {
-        return width;
-    }
-
-    public int getHeight() {
-        return height;
-    }
-
-    public void setCallbacK(GLFWKeyCallback glfwKeyCallback) {
-        GLFWKeyCallback was = GLFW.glfwSetKeyCallback(mainContext, glfwKeyCallback);
-        was.free();
+    private void attachSideContext() {
+        GLFW.glfwMakeContextCurrent(sideContext);
+        GL.setCapabilities(sideCapabilities);
+        LOGGER.info("Attached to side context with cp: {}", GL.getCapabilities());
     }
 }

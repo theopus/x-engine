@@ -1,40 +1,36 @@
 package com.theopus.xengine.system;
 
-import com.google.common.util.concurrent.RateLimiter;
-import com.theopus.xengine.Render;
-import com.theopus.xengine.StaticShader;
-import com.theopus.xengine.WindowManager;
-import com.theopus.xengine.scheduler.EntitesTask;
-import com.theopus.xengine.scheduler.Scheduler;
-import com.theopus.xengine.scheduler.SchedulerTask;
-import com.theopus.xengine.trait.custom.RenderTrait;
-import com.theopus.xengine.trait.Trait;
+import com.theopus.xengine.conc.SystemRTask;
+import com.theopus.xengine.conc.SystemRWTask;
+import com.theopus.xengine.nscheduler.Context;
+import com.theopus.xengine.nscheduler.platform.PlatformManager;
+import com.theopus.xengine.nscheduler.task.Task;
+import com.theopus.xengine.opengl.Render;
+import com.theopus.xengine.opengl.StaticShader;
+import com.theopus.xengine.trait.EntityManager;
 import com.theopus.xengine.trait.TraitMapper;
+import com.theopus.xengine.trait.custom.RenderTrait;
 import com.theopus.xengine.utils.OpsCounter;
 import org.lwjgl.opengl.GL11;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.IOException;
 import java.util.stream.IntStream;
 
-public class RenderSystem implements System {
+public class RenderSystem extends EntitySystem {
 
     private final OpsCounter fps;
     private TraitMapper<RenderTrait> renderMapper;
-    private RenderSystemConfigurer configurer;
 
     private static final Logger LOGGER = LoggerFactory.getLogger(RenderSystem.class);
 
-    private WindowManager wm;
+    private PlatformManager pm;
     private Render render;
-    private final Scheduler scheduler;
 
 
-    public RenderSystem(WindowManager wm, Scheduler scheduler) {
-        this.wm = wm;
-        this.scheduler = scheduler;
-        this.configurer = new RenderSystemConfigurer(this);
+    public RenderSystem(PlatformManager pm) {
+        super(RenderTrait.class);
+        this.pm = pm;
         fps = new OpsCounter("FrameRender");
     }
 
@@ -44,9 +40,8 @@ public class RenderSystem implements System {
             RenderTrait renderTrait = renderMapper.get(id);
             render.render(renderTrait);
         });
-        wm.printGLErrors();
         fps.operateAndLog();
-        wm.swapBuffers();
+        pm.refreshWindow();
         GL11.glClear(GL11.GL_COLOR_BUFFER_BIT);
 
         try {
@@ -57,75 +52,36 @@ public class RenderSystem implements System {
     }
 
     @Override
-    public Configurer configurer() {
-        return configurer;
+    void injectEm(EntityManager em) {
+        this.renderMapper = em.getMapper(RenderTrait.class);
     }
 
-    public SchedulerTask prepareTask() {
-        return new RenderTask(false) {
+    public Task renderTask() {
+        return new SystemRTask(Context.MAIN, true, this);
+    }
 
+    public Task prepareTask() {
+        return new SystemRWTask(Context.MAIN, false, this) {
             @Override
-            public void run() {
-                LOGGER.info("Started prepearing RenderSystem");
-
-                wm.attachMainContext();
-
-                StaticShader staticShader = null;
-                try {
-                    staticShader = new StaticShader("static.vert", "static.frag");
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-
+            public void process() throws Exception {
+                LOGGER.info("Preparing");
+                pm.attachContext(Context.MAIN);
+                StaticShader staticShader = new StaticShader("static.vert", "static.frag");
                 render = new Render(staticShader);
-                scheduler.propose(renderTask());
             }
-        }.setSystem(this);
+        };
     }
 
 
-    public SchedulerTask renderTask() {
-        return new RenderEntityTask(this).setRateLimiter(RateLimiter.create(Double.MAX_VALUE));
-    }
-
-    public SchedulerTask closeTask() {
-        return new RenderTask(false) {
+    public Task closeTask() {
+        return new SystemRWTask(Context.MAIN, false, Integer.MAX_VALUE, this) {
 
             @Override
-            public void run() {
+            public void process() {
                 LOGGER.info("Closing RenderTask.");
                 render.cleanup();
-                wm.deatachContext();
+                pm.detachContext();
             }
-        }.setSystem(this);
-    }
-
-    Class[] classes = new Class[]{
-            RenderTrait.class
-    };
-
-    @Override
-    public Class<? extends Trait>[] toPass() {
-        return classes;
-    }
-
-
-    public void setRenderMapper(TraitMapper<RenderTrait> renderMapper) {
-        this.renderMapper = renderMapper;
-    }
-
-
-    public abstract class RenderTask extends SchedulerTask {
-
-        public RenderTask(boolean repeatable) {
-            super(Scheduler.ThreadType.MAIN_CONTEXT, repeatable);
-        }
-    }
-
-    public class RenderEntityTask extends EntitesTask {
-
-        public RenderEntityTask(System system) {
-            super(Scheduler.ThreadType.MAIN_CONTEXT, true, system);
-        }
+        };
     }
 }

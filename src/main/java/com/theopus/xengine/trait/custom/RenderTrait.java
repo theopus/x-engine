@@ -2,6 +2,7 @@ package com.theopus.xengine.trait.custom;
 
 import com.theopus.xengine.trait.IDuplicate;
 import com.theopus.xengine.trait.Trait;
+import com.theopus.xengine.utils.CopyUtils;
 import org.joml.Matrix4f;
 
 public class RenderTrait extends Trait<RenderTrait> implements IDuplicate<RenderTrait> {
@@ -42,6 +43,7 @@ public class RenderTrait extends Trait<RenderTrait> implements IDuplicate<Render
     public RenderTrait duplicateTo(RenderTrait trait) {
         trait.vaoId = this.vaoId;
         trait.vertexCount = this.vertexCount;
-        return null;
+        CopyUtils.copy(this.getTransformation(), trait.getTransformation());
+        return trait;
     }
 }

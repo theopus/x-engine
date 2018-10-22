@@ -1,11 +1,8 @@
 package com.theopus.xengine.system;
 
-import com.theopus.xengine.trait.State;
-import com.theopus.xengine.trait.StateManager;
+import com.theopus.xengine.conc.State;
 
-public interface Configurer {
-
-    StateManager.LockType type();
+public interface Configurer{
 
     void setRead(State state);
     void setWrite(State read, State state);

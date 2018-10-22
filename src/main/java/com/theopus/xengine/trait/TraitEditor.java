@@ -21,7 +21,7 @@ public class TraitEditor<Trait extends com.theopus.xengine.trait.Trait> {
             Trait to = mapper.get(entityId);
             from.duplicateTo(to);
         };
-        transformations.add(action);
+//        transformations.add(action);
         action.transform(mapper);
     }
 

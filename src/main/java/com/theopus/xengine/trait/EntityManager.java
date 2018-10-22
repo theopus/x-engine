@@ -27,7 +27,7 @@ public class EntityManager {
         return mapper.get(entity);
     }
 
-    public TraitManager getManager() {
+    public TraitManager getTraitManger() {
         return manager;
     }
 
@@ -36,8 +36,8 @@ public class EntityManager {
     }
 
     public<T extends Trait> EntityManager copyTo(EntityManager em) {
-        TraitManager targetManager = em.getManager();
-        for (TraitMapper<Trait> traitMapper : this.getManager().traitMappers()) {
+        TraitManager targetManager = em.getTraitManger();
+        for (TraitMapper<Trait> traitMapper : this.getTraitManger().traitMappers()) {
             TraitEditor editor = targetManager.getMapper(traitMapper.getTraitClass()).getEditor();
             Map<Integer, Trait> traits = traitMapper.traits();
             traits.entrySet().forEach(it -> editor.copy(it.getKey(), it.getValue()));
@@ -60,5 +60,13 @@ public class EntityManager {
 
     public void reApplyTransformations() {
         manager.reApplyTransformations();
+    }
+
+    public<T extends Trait> TraitMapper<T> getMapper(Class<T> traitClass){
+        return manager.getMapper(traitClass);
+    }
+
+    public <T extends Trait> TraitEditor<T> getEditor(Class<T> traitClass){
+        return getMapper(traitClass).getEditor();
     }
 }

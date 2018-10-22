@@ -1,12 +1,16 @@
 package com.theopus.xengine.trait;
 
 import com.theopus.xengine.utils.Reflection;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.BitSet;
 import java.util.HashMap;
 import java.util.Map;
 
 public class TraitMapper<Trait extends com.theopus.xengine.trait.Trait> {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(TraitMapper.class);
 
     private Class<Trait> traitClass;
     private Map<Integer, Trait> traits;

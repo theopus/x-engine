@@ -3,8 +3,12 @@ package com.theopus.xengine.trait.custom;
 import com.theopus.xengine.trait.IDuplicate;
 import com.theopus.xengine.trait.Trait;
 import org.joml.Vector3f;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class PositionTrait extends Trait<PositionTrait> implements IDuplicate<PositionTrait> {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(PositionTrait.class);
 
     private Vector3f position = new Vector3f();
     private float rotX;
@@ -63,6 +67,7 @@ public class PositionTrait extends Trait<PositionTrait> implements IDuplicate<Po
 
     @Override
     public PositionTrait duplicateTo(PositionTrait trait) {
+//        System.out.println("kek");
         trait.position.x = this.position.x;
         trait.position.y = this.position.y;
         trait.position.z = this.position.z;
@@ -76,15 +81,15 @@ public class PositionTrait extends Trait<PositionTrait> implements IDuplicate<Po
         return trait;
     }
 
-    @Override
-    public String toString() {
-        return "PositionTrait{" +
-                "position=" + position +
-                ", rotX=" + rotX +
-                ", rotY=" + rotY +
-                ", rotZ=" + rotZ +
-                ", scale=" + scale +
-                ", rotSpeed=" + rotSpeed +
-                '}';
-    }
+//    @Override
+//    public String toString() {
+//        return "PositionTrait{" +
+//                "position=" + position +
+//                ", rotX=" + rotX +
+//                ", rotY=" + rotY +
+//                ", rotZ=" + rotZ +
+//                ", scale=" + scale +
+//                ", rotSpeed=" + rotSpeed +
+//                '}';
+//    }
 }

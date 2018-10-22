@@ -29,7 +29,7 @@ public class PositionTraitEditor extends TraitEditor<PositionTrait> {
             PositionTrait to = mapper.get(entityId);
             from.duplicateTo(to);
         };
-        transformations.add(action);
+//        transformations.add(action);
         action.transform(mapper);
     }
 
@@ -37,12 +37,9 @@ public class PositionTraitEditor extends TraitEditor<PositionTrait> {
         Transformation<PositionTrait> action = (mapper) -> {
             PositionTrait ptrait = mapper.get(entityId);
             ptrait.setRotSpeed(speed);
-            
-            LOGGER.info("Set speed {}", ptrait.getRotSpeed());
-            
-
         };
         transformations.add(action);
         action.transform(mapper);
+
     }
 }

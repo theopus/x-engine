@@ -1,4 +1,4 @@
-package com.theopus.xengine;
+package com.theopus.xengine.opengl;
 
 import de.matthiasmann.twl.utils.PNGDecoder;
 import org.lwjgl.opengl.*;

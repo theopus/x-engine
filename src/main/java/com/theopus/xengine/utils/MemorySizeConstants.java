@@ -1,4 +1,4 @@
-package com.theopus.xengine;
+package com.theopus.xengine.utils;
 
 public class MemorySizeConstants {
 

@@ -1,9 +1,8 @@
 package com.theopus.xengine.system;
 
-import com.google.common.util.concurrent.RateLimiter;
-import com.theopus.xengine.scheduler.EntitesTask;
-import com.theopus.xengine.scheduler.Scheduler;
-import com.theopus.xengine.scheduler.SchedulerTask;
+import com.theopus.xengine.nscheduler.Context;
+import com.theopus.xengine.nscheduler.task.Task;
+import com.theopus.xengine.conc.SystemRWTask;
 import com.theopus.xengine.trait.*;
 import com.theopus.xengine.trait.custom.PositionTrait;
 import com.theopus.xengine.trait.custom.PositionTraitEditor;
@@ -15,30 +14,25 @@ import org.slf4j.LoggerFactory;
 
 import java.util.stream.IntStream;
 
-public class UpdateSystem implements System {
+public class UpdateSystem extends EntitySystem {
 
-    private Configurer configurer;
     private TraitMapper<RenderTrait> rmapper;
-
     private TraitMapper<PositionTrait> pmapper;
-
     private RenderTraitEditor reditor;
-
     private PositionTraitEditor peditor;
 
     private static final Logger LOGGER = LoggerFactory.getLogger(UpdateSystem.class);
     private final OpsCounter ups;
 
     public UpdateSystem() {
-        configurer = new UpdateSystemConfigurer(this);
+        super(RenderTrait.class, PositionTrait.class);
         ups = new OpsCounter("Updates");
     }
 
     @Override
     public void process(IntStream entities) {
         entities.forEach(value -> {
-//            LOGGER.info("{} \n {}", value, );
-            
+
             PositionTrait positionTrait = pmapper.get(value);
 
             peditor.rotateZ(value, positionTrait.getRotSpeed());
@@ -53,10 +47,13 @@ public class UpdateSystem implements System {
         ups.operateAndLog();
     }
 
-    public SchedulerTask task() {
-        return new EntitesTask(Scheduler.ThreadType.ANY, true, this)
-                .setSystem(this)
-                .setRateLimiter(RateLimiter.create(60));
+    @Override
+    void injectEm(EntityManager em) {
+        pmapper = em.getMapper(PositionTrait.class);
+        peditor = (PositionTraitEditor) em.getEditor(PositionTrait.class);
+
+        rmapper = em.getMapper(RenderTrait.class);
+        reditor = (RenderTraitEditor) em.getEditor(RenderTrait.class);
     }
 
 
@@ -64,31 +61,11 @@ public class UpdateSystem implements System {
         this.reditor = reditor;
     }
 
-    @Override
-    public Configurer configurer() {
-        return configurer;
-    }
-
-
-    Class[] classes = new Class[]{
+    private Class[] classes = new Class[]{
             RenderTrait.class, PositionTrait.class
     };
 
-    @Override
-    public Class<? extends Trait>[] toPass() {
-        return classes;
-    }
-
-    public void setRenderMapper(TraitMapper<RenderTrait> mapper) {
-        this.rmapper = mapper;
-    }
-
-
-    public void setPositionEditor(PositionTraitEditor peditor) {
-        this.peditor = peditor;
-    }
-
-    public void setPositionMapper(TraitMapper<PositionTrait> pmapper) {
-        this.pmapper = pmapper;
+    public Task task() {
+        return new SystemRWTask(Context.WORK, true, this);
     }
 }

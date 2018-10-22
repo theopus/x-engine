@@ -1,4 +1,4 @@
-package com.theopus.xengine;
+package com.theopus.xengine.opengl;
 
 public class Texture {
     private final int textureId;
