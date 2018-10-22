@@ -24,6 +24,7 @@ import com.theopus.xengine.trait.custom.RenderTraitEditor;
 import org.joml.Vector3f;
 import org.joml.Vector4f;
 import org.lwjgl.glfw.GLFWKeyCallback;
+import org.lwjgl.nanovg.NanoVG;
 import org.lwjgl.system.Configuration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -52,7 +53,6 @@ public class Main {
                 RenderTrait.class, RenderTraitEditor.class,
                 PositionTrait.class, PositionTraitEditor.class
         )), 3);
-
 
         pm.createWindow();
         pm.showWindow();
