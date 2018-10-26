@@ -8,13 +8,14 @@ import com.theopus.xengine.nscheduler.task.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.Closeable;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Queue;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.PriorityBlockingQueue;
 
-public class Scheduler {
+public class Scheduler implements AutoCloseable{
 
     private static final Logger LOGGER = LoggerFactory.getLogger(Scheduler.class);
 
@@ -80,7 +81,9 @@ public class Scheduler {
         LOGGER.info("After drain queue: {}", queue);
     }
 
+    @Override
     public void close() throws ExecutionException, InterruptedException {
+        LOGGER.info("Closing...");
         drain();
         feeder.close();
 

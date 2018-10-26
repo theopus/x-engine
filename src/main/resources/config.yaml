@@ -1,0 +1,4 @@
+throttle:
+  scheduler: -1
+  render: -1
+  update; 60

@@ -44,12 +44,12 @@ public class RenderSystem extends EntitySystem {
         pm.refreshWindow();
         GL11.glClear(GL11.GL_COLOR_BUFFER_BIT);
 //
-        try {
-            //TODO fake render time
-            Thread.sleep(10);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
+//        try {
+//            //TODO fake render time
+//            Thread.sleep(10);
+//        } catch (InterruptedException e) {
+//            e.printStackTrace();
+//        }
     }
 
     @Override

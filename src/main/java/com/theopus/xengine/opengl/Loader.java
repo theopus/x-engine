@@ -6,6 +6,7 @@ import org.lwjgl.system.MemoryUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.Closeable;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.ByteBuffer;
@@ -14,7 +15,7 @@ import java.nio.IntBuffer;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Loader {
+public class Loader  implements Closeable {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(Loader.class);
 
@@ -122,7 +123,8 @@ public class Loader {
         }
     }
 
-    public void cleanup(){
+    public void close(){
+        LOGGER.info("Closing...");
         vao.forEach(GL30::glDeleteVertexArrays);
         vbo.forEach(GL30::glDeleteBuffers);
         textures.forEach(GL15::glDeleteTextures);

@@ -176,6 +176,7 @@ public class GlfwPlatformManager implements PlatformManager {
     }
 
     public void close() {
+        LOGGER.info("Closing...");
         Callbacks.glfwFreeCallbacks(mainContext);
         Callbacks.glfwFreeCallbacks(sideContext);
 

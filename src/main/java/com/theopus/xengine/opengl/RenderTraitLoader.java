@@ -4,7 +4,9 @@ import com.theopus.xengine.trait.custom.RenderTrait;
 import com.theopus.xengine.utils.MemorySizeConstants;
 import org.lwjgl.opengl.GL15;
 
-public class RenderTraitLoader extends Loader {
+import java.io.Closeable;
+
+public class RenderTraitLoader extends Loader{
 
     public RenderTrait loadEntity(RenderTrait trait, float[] positions, int vertexCount) {
         int vao = createVAO();

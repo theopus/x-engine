@@ -176,7 +176,7 @@ public final class EFXUtil {
                         throw new IllegalArgumentException("Invalid objectType: " + objectType);
                 }
             } catch (RuntimeException debugBuildException) {
-                // Don't care about cleanup errors.
+                // Don't care about close errors.
             }
 
         } else if (genError == AL_OUT_OF_MEMORY) {
