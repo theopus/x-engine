@@ -1,5 +1,6 @@
 package com.theopus.xengine.nscheduler.lock;
 
+import org.apache.logging.log4j.util.LambdaUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -8,7 +9,6 @@ import java.util.Comparator;
 public class Lock<T> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(Lock.class);
-
     private final int id;
     private int inUse;
 

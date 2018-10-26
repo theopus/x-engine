@@ -6,12 +6,16 @@ import com.theopus.xengine.conc.State;
 import com.theopus.xengine.conc.StateFactory;
 import com.theopus.xengine.nscheduler.Context;
 import com.theopus.xengine.nscheduler.Scheduler;
+import com.theopus.xengine.nscheduler.event.EventManager;
+import com.theopus.xengine.nscheduler.input.GlfwInput;
+import com.theopus.xengine.nscheduler.input.InputManager;
 import com.theopus.xengine.nscheduler.lock.Lock;
 import com.theopus.xengine.nscheduler.lock.LockManager;
 import com.theopus.xengine.nscheduler.platform.GlfwPlatformManager;
 import com.theopus.xengine.nscheduler.task.ExecutorServiceFeeder;
 import com.theopus.xengine.nscheduler.task.Task;
 import com.theopus.xengine.nscheduler.task.TaskChain;
+import com.theopus.xengine.nscheduler.task.TaskFactory;
 import com.theopus.xengine.opengl.RenderTraitLoader;
 import com.theopus.xengine.system.InputSystem;
 import com.theopus.xengine.system.RenderSystem;
@@ -24,7 +28,6 @@ import com.theopus.xengine.trait.custom.RenderTraitEditor;
 import org.joml.Vector3f;
 import org.joml.Vector4f;
 import org.lwjgl.glfw.GLFWKeyCallback;
-import org.lwjgl.nanovg.NanoVG;
 import org.lwjgl.system.Configuration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -54,13 +57,15 @@ public class Main {
                 PositionTrait.class, PositionTraitEditor.class
         )), 3);
 
+        EventManager em = new EventManager(ImmutableMap.of());
+
         pm.createWindow();
         pm.showWindow();
 
 
 
 
-        Scheduler<State> scheduler = new Scheduler<>(lm, new ExecutorServiceFeeder());
+        Scheduler scheduler = new Scheduler(new ExecutorServiceFeeder());
 
 
         Lock<State> lock = lm.forWrite();
@@ -114,10 +119,11 @@ public class Main {
 
         lm.release(lock);
 
+        TaskFactory<State> factory = new TaskFactory<>(lm, em, pm.getInput());
 
-        Task head = TaskChain.startWith(renderSystem.prepareTask()).andThen(renderSystem.renderTask()).andThen(renderSystem.closeTask()).head();
-        scheduler.propose(head);
-        scheduler.propose(updateSystem.task());
+        TaskChain taskChain = TaskChain.startWith(renderSystem.prepareTask()).andThen(renderSystem.renderTask()).andThen(renderSystem.closeTask());
+        scheduler.propose(factory.injectManagers(taskChain).head());
+        scheduler.propose(factory.injectManagers(updateSystem.task()));
 
         InputSystem inputSystem = new InputSystem();
 
@@ -125,15 +131,15 @@ public class Main {
             @Override
             public void invoke(long window, int key, int scancode, int action, int mods) {
                 if (action == 1 || action == 0) {
-                    scheduler.propose(inputSystem.task(key, action));
+                    scheduler.propose(factory.injectManagers(inputSystem.task(key, action)));
                 }
             }
         });
 
-        RateLimiter limiter = RateLimiter.create(1024);
+        RateLimiter limiter = RateLimiter.create(4096);
 
         while (!pm.shouldClose()) {
-            limiter.acquire();
+//            limiter.acquire();
             scheduler.process();
             pm.processEvents();
         }

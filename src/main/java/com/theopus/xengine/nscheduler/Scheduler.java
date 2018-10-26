@@ -1,5 +1,7 @@
 package com.theopus.xengine.nscheduler;
 
+import com.theopus.xengine.nscheduler.event.EventManager;
+import com.theopus.xengine.nscheduler.input.InputManager;
 import com.theopus.xengine.nscheduler.lock.Lock;
 import com.theopus.xengine.nscheduler.lock.LockManager;
 import com.theopus.xengine.nscheduler.task.*;
@@ -12,19 +14,17 @@ import java.util.Queue;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.PriorityBlockingQueue;
 
-public class Scheduler<T> {
+public class Scheduler {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(Scheduler.class);
 
-    private final LockManager lockManager;
     private final Feeder feeder;
     private final PriorityBlockingQueue<Task> queue = new PriorityBlockingQueue<>();
     private final Queue<Task> finished = new LinkedList<>();
 
     private boolean cycle;
 
-    public Scheduler(LockManager<T> lockManager, Feeder feeder) {
-        this.lockManager = lockManager;
+    public Scheduler(Feeder feeder) {
         this.feeder = feeder;
         this.cycle = true;
     }
@@ -41,18 +41,18 @@ public class Scheduler<T> {
             Task task = iterator.next();
             switch (task.getStatus()) {
                 case NEW:
-                    if (task.throttle()) {
-                        boolean success = task.obtainLock(lockManager);
+                    if (task.shouldThrottle()) {
+                        boolean success = task.prepare();
                         if (success) {
                             feeder.feed(task);
                         } else {
-                            task.releaseLock(lockManager);
+                            task.rollback();
                         }
                     }
                     break;
 
                 case COMPLETED:
-                    task.releaseLock(lockManager);
+                    boolean result = task.finish();
                     if (cycle && task.isCycled()) {
                         task.setStatus(Status.NEW);
                     } else {
@@ -87,7 +87,7 @@ public class Scheduler<T> {
     }
 
     public static void main(String[] args) throws InterruptedException, ExecutionException {
-        Scheduler<String> scheduler = new Scheduler<>(new LockManager<>(id -> new Lock<>(id, "Test"), 3), new ExecutorServiceFeeder());
+        Scheduler scheduler = new Scheduler(new ExecutorServiceFeeder());
 
         Task task = TaskChain.startWith(new ReadWriteTask(Context.MAIN, false) {
             @Override
@@ -125,7 +125,7 @@ public class Scheduler<T> {
 //        LOGGER.info("Finished list{}", scheduler.getFinished().stream().map(Task::toString).collect(Collectors.joining("\n")));
     }
 
-    public Queue<Task> getFinished(){
+    public Queue<Task> getFinished() {
         return finished;
     }
 }

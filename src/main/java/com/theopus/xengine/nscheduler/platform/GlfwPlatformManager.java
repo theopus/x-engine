@@ -2,7 +2,8 @@ package com.theopus.xengine.nscheduler.platform;
 
 import com.theopus.xengine.WindowConfig;
 import com.theopus.xengine.nscheduler.Context;
-import com.theopus.xengine.utils.InputHub;
+import com.theopus.xengine.nscheduler.input.GlfwInput;
+import com.theopus.xengine.nscheduler.input.InputManager;
 import org.joml.Vector4f;
 import org.lwjgl.glfw.*;
 import org.lwjgl.opengl.*;
@@ -20,7 +21,7 @@ public class GlfwPlatformManager implements PlatformManager {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(GlfwPlatformManager.class);
 
-    private InputHub hub;
+    private GlfwInput hub;
     private Vector4f color;
     private boolean primitiveCompatible;
     private GLFWKeyCallback listener;
@@ -32,10 +33,10 @@ public class GlfwPlatformManager implements PlatformManager {
     private long sideContext;
     private GLCapabilities sideCapabilities;
 
-    public GlfwPlatformManager(WindowConfig windowConfig, InputHub hub) {
+    public GlfwPlatformManager(WindowConfig windowConfig) {
         this.width = windowConfig.getWidth();
         this.height = windowConfig.getHeight();
-        this.hub = hub;
+        this.hub = new GlfwInput();
         this.color = windowConfig.getColor();
         this.vSync = windowConfig.getvSync();
         this.primitiveCompatible = windowConfig.isPrimitivesCompatible();
@@ -132,10 +133,10 @@ public class GlfwPlatformManager implements PlatformManager {
 
     @Override
     public void processEvents() {
-        int errorCode = GL11.glGetError();
-        if (errorCode != 0) {
-            LOGGER.info("OpenGL Error: {}", errorCode);
-        }
+//        int errorCode = GL11.glGetError();
+//        if (errorCode != 0) {
+//            LOGGER.info("OpenGL Error: {}", errorCode);
+//        }
         GLFW.glfwPollEvents();
     }
 
@@ -199,5 +200,10 @@ public class GlfwPlatformManager implements PlatformManager {
         GLFW.glfwMakeContextCurrent(sideContext);
         GL.setCapabilities(sideCapabilities);
         LOGGER.info("Attached to side context with cp: {}", GL.getCapabilities());
+    }
+
+    @Override
+    public InputManager getInput() {
+        return hub;
     }
 }

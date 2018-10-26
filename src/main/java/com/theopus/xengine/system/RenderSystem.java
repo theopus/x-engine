@@ -43,8 +43,9 @@ public class RenderSystem extends EntitySystem {
         fps.operateAndLog();
         pm.refreshWindow();
         GL11.glClear(GL11.GL_COLOR_BUFFER_BIT);
-
+//
         try {
+            //TODO fake render time
             Thread.sleep(10);
         } catch (InterruptedException e) {
             e.printStackTrace();
@@ -57,7 +58,7 @@ public class RenderSystem extends EntitySystem {
     }
 
     public Task renderTask() {
-        return new SystemRTask(Context.MAIN, true, this);
+        return new SystemRTask(Context.MAIN, true, Integer.MAX_VALUE, this);
     }
 
     public Task prepareTask() {
@@ -74,7 +75,7 @@ public class RenderSystem extends EntitySystem {
 
 
     public Task closeTask() {
-        return new SystemRWTask(Context.MAIN, false, Integer.MAX_VALUE, this) {
+        return new SystemRWTask(Context.MAIN, false, this) {
 
             @Override
             public void process() {

@@ -33,8 +33,8 @@ public class SystemRWTask extends ReadWriteTask<State> {
 
     @Override
     public void preprocess() {
-        LOGGER.debug("RW {}->{} base on {}",writeLock.getFrame(), writeLock.getNextFrame(), readLock.getFrame());
-        system.configurer().setWrite(readLock.getOf(), writeLock.getOf());
+        lock.log();
+        system.configurer().setWrite(lock.readContent(), lock.writeContent());
     }
 
     @Override

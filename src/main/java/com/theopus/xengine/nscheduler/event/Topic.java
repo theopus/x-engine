@@ -13,7 +13,7 @@ public class Topic<D> {
     private static final Logger LOGGER = LoggerFactory.getLogger(Topic.class);
     private static int count;
 
-    private int id;
+    int id;
     private String description;
     private Class<D> dataClass;
 
@@ -36,7 +36,7 @@ public class Topic<D> {
     private int nextBatchOffset = 0;
     private int bcount = 0;
 
-    void put(Queue<Event<D>> newEvents) {
+    void put(List<Event<D>> newEvents) {
         bathces.put(bcount++, nextBatchOffset);
 
         nextBatchOffset += newEvents.size();

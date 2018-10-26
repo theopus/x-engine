@@ -1,11 +1,11 @@
-package com.theopus.xengine.utils;
+package com.theopus.xengine.nscheduler.input;
 
 import org.lwjgl.glfw.*;
 
 import java.util.HashMap;
 import java.util.Map;
 
-public class InputHub {
+public class GlfwInput implements InputManager {
 
     private final MouseKeyListener mouseKeyListener;
     private final KeyListener keyListener;
@@ -29,7 +29,7 @@ public class InputHub {
         return GLFWScrollCallback.create(mouseScrollListener);
     }
 
-    public InputHub() {
+    public GlfwInput() {
         this.keyListener = new KeyListener();
         this.mouseKeyListener = new MouseKeyListener();
         this.mouseMoveListener = new MouseMoveListener();
@@ -58,6 +58,16 @@ public class InputHub {
 
     public void resetCursorDelta(){
         this.mouseMoveListener.reset();
+    }
+
+    @Override
+    public boolean isKeyDown(int k) {
+        return isKeyPressed(k);
+    }
+
+    @Override
+    public InputReader createReader() {
+        return null;
     }
 
 

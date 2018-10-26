@@ -33,7 +33,7 @@ public class SystemRTask extends ReadTask<State> {
 
     @Override
     public void preprocess() {
-        system.configurer().setRead(this.readLock.getOf());
+        system.configurer().setRead(lock.readContent());
     }
 
     @Override

@@ -3,6 +3,8 @@ package com.theopus.xengine.nscheduler.task;
 import com.google.common.util.concurrent.RateLimiter;
 import com.theopus.xengine.nscheduler.Context;
 import com.theopus.xengine.nscheduler.Status;
+import com.theopus.xengine.nscheduler.event.EventManager;
+import com.theopus.xengine.nscheduler.input.InputManager;
 import com.theopus.xengine.nscheduler.lock.LockManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -108,17 +110,46 @@ public abstract class Task implements Runnable, Comparable<Task> {
 
     abstract public void process() throws Exception;
 
+
+    /**
+     * called from scheduler after before submit.
+     * sequential executions of this method should be guarantied
+     */
+    public boolean prepare() {
+        return false;
+    }
+
+    /**
+     * called from scheduler after fail of preparation for submit.
+     * sequential executions of this method should be guarantied
+     */
+    public boolean rollback() {
+        return false;
+    }
+
+    /**
+     * called from scheduler after task completion.
+     * sequential executions of this method should be guarantied
+     */
+    public boolean finish() {
+        return false;
+    }
+
     public void preprocess() {
     }
 
     public void afterprocess() {
     }
 
-    public abstract boolean obtainLock(LockManager lockManager);
+//    public abstract boolean obtainLock(LockManager lockManager);
+//
+//    public abstract boolean obtainEvents(EventManager eventManager);
+//
+//    public abstract boolean obtainInput(InputManager inputManager);
+//
+//    public abstract void releaseLock(LockManager lockManager);
 
-    public abstract void releaseLock(LockManager lockManager);
-
-    public boolean throttle() {
+    public boolean shouldThrottle() {
         return rateLimiter.tryAcquire();
     }
 
@@ -150,4 +181,6 @@ public abstract class Task implements Runnable, Comparable<Task> {
     public long getLastProcessTime() {
         return lastProcessTime;
     }
+
+    public abstract void injectManagers(EventManager em, InputManager im, LockManager lm);
 }

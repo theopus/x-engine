@@ -145,7 +145,7 @@ public class GLFWDemo {
 
     public GLFWDemo() {
         try {
-            this.ttf = ioResourceToByteBuffer("org/lwjgl/demo/FiraSans.ttf", 512 * 1024);
+            this.ttf = ioResourceToByteBuffer("entypo.ttf", 512 * 1024);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

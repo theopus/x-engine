@@ -1,6 +1,10 @@
 package com.theopus.xengine.system;
 
 import com.theopus.xengine.nscheduler.Context;
+import com.theopus.xengine.nscheduler.event.Event;
+import com.theopus.xengine.nscheduler.event.InputData;
+import com.theopus.xengine.nscheduler.event.TopicReader;
+import com.theopus.xengine.nscheduler.event.TopicWriter;
 import com.theopus.xengine.nscheduler.task.Task;
 import com.theopus.xengine.conc.SystemRWTask;
 import com.theopus.xengine.trait.*;
@@ -13,6 +17,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.stream.IntStream;
+import java.util.stream.Stream;
 
 public class UpdateSystem extends EntitySystem {
 
@@ -31,6 +36,7 @@ public class UpdateSystem extends EntitySystem {
 
     @Override
     public void process(IntStream entities) {
+
         entities.forEach(value -> {
 
             PositionTrait positionTrait = pmapper.get(value);

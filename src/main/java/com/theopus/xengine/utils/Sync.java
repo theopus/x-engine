@@ -92,7 +92,7 @@ public class Sync {
      * This method will initialise the sync method by setting initial
      * values for sleepDurations/yieldDurations and nextFrame.
      *
-     * If running on windows it will start the sleep timer fix.
+     * If running on windows it will prepare the sleep timer fix.
      */
     private void initialise() {
         initialised = true;

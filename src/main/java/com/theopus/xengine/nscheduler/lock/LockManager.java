@@ -82,4 +82,11 @@ public class LockManager<T> {
         LOGGER.info("All locks {}", locks);
     }
 
+    public LockUser<T> createReadOnly() {
+        return new LockUser<T>(this, true);
+    }
+
+    public LockUser<T> createReadWrite() {
+        return new LockUser<T>(this, false);
+    }
 }

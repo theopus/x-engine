@@ -1,6 +1,8 @@
 package com.theopus.xengine.nscheduler.task;
 
 import com.theopus.xengine.nscheduler.Context;
+import com.theopus.xengine.nscheduler.event.EventManager;
+import com.theopus.xengine.nscheduler.input.InputManager;
 import com.theopus.xengine.nscheduler.lock.Lock;
 import com.theopus.xengine.nscheduler.lock.LockManager;
 import org.slf4j.Logger;
@@ -9,8 +11,6 @@ import org.slf4j.LoggerFactory;
 public abstract class ReadWriteTask<T> extends ReadTask<T> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ReadWriteTask.class);
-
-    protected Lock<T> writeLock;
 
     public ReadWriteTask() {
     }
@@ -28,15 +28,8 @@ public abstract class ReadWriteTask<T> extends ReadTask<T> {
     }
 
     @Override
-    public boolean obtainLock(LockManager lockManager) {
-        boolean readStatus = super.obtainLock(lockManager);
-        writeLock = lockManager.forWrite();
-        return readStatus && writeLock != null;
-    }
-
-    @Override
-    public void releaseLock(LockManager lockManager) {
-        super.releaseLock(lockManager);
-        lockManager.release(writeLock);
+    public void injectManagers(EventManager em, InputManager im, LockManager lm) {
+        LOGGER.debug("Injected to {}", this);
+        lock = lm.createReadWrite();
     }
 }
