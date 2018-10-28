@@ -11,6 +11,7 @@ import com.theopus.xengine.nscheduler.lock.LockManager;
 import com.theopus.xengine.nscheduler.lock.LockUser;
 
 import java.lang.reflect.Field;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -26,7 +27,6 @@ public class TaskConfigurer {
         this.inputManager = inputManager;
     }
 
-
     public <T extends Task> T injectManagers(T task) {
         if (task == null) {
             return task;
@@ -36,47 +36,59 @@ public class TaskConfigurer {
     }
 
     public TaskChain injectManagers(TaskChain chain) {
-        for (ComponentTask t = (ComponentTask) chain.head(); t != null; t = (ComponentTask) t.getOnComplete()) {
-            try {
-                inj(t);
-            } catch (NoSuchFieldException | IllegalAccessException e) {
-                throw new RuntimeException(e);
-            }
-            injectManagers(t);
-            injectManagers(t.getOnFinish());
+        for (Task t = chain.head(); t != null; t = t.getOnComplete()) {
+            inject(t);
+            inject(t.getOnFinish());
         }
         return chain;
     }
 
-    private void inj(ComponentTask task) throws NoSuchFieldException, IllegalAccessException {
+    private void inject(Task t) {
+        if (t instanceof ComponentTask) {
+            try {
+                inj((ComponentTask) t);
+            } catch (NoSuchFieldException | IllegalAccessException e) {
+                throw new RuntimeException(e);
+            }
+            injectManagers(t);
+        } else {
+            injectManagers(t);
+        }
+    }
 
+    private void inj(ComponentTask task) throws NoSuchFieldException, IllegalAccessException {
         Class<? extends ComponentTask> tc = task.getClass();
-        System.out.println(Arrays.toString(ComponentTask.class.getDeclaredFields()));
         Field components = ComponentTask.class.getDeclaredField("components");
         components.setAccessible(true);
 
         List<TaskComponent> list = (List<TaskComponent>) components.get(task);
         list.clear();
 
-        for (Field field : tc.getDeclaredFields()) {
+        List<Field> fields = collectFields(tc);
+
+        for (Field field : fields) {
             System.out.println(field);
             boolean entity = field.isAnnotationPresent(Entity.class);
             if (entity) {
                 field.setAccessible(true);
                 Entity annotation = field.getAnnotation(Entity.class);
                 LockUser lock;
+                System.out.println(field);
                 if (annotation.value() == Lock.Type.WRITE_READ) {
                     lock = lockManager.createReadWrite();
+                    System.out.println("write");
                 } else {
                     lock = lockManager.createReadOnly();
+                    System.out.println("read");
                 }
+
                 list.add(lock);
                 field.set(task, lock);
             }
+
             boolean event = field.isAnnotationPresent(Event.class);
             if (event) {
                 field.setAccessible(true);
-
                 Event annotation = field.getAnnotation(Event.class);
                 if (annotation.type() == Event.READ) {
                     TopicReader<?> reader = eventManager.createReader(annotation.topicId());
@@ -89,5 +101,13 @@ public class TaskConfigurer {
                 }
             }
         }
+    }
+
+    private List<Field> collectFields(Class<? extends ComponentTask> tc) {
+        List<Field> result = new ArrayList<>();
+        for (Class cl = tc; cl != null ; cl = cl.getSuperclass()) {
+            result.addAll(Arrays.asList(cl.getDeclaredFields()));
+        }
+        return result;
     }
 }

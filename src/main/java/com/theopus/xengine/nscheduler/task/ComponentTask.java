@@ -8,7 +8,7 @@ import com.theopus.xengine.nscheduler.lock.LockManager;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ComponentTask extends Task {
+public abstract class ComponentTask extends Task {
 
     protected final List<TaskComponent> components = new ArrayList<>();
 
@@ -25,11 +25,6 @@ public class ComponentTask extends Task {
 
     public ComponentTask(Context type, boolean cycled, int rate, int priority) {
         super(type, cycled, rate, priority);
-    }
-
-    @Override
-    public void process() throws Exception {
-
     }
 
     @Override

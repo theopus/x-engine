@@ -14,6 +14,7 @@ import com.theopus.xengine.nscheduler.lock.LockManager;
 import com.theopus.xengine.nscheduler.platform.GlfwPlatformManager;
 import com.theopus.xengine.nscheduler.task.ExecutorServiceFeeder;
 import com.theopus.xengine.nscheduler.task.TaskChain;
+import com.theopus.xengine.nscheduler.task.TaskConfigurer;
 import com.theopus.xengine.nscheduler.task.TaskFactory;
 import com.theopus.xengine.opengl.RenderTraitLoader;
 import com.theopus.xengine.system.InputSystem;
@@ -71,8 +72,8 @@ public class Main {
         ));
 
         //tasks
-        TaskFactory<State> factory = new TaskFactory<>(lm, em, pm.getInput());
-        TaskChain taskChain = factory.injectManagers(
+        TaskConfigurer configurer = new TaskConfigurer(lm, em, pm.getInput());
+        TaskChain taskChain = configurer.injectManagers(
                 TaskChain
                         .startWith(TaskUtils.initCtx(pm, Context.MAIN))
                         .andThen(TaskUtils.initCtx(pm, Context.SIDE))

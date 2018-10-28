@@ -3,7 +3,7 @@ package com.theopus.xengine.utils;
 import com.theopus.xengine.conc.State;
 import com.theopus.xengine.conc.SystemRWTask;
 import com.theopus.xengine.nscheduler.Context;
-import com.theopus.xengine.nscheduler.task.ReadWriteTask;
+import com.theopus.xengine.nscheduler.task.ComponentTask;
 import com.theopus.xengine.opengl.RenderTraitLoader;
 import com.theopus.xengine.system.Configurer;
 import com.theopus.xengine.system.System;
@@ -15,7 +15,7 @@ import org.joml.Vector3f;
 public class PlayGround {
 
 
-    public static ReadWriteTask<State> ver0(RenderTraitLoader renderTraitLoader) {
+    public static ComponentTask ver0(RenderTraitLoader renderTraitLoader) {
         System tmpSys = new System() {
 
             private EntityManager manager;

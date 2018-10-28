@@ -9,6 +9,7 @@ import com.theopus.xengine.nscheduler.event.InputData;
 import com.theopus.xengine.nscheduler.event.TopicReader;
 import com.theopus.xengine.nscheduler.input.InputManager;
 import com.theopus.xengine.nscheduler.lock.LockManager;
+import com.theopus.xengine.nscheduler.task.ComponentTask;
 import com.theopus.xengine.nscheduler.task.Task;
 import com.theopus.xengine.trait.EntityManager;
 import com.theopus.xengine.trait.TraitMapper;
@@ -55,6 +56,9 @@ public class UpdateSystem extends EntitySystem {
         reader.read().forEach(d->{
             if (d.data().action == GLFW.GLFW_PRESS){
                 peditor.rotateSpeed(0, 0.3f);
+                peditor.rotateSpeed(1, 0.4f);
+                peditor.rotateSpeed(2, 0.4f);
+                peditor.rotateSpeed(3, 0.4f);
             } else {
                 peditor.rotateSpeed(0, 0f);
             }
