@@ -3,7 +3,6 @@ package com.theopus.xengine.nscheduler.task;
 import com.theopus.xengine.nscheduler.Context;
 import com.theopus.xengine.nscheduler.event.EventManager;
 import com.theopus.xengine.nscheduler.input.InputManager;
-import com.theopus.xengine.nscheduler.lock.Lock;
 import com.theopus.xengine.nscheduler.lock.LockManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

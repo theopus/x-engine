@@ -1,8 +1,10 @@
 package com.theopus.xengine.nscheduler.event;
 
+import com.theopus.xengine.nscheduler.task.TaskComponent;
+
 import java.util.stream.Stream;
 
-public class TopicReader<D> {
+public class TopicReader<D> implements TaskComponent {
 
     private final int id;
     private final int topicId;
@@ -20,16 +22,25 @@ public class TopicReader<D> {
     }
 
     /**
-     *  Notify about read end
+     * Notify about read end
      */
-    public void flush() {
+    @Override
+    public boolean finish() {
         events = null;
+        return true;
     }
 
     /**
      * Get data for next read from manager
      */
-    public void prepare() {
+    @Override
+    public boolean prepare() {
         events = this.manager.read(topicId, id);
+        return true;
+    }
+
+    @Override
+    public boolean rollback() {
+        return false;
     }
 }

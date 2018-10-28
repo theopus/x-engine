@@ -19,4 +19,8 @@ public class Event<D> {
                 ", d=" + d +
                 '}';
     }
+
+    public D data() {
+        return d;
+    }
 }

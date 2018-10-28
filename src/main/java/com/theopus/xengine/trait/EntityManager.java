@@ -14,7 +14,7 @@ public class EntityManager {
         this.manager = manager;
     }
 
-    public synchronized int createEntity(){
+    public synchronized int createEntity() {
         int id = counter;
         bitSet.set(id, true);
         counter++;
@@ -31,11 +31,11 @@ public class EntityManager {
         return manager;
     }
 
-    public void clearEditors(){
+    public void clearEditors() {
         manager.clearEditors();
     }
 
-    public<T extends Trait> EntityManager copyTo(EntityManager em) {
+    public <T extends Trait> EntityManager copyTo(EntityManager em) {
         TraitManager targetManager = em.getTraitManger();
         for (TraitMapper<Trait> traitMapper : this.getTraitManger().traitMappers()) {
             TraitEditor editor = targetManager.getMapper(traitMapper.getTraitClass()).getEditor();
@@ -45,8 +45,8 @@ public class EntityManager {
         return this;
     }
 
-    public BitSet entitiesWith(Class<? extends Trait> ... traits) {
-        if (traits.length == 0){
+    public BitSet entitiesWith(Class<? extends Trait>... traits) {
+        if (traits.length == 0) {
             return new BitSet();
         }
         BitSet newSet = new BitSet();
@@ -62,11 +62,11 @@ public class EntityManager {
         manager.reApplyTransformations();
     }
 
-    public<T extends Trait> TraitMapper<T> getMapper(Class<T> traitClass){
+    public <T extends Trait> TraitMapper<T> getMapper(Class<T> traitClass) {
         return manager.getMapper(traitClass);
     }
 
-    public <T extends Trait> TraitEditor<T> getEditor(Class<T> traitClass){
+    public <T extends Trait> TraitEditor<T> getEditor(Class<T> traitClass) {
         return getMapper(traitClass).getEditor();
     }
 }

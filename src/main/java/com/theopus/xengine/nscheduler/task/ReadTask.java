@@ -3,7 +3,6 @@ package com.theopus.xengine.nscheduler.task;
 import com.theopus.xengine.nscheduler.Context;
 import com.theopus.xengine.nscheduler.event.EventManager;
 import com.theopus.xengine.nscheduler.input.InputManager;
-import com.theopus.xengine.nscheduler.lock.Lock;
 import com.theopus.xengine.nscheduler.lock.LockManager;
 import com.theopus.xengine.nscheduler.lock.LockUser;
 import org.slf4j.Logger;
@@ -28,13 +27,6 @@ public abstract class ReadTask<T> extends Task {
     public ReadTask(Context type, boolean cycled, int rate, int priority) {
         super(type, cycled, rate, priority);
     }
-//
-//    @Override
-//    public boolean obtainLock(LockManager lockManager) {
-//        readLock = lockManager.forRead();
-//        return readLock != null;
-//    }
-
 
     @Override
     public boolean prepare() {

@@ -1,8 +1,8 @@
 package com.theopus.xengine.system;
 
+import com.theopus.xengine.conc.SystemRWTask;
 import com.theopus.xengine.nscheduler.Context;
 import com.theopus.xengine.nscheduler.task.Task;
-import com.theopus.xengine.conc.SystemRWTask;
 import com.theopus.xengine.trait.EntityManager;
 import com.theopus.xengine.trait.TraitMapper;
 import com.theopus.xengine.trait.custom.PositionTrait;
@@ -26,13 +26,13 @@ public class InputSystem extends EntitySystem {
 
     @Override
     void injectEm(EntityManager em) {
-        LOGGER.info("em {}  ",em);
+        LOGGER.info("em {}  ", em);
         positionEditor = (PositionTraitEditor) em.getEditor(PositionTrait.class);
     }
 
-    public void handleInput(int key, int action){
+    public void handleInput(int key, int action) {
 //        LOGGER.info("{} {} ",key, action);
-        
+
         if (action != 0) {
             positionEditor.rotateSpeed(0, 0.1f);
             positionEditor.rotateSpeed(1, 0.6f);
@@ -45,9 +45,7 @@ public class InputSystem extends EntitySystem {
     }
 
 
-
-
-    public Task task(int key, int action){
+    public Task task(int key, int action) {
         return new SystemRWTask(Context.WORK, false, this) {
             @Override
             public void afterprocess() {

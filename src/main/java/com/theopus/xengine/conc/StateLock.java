@@ -14,7 +14,7 @@ public class StateLock extends Lock<State> {
 
     @Override
     public void resolve(Lock<com.theopus.xengine.conc.State> lastLock) {
-         lastLock.getOf().getManager().copyTo(this.getOf().getManager());
+        lastLock.getOf().getManager().copyTo(this.getOf().getManager());
         getOf().getManager().reApplyTransformations();
 
     }

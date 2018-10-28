@@ -1,13 +1,8 @@
 package com.theopus.xengine.utils;
 
-import com.google.common.collect.ImmutableMap;
 import com.theopus.xengine.conc.State;
 import com.theopus.xengine.conc.SystemRWTask;
 import com.theopus.xengine.nscheduler.Context;
-import com.theopus.xengine.nscheduler.Scheduler;
-import com.theopus.xengine.nscheduler.event.EventManager;
-import com.theopus.xengine.nscheduler.lock.Lock;
-import com.theopus.xengine.nscheduler.task.ExecutorServiceFeeder;
 import com.theopus.xengine.nscheduler.task.ReadWriteTask;
 import com.theopus.xengine.opengl.RenderTraitLoader;
 import com.theopus.xengine.system.Configurer;
@@ -22,6 +17,8 @@ public class PlayGround {
 
     public static ReadWriteTask<State> ver0(RenderTraitLoader renderTraitLoader) {
         System tmpSys = new System() {
+
+            private EntityManager manager;
 
             @Override
             public void process() {
@@ -57,8 +54,6 @@ public class PlayGround {
                 PositionTrait positionTrait3 = manager.getMapper(PositionTrait.class).get(3);
                 positionTrait3.setPosition(new Vector3f(1, 1, 0));
             }
-
-            private EntityManager manager;
 
             @Override
             public Configurer configurer() {

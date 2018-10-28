@@ -9,6 +9,8 @@ import com.theopus.xengine.nscheduler.lock.LockManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public abstract class Task implements Runnable, Comparable<Task> {
@@ -19,18 +21,13 @@ public abstract class Task implements Runnable, Comparable<Task> {
     private final int id;
     private final int priority;
     private final Context type;
-
+    private final boolean cycled;
+    private final RateLimiter rateLimiter;
     private int executions;
     private Status status;
-
     private Task onComplete;
     private Task onFinish;
-
     private long lastProcessTime;
-
-    private final boolean cycled;
-
-    private final RateLimiter rateLimiter;
 
     public Task() {
         this(Context.WORK, false);
@@ -116,7 +113,7 @@ public abstract class Task implements Runnable, Comparable<Task> {
      * sequential executions of this method should be guarantied
      */
     public boolean prepare() {
-        return false;
+        return true;
     }
 
     /**
@@ -124,7 +121,7 @@ public abstract class Task implements Runnable, Comparable<Task> {
      * sequential executions of this method should be guarantied
      */
     public boolean rollback() {
-        return false;
+        return true;
     }
 
     /**
@@ -132,7 +129,7 @@ public abstract class Task implements Runnable, Comparable<Task> {
      * sequential executions of this method should be guarantied
      */
     public boolean finish() {
-        return false;
+        return true;
     }
 
     public void preprocess() {

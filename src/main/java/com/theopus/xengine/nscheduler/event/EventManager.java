@@ -1,16 +1,15 @@
 package com.theopus.xengine.nscheduler.event;
 
-import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.Lists;
-
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
-import java.util.Queue;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Stream;
 
 public class EventManager {
+
+    public static final class Topics {
+        public static final Topic<InputData> INPUT_DATA_TOPIC = new Topic<>(InputData.class);
+    }
 
     private static final AtomicInteger count = new AtomicInteger();
     private Map<Integer, Topic<?>> map;
@@ -30,19 +29,27 @@ public class EventManager {
         return top.readAs(userId);
     }
 
-    private<D> TopicReader<D> createReader(Topic<D> topic){
+    public <D> TopicReader<D> createReader(Topic<D> topic) {
         return new TopicReader<>(count.getAndIncrement(), topic.id, this);
     }
 
-    private<D> TopicWriter<D> createWriter(Topic<D> topic){
+    public <D> TopicReader<D> createReader(int topicId) {
+        return new TopicReader<>(count.getAndIncrement(), topicId, this);
+    }
+
+    public <D> TopicWriter<D> createWriter(Topic<D> topic) {
         return new TopicWriter<>(topic.id, this);
     }
 
-    private void logTopics(){
+    public <D> TopicWriter<D> createWriter(int topicId) {
+        return new TopicWriter<>(topicId, this);
+    }
+
+    public void logTopics() {
         this.map.values().forEach(Topic::logTopic);
     }
 
-    private void trimTo(int batch){
+    public void trimTo(int batch) {
         this.map.values().forEach(topic -> topic.trimTo(batch));
     }
 }

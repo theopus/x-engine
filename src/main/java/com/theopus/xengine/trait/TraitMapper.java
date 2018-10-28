@@ -60,7 +60,7 @@ public class TraitMapper<Trait extends com.theopus.xengine.trait.Trait> {
         return editor;
     }
 
-    public void clearEditor(){
+    public void clearEditor() {
         editor.clear();
     }
 

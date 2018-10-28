@@ -24,16 +24,16 @@ public class TraitManager {
         return mappers.get(traitClass);
     }
 
-    public Collection<TraitMapper> traitMappers(){
+    public Collection<TraitMapper> traitMappers() {
         return mappers.values();
     }
 
-    public Stream<TraitEditor> traitEditors(){
+    public Stream<TraitEditor> traitEditors() {
         return traitMappers().stream().map(TraitMapper::getEditor);
     }
 
 
-    public void clearEditors(){
+    public void clearEditors() {
         mappers.values().forEach(TraitMapper::clearEditor);
     }
 

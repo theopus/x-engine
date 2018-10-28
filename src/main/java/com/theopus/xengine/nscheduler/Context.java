@@ -4,6 +4,7 @@ public enum Context {
     MAIN,
     SIDE,
     WORK,
-    ANY
+    ANY,
+    INLINE,
 
 }

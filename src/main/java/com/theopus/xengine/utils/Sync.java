@@ -42,16 +42,24 @@ import static org.lwjgl.glfw.GLFW.glfwGetTime;
  */
 public class Sync {
 
-    /** number of nano seconds in a second */
+    /**
+     * number of nano seconds in a second
+     */
     private static final long NANOS_IN_SECOND = 1000L * 1000L * 1000L;
 
-    /** The time to sleep/yield until the next frame */
+    /**
+     * The time to sleep/yield until the next frame
+     */
     private long nextFrame = 0;
 
-    /** whether the initialisation code has run */
+    /**
+     * whether the initialisation code has run
+     */
     private boolean initialised = false;
 
-    /** for calculating the averages the previous sleep/yield times are stored */
+    /**
+     * for calculating the averages the previous sleep/yield times are stored
+     */
     private RunningAvg sleepDurations = new RunningAvg(10);
     private RunningAvg yieldDurations = new RunningAvg(10);
 
@@ -91,7 +99,7 @@ public class Sync {
     /**
      * This method will initialise the sync method by setting initial
      * values for sleepDurations/yieldDurations and nextFrame.
-     *
+     * <p>
      * If running on windows it will prepare the sleep timer fix.
      */
     private void initialise() {
@@ -109,15 +117,14 @@ public class Sync {
      * @return will return the current time in nano's
      */
     public long getTime() {
-        return (long)(glfwGetTime() * NANOS_IN_SECOND);
+        return (long) (glfwGetTime() * NANOS_IN_SECOND);
     }
 
     private class RunningAvg {
-        private final long[] slots;
-        private int offset;
-
         private static final long DAMPEN_THRESHOLD = 10 * 1000L * 1000L; // 10ms
         private static final float DAMPEN_FACTOR = 0.9f; // don't change: 0.9f is exactly right!
+        private final long[] slots;
+        private int offset;
 
         public RunningAvg(int slotCount) {
             this.slots = new long[slotCount];

@@ -2,20 +2,20 @@ package com.theopus.xengine.nscheduler;
 
 import com.theopus.xengine.nscheduler.event.EventManager;
 import com.theopus.xengine.nscheduler.input.InputManager;
-import com.theopus.xengine.nscheduler.lock.Lock;
 import com.theopus.xengine.nscheduler.lock.LockManager;
-import com.theopus.xengine.nscheduler.task.*;
+import com.theopus.xengine.nscheduler.task.ExecutorServiceFeeder;
+import com.theopus.xengine.nscheduler.task.Feeder;
+import com.theopus.xengine.nscheduler.task.Task;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.Closeable;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Queue;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.PriorityBlockingQueue;
 
-public class Scheduler implements AutoCloseable{
+public class Scheduler implements AutoCloseable {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(Scheduler.class);
 
@@ -24,10 +24,36 @@ public class Scheduler implements AutoCloseable{
     private final Queue<Task> finished = new LinkedList<>();
 
     private boolean cycle;
+    private long tick = 0L;
 
     public Scheduler(Feeder feeder) {
         this.feeder = feeder;
         this.cycle = true;
+    }
+
+    public static void main(String[] args) throws InterruptedException, ExecutionException {
+        Scheduler scheduler = new Scheduler(new ExecutorServiceFeeder());
+
+        Task processed = new Task(Context.INLINE, true, Integer.MAX_VALUE) {
+            @Override
+            public void process() throws Exception {
+                LOGGER.info("Processed");
+            }
+
+            @Override
+            public void injectManagers(EventManager em, InputManager im, LockManager lm) {
+
+            }
+        };
+        scheduler.propose(processed);
+
+        for (int i = 0; i < 10_000_0_000; i++) {
+            System.out.println(processed);
+            System.out.println(scheduler.tick);
+            scheduler.process();
+        }
+        scheduler.close();
+//        LOGGER.info("Finished list{}", scheduler.getFinished().stream().map(Task::toString).collect(Collectors.joining("\n")));
     }
 
     public void propose(Task task) {
@@ -42,33 +68,44 @@ public class Scheduler implements AutoCloseable{
             Task task = iterator.next();
             switch (task.getStatus()) {
                 case NEW:
-                    if (task.shouldThrottle()) {
-                        boolean success = task.prepare();
-                        if (success) {
-                            feeder.feed(task);
-                        } else {
-                            task.rollback();
-                        }
-                    }
+                    handleNew(task);
                     break;
-
                 case COMPLETED:
-                    boolean result = task.finish();
-                    if (cycle && task.isCycled()) {
-                        task.setStatus(Status.NEW);
-                    } else {
-                        task.setStatus(Status.FINISHED);
-                        propose(task.getOnComplete());
-                    }
+                    handleComplete(task);
                     break;
-
                 case FINISHED:
-                    iterator.remove();
-                    finished.add(task);
-                    propose(task.getOnFinish());
+                    handleFinish(iterator, task);
                     break;
             }
         }
+        tick++;
+    }
+
+    private void handleNew(Task task) {
+        if (task.shouldThrottle()) {
+            boolean success = task.prepare();
+            if (success) {
+                feeder.feed(task);
+            } else {
+                task.rollback();
+            }
+        }
+    }
+
+    private void handleComplete(Task task) {
+        boolean result = task.finish();
+        if (cycle && task.isCycled()) {
+            task.setStatus(Status.NEW);
+        } else {
+            task.setStatus(Status.FINISHED);
+            propose(task.getOnComplete());
+        }
+    }
+
+    private void handleFinish(Iterator<Task> iterator, Task task) {
+        iterator.remove();
+        finished.add(task);
+        propose(task.getOnFinish());
     }
 
     public void drain() throws ExecutionException, InterruptedException {
@@ -89,46 +126,9 @@ public class Scheduler implements AutoCloseable{
 
     }
 
-    public static void main(String[] args) throws InterruptedException, ExecutionException {
-        Scheduler scheduler = new Scheduler(new ExecutorServiceFeeder());
-
-        Task task = TaskChain.startWith(new ReadWriteTask(Context.MAIN, false) {
-            @Override
-            public void process() {
-                LOGGER.info("Prepare main 0 cycle {}", getExecutions());
-            }
-        }).andThen(new ReadWriteTask(Context.MAIN, false) {
-            @Override
-            public void process() {
-                LOGGER.info("Prepare main 1 cycle {}", getExecutions());
-            }
-        }).onFinish(new ReadWriteTask(Context.WORK, true, 1) {
-            @Override
-            public void process() {
-                LOGGER.info("Update cycle {} took {}", getExecutions(), getLastProcessTime());
-            }
-        }).andThen(new ReadTask(Context.MAIN, true, 2) {
-            @Override
-            public void process() {
-                LOGGER.info("Run 1 cycle main {} took", getExecutions(), getLastProcessTime());
-            }
-        }).andThen(new ReadWriteTask(Context.MAIN, false) {
-            @Override
-            public void process() {
-                LOGGER.info("Teardown cycle main {}", getExecutions());
-            }
-        }).head();
-
-        scheduler.propose(task);
-
-        for (int i = 0; i < 10_000_0_000; i++) {
-            scheduler.process();
-        }
-        scheduler.close();
-//        LOGGER.info("Finished list{}", scheduler.getFinished().stream().map(Task::toString).collect(Collectors.joining("\n")));
-    }
-
     public Queue<Task> getFinished() {
         return finished;
     }
+
+
 }

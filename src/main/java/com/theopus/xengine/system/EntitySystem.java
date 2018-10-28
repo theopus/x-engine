@@ -9,11 +9,11 @@ import java.util.stream.IntStream;
 
 public abstract class EntitySystem implements System {
 
-    private EntityManager em;
     private final Configurer configurer = new EsConfigurer();
+    private EntityManager em;
     private Class<? extends Trait>[] targets;
 
-    public EntitySystem(Class<? extends Trait> ... targets) {
+    public EntitySystem(Class<? extends Trait>... targets) {
         this.targets = targets;
     }
 
@@ -34,7 +34,7 @@ public abstract class EntitySystem implements System {
     }
 
 
-    private class EsConfigurer implements Configurer{
+    private class EsConfigurer implements Configurer {
 
         @Override
         public void setRead(State state) {

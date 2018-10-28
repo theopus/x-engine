@@ -1,10 +1,12 @@
 package com.theopus.xengine.nscheduler.event;
 
+import com.theopus.xengine.nscheduler.task.TaskComponent;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-public class TopicWriter<D> {
+public class TopicWriter<D> implements TaskComponent {
 
     private final int topicId;
     private final EventManager eventManager;
@@ -15,8 +17,14 @@ public class TopicWriter<D> {
         this.eventManager = eventManager;
     }
 
-    public void prepare() {
+    public boolean prepare() {
         events.clear();
+        return true;
+    }
+
+    @Override
+    public boolean rollback() {
+        return false;
     }
 
     public void write(Event<D> event) {
@@ -27,7 +35,9 @@ public class TopicWriter<D> {
         events.addAll(event);
     }
 
-    public void flush() {
+    @Override
+    public boolean finish() {
         eventManager.put(topicId, events);
+        return true;
     }
 }

@@ -1,15 +1,15 @@
 package com.theopus.xengine.nscheduler.lock;
 
+import com.theopus.xengine.nscheduler.task.TaskComponent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class LockUser<T> {
+public class LockUser<T> implements TaskComponent {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(LockUser.class);
-
+    private final LockManager<T> lock;
     private Lock<T> read;
     private Lock<T> write;
-    private final LockManager<T> lock;
     private boolean onlyRead;
 
     public LockUser(LockManager<T> lock, boolean onlyRead) {
@@ -47,7 +47,7 @@ public class LockUser<T> {
         return write.getOf();
     }
 
-    public void log(){
+    public void log() {
         LOGGER.debug("LockUser id: readLock: {}, writeLock: {}", read, write);
     }
 }

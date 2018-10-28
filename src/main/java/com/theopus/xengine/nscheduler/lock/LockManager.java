@@ -25,18 +25,18 @@ public class LockManager<T> {
     }
 
     public void release(Lock<T> lock) {
-        if (lock == null){
+        if (lock == null) {
             return;
         }
-        if (lock.getState() == Lock.State.READ) {
+        if (lock.getType() == Lock.Type.READ) {
             int inUseCount = lock.releaseRead();
             if (inUseCount == 0) {
-                lock.setState(Lock.State.FREE);
+                lock.setType(Lock.Type.FREE);
             }
-        } else if (lock.getState() == Lock.State.WRITE_READ){
+        } else if (lock.getType() == Lock.Type.WRITE_READ) {
             int nextFrame = lock.getNextFrame();
 
-            if (nextFrame <= currentFrame){
+            if (nextFrame <= currentFrame) {
                 lock.resolve(lastFrameLock);
                 lock.setNextFrame(++currentFrame);
                 locks.update(lock, defaultUpd);
@@ -46,17 +46,17 @@ public class LockManager<T> {
 
             currentFrame = lock.getNextFrame();
             lastFrameLock = lock;
-            lock.setState(Lock.State.FREE);
+            lock.setType(Lock.Type.FREE);
         }
     }
 
     public Lock<T> forRead() {
         for (Lock<T> lock : locks) {
-            Lock.State state = lock.getState();
-            if (state == Lock.State.FREE || state == Lock.State.READ) {
+            Lock.Type type = lock.getType();
+            if (type == Lock.Type.FREE || type == Lock.Type.READ) {
                 lock.getRead();
                 //get fresh input data??
-                lock.setState(Lock.State.READ);
+                lock.setType(Lock.Type.READ);
                 return lock;
             }
         }
@@ -66,17 +66,17 @@ public class LockManager<T> {
     public Lock<T> forWrite() {
         for (Iterator<Lock<T>> iterator = locks.descendingIterator(); iterator.hasNext(); ) {
             Lock<T> lock = iterator.next();
-            Lock.State state = lock.getState();
-            if (state == Lock.State.FREE) {
+            Lock.Type type = lock.getType();
+            if (type == Lock.Type.FREE) {
                 lock.setNextFrame(currentFrame + 1);
-                lock.setState(Lock.State.WRITE_READ);
+                lock.setType(Lock.Type.WRITE_READ);
                 return lock;
             }
         }
         return null;
     }
 
-    private void logLocks(){
+    private void logLocks() {
         LOGGER.info("Current frame {}", currentFrame);
         LOGGER.info("Current last lock {}", lastFrameLock);
         LOGGER.info("All locks {}", locks);

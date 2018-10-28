@@ -19,11 +19,9 @@ import java.util.stream.IntStream;
 
 public class RenderSystem extends EntitySystem {
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(RenderSystem.class);
     private final OpsCounter fps;
     private TraitMapper<RenderTrait> renderMapper;
-
-    private static final Logger LOGGER = LoggerFactory.getLogger(RenderSystem.class);
-
     private PlatformManager pm;
     private Render render;
 

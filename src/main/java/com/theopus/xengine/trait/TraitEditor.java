@@ -7,7 +7,7 @@ public class TraitEditor<Trait extends com.theopus.xengine.trait.Trait> {
     protected TraitMapper<Trait> mapper;
     protected List<Transformation<Trait>> transformations = new ArrayList<>();
 
-    public TraitEditor<Trait> with(TraitMapper<Trait> mapper){
+    public TraitEditor<Trait> with(TraitMapper<Trait> mapper) {
         this.mapper = mapper;
         return this;
     }
@@ -25,7 +25,7 @@ public class TraitEditor<Trait extends com.theopus.xengine.trait.Trait> {
         action.transform(mapper);
     }
 
-    public void clear(){
+    public void clear() {
         transformations.clear();
     }
 }

@@ -20,7 +20,7 @@ public class PositionTraitEditor extends TraitEditor<PositionTrait> {
         action.transform(mapper);
     }
 
-    public List<Transformation<PositionTrait>> transformations(){
+    public List<Transformation<PositionTrait>> transformations() {
         return transformations;
     }
 

@@ -4,9 +4,7 @@ import com.theopus.xengine.trait.custom.RenderTrait;
 import com.theopus.xengine.utils.MemorySizeConstants;
 import org.lwjgl.opengl.GL15;
 
-import java.io.Closeable;
-
-public class RenderTraitLoader extends Loader{
+public class RenderTraitLoader extends Loader {
 
     public RenderTrait loadEntity(RenderTrait trait, float[] positions, int vertexCount) {
         int vao = createVAO();
@@ -24,7 +22,7 @@ public class RenderTraitLoader extends Loader{
         bindVao(vao);
         int posVbo = writeInVao(0, 3, positions);
         unbindVao();
-        
+
         Vbo vbo = new Vbo(posVbo, GL15.GL_ARRAY_BUFFER, MemorySizeConstants.VEC3_FLOAT * positions.length, GL15.GL_STATIC_DRAW);
         Attribute posAttr = new Attribute("positions", 0, 3);
 

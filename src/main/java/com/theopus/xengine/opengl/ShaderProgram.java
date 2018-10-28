@@ -15,13 +15,11 @@ import java.nio.FloatBuffer;
 
 public abstract class ShaderProgram {
 
+    private static Logger LOGGER = LoggerFactory.getLogger(ShaderProgram.class);
     private final int programID;
     private final int vertexShaderID;
     private final int fragmentShaderID;
-
     private final FloatBuffer matrixBuffer;
-
-    private static Logger LOGGER = LoggerFactory.getLogger(ShaderProgram.class);
 
     public ShaderProgram(int vertexShaderID, int fragmentShaderID) {
         this.vertexShaderID = vertexShaderID;
@@ -42,6 +40,33 @@ public abstract class ShaderProgram {
                 loadShader(vertexFile, Type.VERTEX),
                 loadShader(fragmentFile, Type.FRAGMENT)
         );
+    }
+
+    public static int loadShader(String file, Type type) throws IOException {
+        StringBuilder shaderSource = fileToStringBuilder(file);
+
+        LOGGER.info("SHADER = \n{}", shaderSource);
+        int shaderID = GL20.glCreateShader(type.binding());
+        GL20.glShaderSource(shaderID, shaderSource);
+        GL20.glCompileShader(shaderID);
+        if (GL20.glGetShaderi(shaderID, GL20.GL_COMPILE_STATUS) == GL11.GL_FALSE) {
+            throw new RuntimeException(String.format("Exception during initializing of [%s] shader, shader file: [%s] OpenGL: ", type, file) +
+                    GL20.glGetShaderInfoLog(shaderID, 10_000));
+
+        }
+        return shaderID;
+    }
+
+    private static StringBuilder fileToStringBuilder(String file) throws IOException {
+        StringBuilder shaderSource = new StringBuilder();
+
+        try (BufferedReader reader = new BufferedReader(new InputStreamReader(ShaderProgram.class.getClassLoader().getResourceAsStream(file)))) {
+            String line;
+            while ((line = reader.readLine()) != null) {
+                shaderSource.append(line).append('\n');
+            }
+        }
+        return shaderSource;
     }
 
     protected abstract void getAllUniformLocations();
@@ -103,37 +128,11 @@ public abstract class ShaderProgram {
         MemoryUtil.memFree(matrixBuffer);
     }
 
-    public static int loadShader(String file, Type type) throws IOException {
-        StringBuilder shaderSource = fileToStringBuilder(file);
-
-        LOGGER.info("SHADER = \n{}", shaderSource);
-        int shaderID = GL20.glCreateShader(type.binding());
-        GL20.glShaderSource(shaderID, shaderSource);
-        GL20.glCompileShader(shaderID);
-        if (GL20.glGetShaderi(shaderID, GL20.GL_COMPILE_STATUS) == GL11.GL_FALSE) {
-            throw new RuntimeException(String.format("Exception during initializing of [%s] shader, shader file: [%s] OpenGL: ", type, file) +
-                    GL20.glGetShaderInfoLog(shaderID, 10_000));
-
-        }
-        return shaderID;
-    }
-
-    private static StringBuilder fileToStringBuilder(String file) throws IOException {
-        StringBuilder shaderSource = new StringBuilder();
-
-        try (BufferedReader reader = new BufferedReader(new InputStreamReader(ShaderProgram.class.getClassLoader().getResourceAsStream(file)))) {
-            String line;
-            while ((line = reader.readLine()) != null) {
-                shaderSource.append(line).append('\n');
-            }
-        }
-        return shaderSource;
-    }
-
 
     public enum Type {
         VERTEX(GL20.GL_VERTEX_SHADER),
-        FRAGMENT(GL20.GL_FRAGMENT_SHADER),;
+        FRAGMENT(GL20.GL_FRAGMENT_SHADER),
+        ;
         private int glBinding;
 
         Type(int glBinding) {

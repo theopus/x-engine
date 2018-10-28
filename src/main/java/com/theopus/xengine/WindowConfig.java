@@ -16,6 +16,7 @@ public class WindowConfig {
         this.color = color;
         this.vSync = vSync;
     }
+
     public WindowConfig(int width, int height, Vector4f color, boolean primitivesCompatible, int vSync) {
         this(width, height, color, vSync);
         this.primitivesCompatible = primitivesCompatible;

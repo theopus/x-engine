@@ -1,33 +1,48 @@
 package com.theopus.xengine.system;
 
+import com.theopus.xengine.conc.SystemRWTask;
+import com.theopus.xengine.inject.Entity;
+import com.theopus.xengine.inject.Event;
 import com.theopus.xengine.nscheduler.Context;
-import com.theopus.xengine.nscheduler.event.Event;
+import com.theopus.xengine.nscheduler.event.EventManager;
 import com.theopus.xengine.nscheduler.event.InputData;
 import com.theopus.xengine.nscheduler.event.TopicReader;
-import com.theopus.xengine.nscheduler.event.TopicWriter;
+import com.theopus.xengine.nscheduler.input.InputManager;
+import com.theopus.xengine.nscheduler.lock.LockManager;
 import com.theopus.xengine.nscheduler.task.Task;
-import com.theopus.xengine.conc.SystemRWTask;
-import com.theopus.xengine.trait.*;
+import com.theopus.xengine.trait.EntityManager;
+import com.theopus.xengine.trait.TraitMapper;
 import com.theopus.xengine.trait.custom.PositionTrait;
 import com.theopus.xengine.trait.custom.PositionTraitEditor;
 import com.theopus.xengine.trait.custom.RenderTrait;
 import com.theopus.xengine.trait.custom.RenderTraitEditor;
 import com.theopus.xengine.utils.OpsCounter;
+import org.lwjgl.glfw.GLFW;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.stream.IntStream;
-import java.util.stream.Stream;
 
 public class UpdateSystem extends EntitySystem {
 
-    private TraitMapper<RenderTrait> rmapper;
-    private TraitMapper<PositionTrait> pmapper;
-    private RenderTraitEditor reditor;
-    private PositionTraitEditor peditor;
-
     private static final Logger LOGGER = LoggerFactory.getLogger(UpdateSystem.class);
     private final OpsCounter ups;
+
+
+    @Entity
+    private TraitMapper<RenderTrait> rmapper;
+
+    @Entity
+    private TraitMapper<PositionTrait> pmapper;
+
+    @Entity
+    private RenderTraitEditor reditor;
+
+    @Entity
+    private PositionTraitEditor peditor;
+
+    @Event(topicId = 0, type = 0)
+    private TopicReader<InputData> reader;
 
     public UpdateSystem() {
         super(RenderTrait.class, PositionTrait.class);
@@ -36,6 +51,14 @@ public class UpdateSystem extends EntitySystem {
 
     @Override
     public void process(IntStream entities) {
+
+        reader.read().forEach(d->{
+            if (d.data().action == GLFW.GLFW_PRESS){
+                peditor.rotateSpeed(0, 0.3f);
+            } else {
+                peditor.rotateSpeed(0, 0f);
+            }
+        });
 
         entities.forEach(value -> {
 
@@ -48,7 +71,6 @@ public class UpdateSystem extends EntitySystem {
                     positionTrait.getRotZ(),
                     positionTrait.getScale()
             );
-
         });
         ups.operateAndLog();
     }
@@ -62,16 +84,30 @@ public class UpdateSystem extends EntitySystem {
         reditor = (RenderTraitEditor) em.getEditor(RenderTrait.class);
     }
 
-
     public void setReditor(RenderTraitEditor reditor) {
         this.reditor = reditor;
     }
 
-    private Class[] classes = new Class[]{
-            RenderTrait.class, PositionTrait.class
-    };
-
     public Task task() {
-        return new SystemRWTask(Context.WORK, true, this);
+        return new SystemRWTask(Context.WORK, true, this){
+            @Override
+            public boolean prepare() {
+                boolean prepare = super.prepare();
+                return prepare && reader.prepare();
+            }
+
+            @Override
+            public boolean finish() {
+                boolean sup = super.finish();
+                boolean readerF = reader.finish();
+                return sup && readerF;
+            }
+
+            @Override
+            public void injectManagers(EventManager em, InputManager im, LockManager lm) {
+                super.injectManagers(em, im, lm);
+                reader = em.createReader(EventManager.Topics.INPUT_DATA_TOPIC);
+            }
+        };
     }
 }

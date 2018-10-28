@@ -19,20 +19,20 @@ public class RenderTrait extends Trait<RenderTrait> implements IDuplicate<Render
         return vaoId;
     }
 
-    public int getVertexCount() {
-        return vertexCount;
-    }
-
-    public Matrix4f getTransformation() {
-        return transformation;
-    }
-
     public void setVaoId(int vaoId) {
         this.vaoId = vaoId;
     }
 
+    public int getVertexCount() {
+        return vertexCount;
+    }
+
     public void setVertexCount(int vertexCount) {
         this.vertexCount = vertexCount;
+    }
+
+    public Matrix4f getTransformation() {
+        return transformation;
     }
 
     public void setTransformation(Matrix4f transformation) {

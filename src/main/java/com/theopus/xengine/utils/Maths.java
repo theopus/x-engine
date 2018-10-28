@@ -24,7 +24,7 @@ public class Maths {
                 .scale(scale);
     }
 
-    public static Matrix4f applyTransformations(Vector3f vector3f, float rx, float ry, float rz, float scale, Matrix4f matrix4f){
+    public static Matrix4f applyTransformations(Vector3f vector3f, float rx, float ry, float rz, float scale, Matrix4f matrix4f) {
         return matrix4f
                 .identity()
                 .setTranslation(vector3f)

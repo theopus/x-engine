@@ -15,7 +15,7 @@ import java.nio.IntBuffer;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Loader  implements Closeable {
+public class Loader implements Closeable {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(Loader.class);
 
@@ -91,7 +91,7 @@ public class Loader  implements Closeable {
 
     public Texture loadTexture(String path) {
 
-        try (InputStream resourceAsStream = Loader.class.getClassLoader().getResourceAsStream(path);){
+        try (InputStream resourceAsStream = Loader.class.getClassLoader().getResourceAsStream(path);) {
             PNGDecoder decoder = new PNGDecoder(resourceAsStream);
             int width = decoder.getWidth();
             int height = decoder.getHeight();
@@ -123,7 +123,7 @@ public class Loader  implements Closeable {
         }
     }
 
-    public void close(){
+    public void close() {
         LOGGER.info("Closing...");
         vao.forEach(GL30::glDeleteVertexArrays);
         vbo.forEach(GL30::glDeleteBuffers);

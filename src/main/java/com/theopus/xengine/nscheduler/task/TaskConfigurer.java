@@ -1,6 +1,5 @@
 package com.theopus.xengine.nscheduler.task;
 
-import com.theopus.xengine.conc.State;
 import com.theopus.xengine.inject.Entity;
 import com.theopus.xengine.inject.Event;
 import com.theopus.xengine.nscheduler.event.EventManager;
@@ -15,13 +14,13 @@ import java.lang.reflect.Field;
 import java.util.Arrays;
 import java.util.List;
 
-public class TaskFactory<T> {
+public class TaskConfigurer {
 
-    private final LockManager<T> lockManager;
+    private final LockManager<?> lockManager;
     private final EventManager eventManager;
     private final InputManager inputManager;
 
-    public TaskFactory(LockManager<T> lockManager, EventManager eventManager, InputManager inputManager) {
+    public TaskConfigurer(LockManager<?> lockManager, EventManager eventManager, InputManager inputManager) {
         this.lockManager = lockManager;
         this.eventManager = eventManager;
         this.inputManager = inputManager;
@@ -37,14 +36,19 @@ public class TaskFactory<T> {
     }
 
     public TaskChain injectManagers(TaskChain chain) {
-        for (Task t = chain.head(); t != null; t = t.getOnComplete()) {
+        for (ComponentTask t = (ComponentTask) chain.head(); t != null; t = (ComponentTask) t.getOnComplete()) {
+            try {
+                inj(t);
+            } catch (NoSuchFieldException | IllegalAccessException e) {
+                throw new RuntimeException(e);
+            }
             injectManagers(t);
             injectManagers(t.getOnFinish());
         }
         return chain;
     }
 
-    private void inj(LockManager<State> lm, EventManager em, ComponentTask task) throws NoSuchFieldException, IllegalAccessException {
+    private void inj(ComponentTask task) throws NoSuchFieldException, IllegalAccessException {
 
         Class<? extends ComponentTask> tc = task.getClass();
         System.out.println(Arrays.toString(ComponentTask.class.getDeclaredFields()));
@@ -60,11 +64,11 @@ public class TaskFactory<T> {
             if (entity) {
                 field.setAccessible(true);
                 Entity annotation = field.getAnnotation(Entity.class);
-                LockUser<State> lock;
+                LockUser lock;
                 if (annotation.value() == Lock.Type.WRITE_READ) {
-                    lock = lm.createReadWrite();
+                    lock = lockManager.createReadWrite();
                 } else {
-                    lock = lm.createReadOnly();
+                    lock = lockManager.createReadOnly();
                 }
                 list.add(lock);
                 field.set(task, lock);
@@ -75,11 +79,11 @@ public class TaskFactory<T> {
 
                 Event annotation = field.getAnnotation(Event.class);
                 if (annotation.type() == Event.READ) {
-                    TopicReader<?> reader = em.createReader(annotation.topicId());
+                    TopicReader<?> reader = eventManager.createReader(annotation.topicId());
                     list.add(reader);
                     field.set(task, reader);
                 } else if (annotation.type() == Event.WRITE) {
-                    TopicWriter<?> writer = em.createWriter(annotation.topicId());
+                    TopicWriter<?> writer = eventManager.createWriter(annotation.topicId());
                     list.add(writer);
                     field.set(task, writer);
                 }

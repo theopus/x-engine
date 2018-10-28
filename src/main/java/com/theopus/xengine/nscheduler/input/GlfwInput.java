@@ -13,6 +13,13 @@ public class GlfwInput implements InputManager {
     private final MouseScrollListener mouseScrollListener;
 
 
+    public GlfwInput() {
+        this.keyListener = new KeyListener();
+        this.mouseKeyListener = new MouseKeyListener();
+        this.mouseMoveListener = new MouseMoveListener();
+        this.mouseScrollListener = new MouseScrollListener();
+    }
+
     public GLFWKeyCallbackI keyCallback() {
         return GLFWKeyCallback.create(keyListener);
     }
@@ -29,13 +36,6 @@ public class GlfwInput implements InputManager {
         return GLFWScrollCallback.create(mouseScrollListener);
     }
 
-    public GlfwInput() {
-        this.keyListener = new KeyListener();
-        this.mouseKeyListener = new MouseKeyListener();
-        this.mouseMoveListener = new MouseMoveListener();
-        this.mouseScrollListener = new MouseScrollListener();
-    }
-
     public boolean isKeyPressed(int key) {
         return this.keyListener.isKeyPressed(key);
     }
@@ -44,19 +44,19 @@ public class GlfwInput implements InputManager {
         return this.mouseKeyListener.isKeyPressed(key);
     }
 
-    public double xAxisDelta(){
+    public double xAxisDelta() {
         return this.mouseMoveListener.xAxisDelta();
     }
 
-    public double yAxisDelta(){
+    public double yAxisDelta() {
         return this.mouseMoveListener.yAxisDelta();
     }
 
-    public float scrollDy(){
+    public float scrollDy() {
         return this.mouseScrollListener.scrollDy();
     }
 
-    public void resetCursorDelta(){
+    public void resetCursorDelta() {
         this.mouseMoveListener.reset();
     }
 
@@ -106,7 +106,7 @@ public class GlfwInput implements InputManager {
         }
     }
 
-    public class MouseScrollListener implements GLFWScrollCallbackI{
+    public class MouseScrollListener implements GLFWScrollCallbackI {
 
         private float dy;
 
@@ -140,7 +140,7 @@ public class GlfwInput implements InputManager {
             y = ypos;
         }
 
-        public void reset(){
+        public void reset() {
             dx = 0;
             dy = 0;
         }

@@ -22,7 +22,6 @@ public class ExecutorServiceFeeder implements Feeder {
 
     @Override
     public void feed(Task task) {
-
         task.setStatus(Status.SUBMITTED);
         Runnable wrapped = wrapRemoveFuture(task);
         switch (task.getType()) {
@@ -42,7 +41,12 @@ public class ExecutorServiceFeeder implements Feeder {
                 runningTasks.put(task.getId(), work.submit(wrapped));
             }
             break;
+            case INLINE: {
+                task.run();
+                //TODO: revisit for improving sequential inline execution. (now it`s 1 inline execution to 2 scheduler ticks for each task)
+            }
         }
+
     }
 
     @Override

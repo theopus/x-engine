@@ -6,7 +6,9 @@ import com.theopus.xengine.nscheduler.input.GlfwInput;
 import com.theopus.xengine.nscheduler.input.InputManager;
 import org.joml.Vector4f;
 import org.lwjgl.glfw.*;
-import org.lwjgl.opengl.*;
+import org.lwjgl.opengl.GL;
+import org.lwjgl.opengl.GL11;
+import org.lwjgl.opengl.GLCapabilities;
 import org.lwjgl.system.MemoryStack;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -20,14 +22,13 @@ import static org.lwjgl.system.MemoryUtil.NULL;
 public class GlfwPlatformManager implements PlatformManager {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(GlfwPlatformManager.class);
-
+    public int width;
+    public int height;
+    public long mainContext;
     private GlfwInput hub;
     private Vector4f color;
     private boolean primitiveCompatible;
     private GLFWKeyCallback listener;
-    public int width;
-    public int height;
-    public long mainContext;
     private GLCapabilities mainCapabilities;
     private int vSync;
     private long sideContext;

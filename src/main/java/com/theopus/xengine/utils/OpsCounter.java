@@ -20,13 +20,13 @@ public class OpsCounter {
         this.name = name;
     }
 
-    public void operate(){
+    public void operate() {
         current = System.nanoTime();
         operationTime = current - previous;
         previous = current;
     }
 
-    public void printOps(){
+    public void printOps() {
         if (System.currentTimeMillis() - lastPrintTime > deltaToPrint) {
             float currentOps = 1_000_000_000f / operationTime;
             LOGGER.info("{}: [{}] per/sec", name, String.format("%.02f", currentOps));
@@ -34,7 +34,7 @@ public class OpsCounter {
         }
     }
 
-    public void operateAndLog(){
+    public void operateAndLog() {
         operate();
         printOps();
     }

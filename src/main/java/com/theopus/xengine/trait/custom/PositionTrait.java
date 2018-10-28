@@ -57,12 +57,12 @@ public class PositionTrait extends Trait<PositionTrait> implements IDuplicate<Po
         this.scale = scale;
     }
 
-    public void setRotSpeed(float rotSpeed) {
-        this.rotSpeed = rotSpeed;
-    }
-
     public float getRotSpeed() {
         return rotSpeed;
+    }
+
+    public void setRotSpeed(float rotSpeed) {
+        this.rotSpeed = rotSpeed;
     }
 
     @Override

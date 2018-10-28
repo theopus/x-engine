@@ -21,7 +21,9 @@ public class Topic<D> {
 
 
     private BlockingQueue<Event<D>> events = new LinkedBlockingQueue<>();
-
+    private int nextBatchOffset = 0;
+    private int bcount = 0;
+    private Map<Integer, Integer> bathces = new LinkedHashMap<>();
     public Topic(String description, Class<D> dataClass) {
         this.id = count++;
         this.userOffsets = new HashMap<>();
@@ -32,9 +34,6 @@ public class Topic<D> {
     public Topic(Class<D> dataClass) {
         this("Topic for: " + dataClass, dataClass);
     }
-
-    private int nextBatchOffset = 0;
-    private int bcount = 0;
 
     void put(List<Event<D>> newEvents) {
         bathces.put(bcount++, nextBatchOffset);
@@ -89,13 +88,9 @@ public class Topic<D> {
         return offset;
     }
 
-
     public void logTopic() {
         LOGGER.info("\nTopic queue :{}\nTopic users : {}\nTopic batches : {}", events, userOffsets, bathces);
     }
-
-
-    private Map<Integer, Integer> bathces = new LinkedHashMap<>();
 
     public void trimTo(int toLast) {
         Collection<Object> objects = new ArrayList<>();
@@ -104,6 +99,9 @@ public class Topic<D> {
             events.clear();
         } else {
             int trimBuckets = bcount - toLast;
+            if (trimBuckets <= 0){
+                return;
+            }
             events.drainTo(objects, bathces.get(trimBuckets));
             userOffsets.keySet().forEach(integer -> {
                 if (integer < trimBuckets) {
@@ -114,5 +112,9 @@ public class Topic<D> {
         moveOffsets(-objects.size());
         moveBatchesOffsets(-objects.size());
         LOGGER.info("Trimmed {}", objects.size());
+    }
+
+    public int getId() {
+        return id;
     }
 }

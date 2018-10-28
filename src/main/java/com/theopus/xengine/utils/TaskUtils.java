@@ -6,6 +6,7 @@ import com.theopus.xengine.nscheduler.task.ReadWriteTask;
 import com.theopus.xengine.opengl.RenderTraitLoader;
 
 import java.io.Closeable;
+import java.util.Collection;
 
 public class TaskUtils {
 
@@ -23,6 +24,28 @@ public class TaskUtils {
             @Override
             public void process() throws Exception {
                 closeable.close();
+            }
+        };
+    }
+
+    public static ReadWriteTask close(Context ctx, Collection<Closeable> closeable) {
+        return new ReadWriteTask(ctx, false) {
+            @Override
+            public void process() throws Exception {
+                for (Closeable c : closeable) {
+                    c.close();
+                }
+            }
+        };
+    }
+
+    public static ReadWriteTask closeAutos(Context ctx, Collection<AutoCloseable> closeable) {
+        return new ReadWriteTask(ctx, false) {
+            @Override
+            public void process() throws Exception {
+                for (AutoCloseable c : closeable) {
+                    c.close();
+                }
             }
         };
     }

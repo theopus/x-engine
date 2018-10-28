@@ -1,47 +1,52 @@
 package com.theopus.xengine.nscheduler.task;
 
+import com.google.common.collect.ImmutableMap;
 import com.theopus.xengine.conc.State;
+import com.theopus.xengine.conc.StateFactory;
 import com.theopus.xengine.inject.Entity;
 import com.theopus.xengine.inject.Event;
 import com.theopus.xengine.nscheduler.event.EventManager;
 import com.theopus.xengine.nscheduler.event.TopicReader;
 import com.theopus.xengine.nscheduler.event.TopicWriter;
 import com.theopus.xengine.nscheduler.input.InputManager;
+import com.theopus.xengine.nscheduler.input.InputReader;
 import com.theopus.xengine.nscheduler.lock.Lock;
 import com.theopus.xengine.nscheduler.lock.LockManager;
 import com.theopus.xengine.nscheduler.lock.LockUser;
+import com.theopus.xengine.trait.custom.PositionTrait;
+import com.theopus.xengine.trait.custom.PositionTraitEditor;
+import com.theopus.xengine.trait.custom.RenderTrait;
+import com.theopus.xengine.trait.custom.RenderTraitEditor;
+import org.junit.Test;
 
 import java.lang.reflect.Field;
 import java.util.Arrays;
 import java.util.List;
 
-public class TaskFactory<T> {
+public class TaskTest {
 
-    private final LockManager<T> lockManager;
-    private final EventManager eventManager;
-    private final InputManager inputManager;
+    @Test
+    public void name() throws NoSuchFieldException, IllegalAccessException {
 
-    public TaskFactory(LockManager<T> lockManager, EventManager eventManager, InputManager inputManager) {
-        this.lockManager = lockManager;
-        this.eventManager = eventManager;
-        this.inputManager = inputManager;
-    }
+        LockManager<State> lm = new LockManager<State>(new StateFactory(ImmutableMap.of(
+                RenderTrait.class, RenderTraitEditor.class,
+                PositionTrait.class, PositionTraitEditor.class
+        )), 3);
+
+        EventManager em = new EventManager(ImmutableMap.of(
+                EventManager.Topics.INPUT_DATA_TOPIC.getId(), EventManager.Topics.INPUT_DATA_TOPIC
+        ));
+
+        TaskFactory<State> factory = new TaskFactory<>(lm, null, null);
 
 
-    public <T extends Task> T injectManagers(T task) {
-        if (task == null) {
-            return task;
-        }
-        task.injectManagers(eventManager, inputManager, lockManager);
-        return task;
-    }
+        TestTask testTask = new TestTask();
 
-    public TaskChain injectManagers(TaskChain chain) {
-        for (Task t = chain.head(); t != null; t = t.getOnComplete()) {
-            injectManagers(t);
-            injectManagers(t.getOnFinish());
-        }
-        return chain;
+        inj(lm, em, testTask);
+
+        testTask.prepare();
+        testTask.process();
+
     }
 
     private void inj(LockManager<State> lm, EventManager em, ComponentTask task) throws NoSuchFieldException, IllegalAccessException {
@@ -84,6 +89,28 @@ public class TaskFactory<T> {
                     field.set(task, writer);
                 }
             }
+        }
+    }
+
+
+    static class TestTask extends ComponentTask {
+
+        @Entity(Lock.Type.WRITE_READ)
+        private LockUser<State> lockUser;
+
+        @Event(topicId = 0, type = Event.READ)
+        private TopicReader<InputReader> reader;
+
+        @Event(topicId = 0, type = Event.WRITE)
+        private TopicWriter<InputReader> writer;
+
+        @Override
+        public void process() {
+        }
+
+        @Override
+        public void injectManagers(EventManager em, InputManager im, LockManager lm) {
+
         }
     }
 }
