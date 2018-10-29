@@ -1,6 +1,6 @@
 package com.theopus.xengine.conc;
 
-import com.theopus.xengine.inject.Entity;
+import com.theopus.xengine.inject.InjectLock;
 import com.theopus.xengine.nscheduler.Context;
 import com.theopus.xengine.nscheduler.lock.Lock;
 import com.theopus.xengine.nscheduler.lock.LockUser;
@@ -15,7 +15,7 @@ public class SystemRWTask extends ComponentTask {
 
     protected final System system;
 
-    @Entity(Lock.Type.WRITE_READ)
+    @InjectLock(Lock.Type.WRITE_READ)
     protected LockUser<State> lock;
 
     public SystemRWTask(System system) {

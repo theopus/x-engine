@@ -14,7 +14,7 @@ public class Event<D> {
 
     @Override
     public String toString() {
-        return "Event{" +
+        return "InjectEvent{" +
                 "id=" + id +
                 ", d=" + d +
                 '}';

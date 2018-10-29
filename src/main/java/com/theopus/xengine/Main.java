@@ -90,11 +90,10 @@ public class Main {
 
         scheduler.propose(taskChain.head());
 
+
         TopicWriter<InputData> input = em.createWriter(EventManager.Topics.INPUT_DATA_TOPIC);
         pm.detachContext();
         pm.setCallback(new GLFWKeyCallback() {
-
-
 
             @Override
             public void invoke(long window, int key, int scancode, int action, int mods) {
@@ -115,6 +114,7 @@ public class Main {
             input.prepare();
             pm.processEvents();
             input.finish();
+            em.trimTo(60);
         }
 
         //teardown

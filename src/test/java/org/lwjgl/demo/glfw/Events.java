@@ -152,7 +152,7 @@ public final class Events {
         glfwDefaultWindowHints();
         glfwWindowHint(GLFW_VISIBLE, GLFW_FALSE);
 
-        long window = glfwCreateWindow(WIDTH, HEIGHT, "GLFW Event Demo", NULL, NULL);
+        long window = glfwCreateWindow(WIDTH, HEIGHT, "GLFW InjectEvent Demo", NULL, NULL);
         if (window == NULL) {
             throw new IllegalStateException("Failed to create GLFW window.");
         }

@@ -1,7 +1,7 @@
 package com.theopus.xengine.nscheduler.task;
 
-import com.theopus.xengine.inject.Entity;
-import com.theopus.xengine.inject.Event;
+import com.theopus.xengine.inject.InjectEvent;
+import com.theopus.xengine.inject.InjectLock;
 import com.theopus.xengine.nscheduler.event.EventManager;
 import com.theopus.xengine.nscheduler.event.TopicReader;
 import com.theopus.xengine.nscheduler.event.TopicWriter;
@@ -68,10 +68,10 @@ public class TaskConfigurer {
 
         for (Field field : fields) {
             System.out.println(field);
-            boolean entity = field.isAnnotationPresent(Entity.class);
+            boolean entity = field.isAnnotationPresent(InjectLock.class);
             if (entity) {
                 field.setAccessible(true);
-                Entity annotation = field.getAnnotation(Entity.class);
+                InjectLock annotation = field.getAnnotation(InjectLock.class);
                 LockUser lock;
                 System.out.println(field);
                 if (annotation.value() == Lock.Type.WRITE_READ) {
@@ -86,15 +86,15 @@ public class TaskConfigurer {
                 field.set(task, lock);
             }
 
-            boolean event = field.isAnnotationPresent(Event.class);
+            boolean event = field.isAnnotationPresent(InjectEvent.class);
             if (event) {
                 field.setAccessible(true);
-                Event annotation = field.getAnnotation(Event.class);
-                if (annotation.type() == Event.READ) {
+                InjectEvent annotation = field.getAnnotation(InjectEvent.class);
+                if (annotation.type() == InjectEvent.READ) {
                     TopicReader<?> reader = eventManager.createReader(annotation.topicId());
                     list.add(reader);
                     field.set(task, reader);
-                } else if (annotation.type() == Event.WRITE) {
+                } else if (annotation.type() == InjectEvent.WRITE) {
                     TopicWriter<?> writer = eventManager.createWriter(annotation.topicId());
                     list.add(writer);
                     field.set(task, writer);

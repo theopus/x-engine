@@ -5,9 +5,9 @@ import java.lang.annotation.RetentionPolicy;
 
 @Inject
 @Retention(RetentionPolicy.RUNTIME)
-public @interface Event{
+public @interface InjectEvent {
     int READ = 0;
-    int WRITE = 2;
+    int WRITE = 1;
 
     int topicId();
 

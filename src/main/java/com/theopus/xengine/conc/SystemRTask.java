@@ -1,6 +1,6 @@
 package com.theopus.xengine.conc;
 
-import com.theopus.xengine.inject.Entity;
+import com.theopus.xengine.inject.InjectLock;
 import com.theopus.xengine.nscheduler.Context;
 import com.theopus.xengine.nscheduler.lock.Lock;
 import com.theopus.xengine.nscheduler.lock.LockUser;
@@ -14,7 +14,7 @@ public class SystemRTask extends ComponentTask {
     private static final Logger LOGGER = LoggerFactory.getLogger(SystemRTask.class);
 
     protected final System system;
-    @Entity(Lock.Type.READ)
+    @InjectLock(Lock.Type.READ)
     protected LockUser<State> lock;
 
     public SystemRTask(System system) {

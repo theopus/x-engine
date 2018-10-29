@@ -1,15 +1,14 @@
 package com.theopus.xengine.system;
 
 import com.theopus.xengine.conc.SystemRWTask;
-import com.theopus.xengine.inject.Entity;
-import com.theopus.xengine.inject.Event;
+import com.theopus.xengine.inject.InjectLock;
+import com.theopus.xengine.inject.InjectEvent;
 import com.theopus.xengine.nscheduler.Context;
 import com.theopus.xengine.nscheduler.event.EventManager;
 import com.theopus.xengine.nscheduler.event.InputData;
 import com.theopus.xengine.nscheduler.event.TopicReader;
 import com.theopus.xengine.nscheduler.input.InputManager;
 import com.theopus.xengine.nscheduler.lock.LockManager;
-import com.theopus.xengine.nscheduler.task.ComponentTask;
 import com.theopus.xengine.nscheduler.task.Task;
 import com.theopus.xengine.trait.EntityManager;
 import com.theopus.xengine.trait.TraitMapper;
@@ -30,19 +29,19 @@ public class UpdateSystem extends EntitySystem {
     private final OpsCounter ups;
 
 
-    @Entity
+    @InjectLock
     private TraitMapper<RenderTrait> rmapper;
 
-    @Entity
+    @InjectLock
     private TraitMapper<PositionTrait> pmapper;
 
-    @Entity
+    @InjectLock
     private RenderTraitEditor reditor;
 
-    @Entity
+    @InjectLock
     private PositionTraitEditor peditor;
 
-    @Event(topicId = 0, type = 0)
+    @InjectEvent(topicId = 0, type = 0)
     private TopicReader<InputData> reader;
 
     public UpdateSystem() {

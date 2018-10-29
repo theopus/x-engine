@@ -36,6 +36,9 @@ public class Topic<D> {
     }
 
     void put(List<Event<D>> newEvents) {
+        if (newEvents.isEmpty()){
+            return;
+        }
         bathces.put(bcount++, nextBatchOffset);
 
         nextBatchOffset += newEvents.size();
@@ -72,14 +75,13 @@ public class Topic<D> {
         moveOffsets(read, bathces);
     }
 
-    private void moveOffsets(int read, Map<Integer, Integer> bathces) {
-        bathces.entrySet().forEach(integerIntegerEntry -> {
-            int diff = integerIntegerEntry.getValue() + read;
-            if (diff <= 0) {
-                diff = 0;
-            }
-            bathces.put(integerIntegerEntry.getKey(), diff);
+    private void moveOffsets(int read, Map<Integer, Integer> v) {
+
+        v.forEach((key, value) -> {
+            int diff = value + read;
+            v.put(key, diff);
         });
+        LOGGER.debug("after move{}", v);
     }
 
     int moveOffset(int userId, int read) {
@@ -89,7 +91,7 @@ public class Topic<D> {
     }
 
     public void logTopic() {
-        LOGGER.info("\nTopic queue :{}\nTopic users : {}\nTopic batches : {}", events, userOffsets, bathces);
+        LOGGER.debug("\nTopic queue :{}\nQueueSize: {}\nTopic users : {}\nTopic batches : {}", events, events.size(), userOffsets, bathces);
     }
 
     public void trimTo(int toLast) {
@@ -98,20 +100,22 @@ public class Topic<D> {
             events.drainTo(objects);
             events.clear();
         } else {
-            int trimBuckets = bcount - toLast;
-            if (trimBuckets <= 0){
+            int batchToTrimIndex = bcount - toLast;
+            if (batchToTrimIndex <= 0){
                 return;
             }
-            events.drainTo(objects, bathces.get(trimBuckets));
-            userOffsets.keySet().forEach(integer -> {
-                if (integer < trimBuckets) {
-                    bathces.remove(integer);
-                }
-            });
+
+            LOGGER.debug("Index to trim {}\n {} ", batchToTrimIndex, events.size());
+            events.drainTo(objects, bathces.get(batchToTrimIndex));
+            LOGGER.debug("Drained{}",objects);
+            bathces.keySet().removeIf(integer -> integer < batchToTrimIndex);
+
+            nextBatchOffset-= objects.size();
+            moveOffsets(-objects.size());
+            moveBatchesOffsets(-objects.size());
         }
-        moveOffsets(-objects.size());
-        moveBatchesOffsets(-objects.size());
-        LOGGER.info("Trimmed {}", objects.size());
+
+//        LOGGER.info( "Trimmed {}", objects.size());
     }
 
     public int getId() {

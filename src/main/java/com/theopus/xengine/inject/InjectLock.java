@@ -9,6 +9,6 @@ import static com.theopus.xengine.nscheduler.lock.Lock.Type.WRITE_READ;
 
 @Inject
 @Retention(RetentionPolicy.RUNTIME)
-public @interface Entity {
+public @interface InjectLock {
     Lock.Type value() default WRITE_READ;
 }
