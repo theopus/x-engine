@@ -2,6 +2,8 @@ package com.theopus.xengine.nscheduler.platform;
 
 import com.theopus.xengine.WindowConfig;
 import com.theopus.xengine.nscheduler.Context;
+import com.theopus.xengine.nscheduler.event.InputData;
+import com.theopus.xengine.nscheduler.event.TopicWriter;
 import com.theopus.xengine.nscheduler.input.GlfwInput;
 import com.theopus.xengine.nscheduler.input.InputManager;
 import org.joml.Vector4f;
@@ -34,10 +36,10 @@ public class GlfwPlatformManager implements PlatformManager {
     private long sideContext;
     private GLCapabilities sideCapabilities;
 
-    public GlfwPlatformManager(WindowConfig windowConfig) {
+    public GlfwPlatformManager(WindowConfig windowConfig, TopicWriter<InputData> writer) {
         this.width = windowConfig.getWidth();
         this.height = windowConfig.getHeight();
-        this.hub = new GlfwInput();
+        this.hub = new GlfwInput(writer);
         this.color = windowConfig.getColor();
         this.vSync = windowConfig.getvSync();
         this.primitiveCompatible = windowConfig.isPrimitivesCompatible();
@@ -134,11 +136,9 @@ public class GlfwPlatformManager implements PlatformManager {
 
     @Override
     public void processEvents() {
-//        int errorCode = GL11.glGetError();
-//        if (errorCode != 0) {
-//            LOGGER.info("OpenGL Error: {}", errorCode);
-//        }
+        this.hub.prepare();
         GLFW.glfwPollEvents();
+        this.hub.finish();
     }
 
     @Override

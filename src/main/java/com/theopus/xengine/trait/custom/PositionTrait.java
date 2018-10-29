@@ -67,7 +67,6 @@ public class PositionTrait extends Trait<PositionTrait> implements IDuplicate<Po
 
     @Override
     public PositionTrait duplicateTo(PositionTrait trait) {
-//        System.out.println("kek");
         trait.position.x = this.position.x;
         trait.position.y = this.position.y;
         trait.position.z = this.position.z;
@@ -78,18 +77,9 @@ public class PositionTrait extends Trait<PositionTrait> implements IDuplicate<Po
 
         trait.scale = this.scale;
         trait.rotSpeed = this.rotSpeed;
+
+        trait.gen = this.gen;
         return trait;
     }
 
-//    @Override
-//    public String toString() {
-//        return "PositionTrait{" +
-//                "position=" + position +
-//                ", rotX=" + rotX +
-//                ", rotY=" + rotY +
-//                ", rotZ=" + rotZ +
-//                ", scale=" + scale +
-//                ", rotSpeed=" + rotSpeed +
-//                '}';
-//    }
 }

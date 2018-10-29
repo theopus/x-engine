@@ -44,6 +44,7 @@ public class RenderTrait extends Trait<RenderTrait> implements IDuplicate<Render
         trait.vaoId = this.vaoId;
         trait.vertexCount = this.vertexCount;
         CopyUtils.copy(this.getTransformation(), trait.getTransformation());
+        trait.gen = this.gen;
         return trait;
     }
 }

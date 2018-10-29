@@ -18,6 +18,7 @@ public class LockUser<T> implements TaskComponent {
     }
 
     public boolean prepare() {
+        LOGGER.debug("Prepare...");
         if (onlyRead) {
             this.read = lock.forRead();
             return read != null;
@@ -34,6 +35,7 @@ public class LockUser<T> implements TaskComponent {
     }
 
     public boolean finish() {
+        LOGGER.debug("Finish...");
         lock.release(read);
         lock.release(write);
         return true;

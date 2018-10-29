@@ -36,6 +36,7 @@ public class EntityManager {
     }
 
     public <T extends Trait> EntityManager copyTo(EntityManager em) {
+
         TraitManager targetManager = em.getTraitManger();
         for (TraitMapper<Trait> traitMapper : this.getTraitManger().traitMappers()) {
             TraitEditor editor = targetManager.getMapper(traitMapper.getTraitClass()).getEditor();

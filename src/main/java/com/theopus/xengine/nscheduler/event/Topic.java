@@ -91,7 +91,7 @@ public class Topic<D> {
     }
 
     public void logTopic() {
-        LOGGER.debug("\nTopic queue :{}\nQueueSize: {}\nTopic users : {}\nTopic batches : {}", events, events.size(), userOffsets, bathces);
+        LOGGER.info("\nTopic queue :{}\nQueueSize: {}\nTopic users : {}\nTopic batches : {}", events, events.size(), userOffsets, bathces);
     }
 
     public void trimTo(int toLast) {

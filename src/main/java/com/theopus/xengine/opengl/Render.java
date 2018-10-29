@@ -14,18 +14,16 @@ public class Render {
     }
 
     public void render(RenderTrait trait) {
-        GL30.glBindVertexArray(trait.getVaoId());
-        GL20.glEnableVertexAttribArray(0);
-
         staticShader.bind();
+        GL30.glBindVertexArray(trait.getVaoId());
+
         staticShader.loadTransformationMatrix(
                 trait.getTransformation()
         );
-        GL11.glDrawArrays(GL11.GL_TRIANGLES, 0, trait.getVertexCount());
-        staticShader.unbind();
+        GL30.glDrawElements(GL11.GL_TRIANGLES, trait.getVertexCount(), GL30.GL_UNSIGNED_INT, 0);
 
-        GL20.glDisableVertexAttribArray(0);
         GL30.glBindVertexArray(0);
+        staticShader.unbind();
     }
 
     public void cleanup() {

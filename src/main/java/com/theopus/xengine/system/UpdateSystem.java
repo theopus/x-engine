@@ -9,6 +9,7 @@ import com.theopus.xengine.nscheduler.event.InputData;
 import com.theopus.xengine.nscheduler.event.TopicReader;
 import com.theopus.xengine.nscheduler.input.InputManager;
 import com.theopus.xengine.nscheduler.lock.LockManager;
+import com.theopus.xengine.nscheduler.task.ComponentTask;
 import com.theopus.xengine.nscheduler.task.Task;
 import com.theopus.xengine.trait.EntityManager;
 import com.theopus.xengine.trait.TraitMapper;
@@ -28,20 +29,12 @@ public class UpdateSystem extends EntitySystem {
     private static final Logger LOGGER = LoggerFactory.getLogger(UpdateSystem.class);
     private final OpsCounter ups;
 
-
-    @InjectLock
     private TraitMapper<RenderTrait> rmapper;
-
-    @InjectLock
     private TraitMapper<PositionTrait> pmapper;
-
-    @InjectLock
     private RenderTraitEditor reditor;
-
-    @InjectLock
     private PositionTraitEditor peditor;
 
-    @InjectEvent(topicId = 0, type = 0)
+    @InjectEvent(topicId = 0, type = InjectEvent.READ)
     private TopicReader<InputData> reader;
 
     public UpdateSystem() {
@@ -91,26 +84,7 @@ public class UpdateSystem extends EntitySystem {
         this.reditor = reditor;
     }
 
-    public Task task() {
-        return new SystemRWTask(Context.WORK, true, this){
-            @Override
-            public boolean prepare() {
-                boolean prepare = super.prepare();
-                return prepare && reader.prepare();
-            }
-
-            @Override
-            public boolean finish() {
-                boolean sup = super.finish();
-                boolean readerF = reader.finish();
-                return sup && readerF;
-            }
-
-            @Override
-            public void injectManagers(EventManager em, InputManager im, LockManager lm) {
-                super.injectManagers(em, im, lm);
-                reader = em.createReader(EventManager.Topics.INPUT_DATA_TOPIC);
-            }
-        };
+    public ComponentTask task() {
+        return new SystemRWTask(Context.WORK, true, this);
     }
 }

@@ -1,5 +1,8 @@
 package com.theopus.xengine.nscheduler.event;
 
+import com.theopus.xengine.nscheduler.Context;
+import com.theopus.xengine.nscheduler.task.ComponentTask;
+
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -51,5 +54,15 @@ public class EventManager {
 
     public void trimTo(int batch) {
         this.map.values().forEach(topic -> topic.trimTo(batch));
+    }
+
+
+    public ComponentTask task(int trimLast){
+        return new ComponentTask(Context.INLINE, true) {
+            @Override
+            public void process() throws Exception {
+                trimTo(trimLast);
+            }
+        };
     }
 }

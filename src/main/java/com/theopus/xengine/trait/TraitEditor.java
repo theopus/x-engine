@@ -19,6 +19,10 @@ public class TraitEditor<Trait extends com.theopus.xengine.trait.Trait> {
     public void copy(int entityId, Trait from) {
         Transformation<Trait> action = (mapper) -> {
             Trait to = mapper.get(entityId);
+            if (from.gen <= to.gen){
+//                System.out.println("Same entity");
+                return;
+            }
             from.duplicateTo(to);
         };
 //        transformations.add(action);

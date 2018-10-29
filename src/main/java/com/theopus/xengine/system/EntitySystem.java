@@ -3,11 +3,15 @@ package com.theopus.xengine.system;
 import com.theopus.xengine.conc.State;
 import com.theopus.xengine.trait.EntityManager;
 import com.theopus.xengine.trait.Trait;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.BitSet;
 import java.util.stream.IntStream;
 
 public abstract class EntitySystem implements System {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(EntitySystem.class);
 
     private final Configurer configurer = new EsConfigurer();
     private EntityManager em;
@@ -46,6 +50,7 @@ public abstract class EntitySystem implements System {
         public void setWrite(State read, State write) {
             EntityManager writeManager = write.getManager();
             EntityManager readManager = read.getManager();
+
 
             write.getManager().clearEditors();
             readManager.copyTo(writeManager);

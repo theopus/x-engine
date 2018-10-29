@@ -29,13 +29,13 @@ public class PlayGround {
                         new float[]{
                                 -0.5f, 0.5f, 0,
                                 -0.5f, -0.5f, 0,
-                                0.5f, 0.5f, 0,
-
-                                -0.5f, -0.5f, 0,
                                 0.5f, -0.5f, 0,
                                 0.5f, 0.5f, 0,
-
-                        }, 6
+                        },
+                        new int[]{
+                                0, 1, 3,
+                                3,1,2
+                        }
                 );
 
                 RenderTrait renderTrait1 = manager.getMapper(RenderTrait.class).get(1);
@@ -53,6 +53,15 @@ public class PlayGround {
                 positionTrait2.setPosition(new Vector3f(1, -1, 0));
                 PositionTrait positionTrait3 = manager.getMapper(PositionTrait.class).get(3);
                 positionTrait3.setPosition(new Vector3f(1, 1, 0));
+
+                positionTrait0.changed();
+                positionTrait1.changed();
+                positionTrait2.changed();
+                positionTrait3.changed();
+                renderTrait.changed();
+                renderTrait1.changed();
+                renderTrait2.changed();
+                renderTrait3.changed();
             }
 
             @Override

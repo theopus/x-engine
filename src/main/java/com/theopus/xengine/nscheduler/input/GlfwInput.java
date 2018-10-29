@@ -1,5 +1,8 @@
 package com.theopus.xengine.nscheduler.input;
 
+import com.theopus.xengine.nscheduler.event.Event;
+import com.theopus.xengine.nscheduler.event.InputData;
+import com.theopus.xengine.nscheduler.event.TopicWriter;
 import org.lwjgl.glfw.*;
 
 import java.util.HashMap;
@@ -12,8 +15,11 @@ public class GlfwInput implements InputManager {
     private final MouseMoveListener mouseMoveListener;
     private final MouseScrollListener mouseScrollListener;
 
+    private final TopicWriter<InputData> writer;
 
-    public GlfwInput() {
+
+    public GlfwInput(TopicWriter<InputData> writer) {
+        this.writer = writer;
         this.keyListener = new KeyListener();
         this.mouseKeyListener = new MouseKeyListener();
         this.mouseMoveListener = new MouseMoveListener();
@@ -70,6 +76,15 @@ public class GlfwInput implements InputManager {
         return null;
     }
 
+    @Override
+    public void prepare() {
+        writer.prepare();
+    }
+
+    @Override
+    public void finish() {
+        writer.finish();
+    }
 
     public class KeyListener implements GLFWKeyCallbackI {
         private Map<Integer, Boolean> keyMap;
@@ -81,6 +96,9 @@ public class GlfwInput implements InputManager {
         @Override
         public void invoke(long window, int key, int scancode, int action, int mods) {
             keyMap.put(key, action != GLFW.GLFW_RELEASE);
+            if (action != GLFW.GLFW_REPEAT) {
+                writer.write(new Event<>(new InputData(key, action)));
+            }
         }
 
         private boolean isKeyPressed(int key) {

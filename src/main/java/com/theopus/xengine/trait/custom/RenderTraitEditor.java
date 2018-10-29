@@ -27,15 +27,7 @@ public class RenderTraitEditor extends TraitEditor<RenderTrait> {
                     scale,
                     renderTrait.getTransformation()
             );
-        };
-        transformations.add(action);
-        action.transform(mapper);
-    }
-
-    public void copy(int entityId, RenderTrait from) {
-        Transformation<RenderTrait> action = (mapper) -> {
-            RenderTrait to = mapper.get(entityId);
-            from.duplicateTo(to);
+            renderTrait.changed();
         };
         transformations.add(action);
         action.transform(mapper);
