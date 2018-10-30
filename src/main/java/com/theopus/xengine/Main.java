@@ -4,17 +4,17 @@ import com.google.common.collect.ImmutableMap;
 import com.google.common.util.concurrent.RateLimiter;
 import com.theopus.xengine.conc.State;
 import com.theopus.xengine.conc.StateFactory;
+import com.theopus.xengine.inject.TaskConfigurer;
 import com.theopus.xengine.nscheduler.Context;
 import com.theopus.xengine.nscheduler.Scheduler;
 import com.theopus.xengine.nscheduler.event.EventManager;
+import com.theopus.xengine.nscheduler.event.TopicReader;
 import com.theopus.xengine.nscheduler.lock.LockManager;
 import com.theopus.xengine.nscheduler.platform.GlfwPlatformManager;
 import com.theopus.xengine.nscheduler.platform.PlatformManager;
 import com.theopus.xengine.nscheduler.task.ComponentTask;
 import com.theopus.xengine.nscheduler.task.ExecutorServiceFeeder;
-import com.theopus.xengine.nscheduler.task.Task;
 import com.theopus.xengine.nscheduler.task.TaskChain;
-import com.theopus.xengine.inject.TaskConfigurer;
 import com.theopus.xengine.opengl.RenderTraitLoader;
 import com.theopus.xengine.system.InputSystem;
 import com.theopus.xengine.system.RenderSystem;
@@ -25,18 +25,25 @@ import com.theopus.xengine.trait.custom.RenderTrait;
 import com.theopus.xengine.trait.custom.RenderTraitEditor;
 import com.theopus.xengine.utils.PlayGround;
 import com.theopus.xengine.utils.TaskUtils;
+import org.joml.Vector2i;
 import org.joml.Vector4f;
 import org.lwjgl.system.Configuration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.yaml.snakeyaml.Yaml;
 
+import java.io.IOException;
+import java.util.Map;
 import java.util.concurrent.ExecutionException;
 
 public class Main {
     private static final Logger LOGGER = LoggerFactory.getLogger(Main.class);
 
-    public static void main(String[] args) throws InterruptedException, InstantiationException, IllegalAccessException, ExecutionException, NoSuchFieldException {
+    public static void main(String[] args) throws InterruptedException, InstantiationException, IllegalAccessException, ExecutionException, NoSuchFieldException, IOException {
         //config
+        Yaml yaml = new Yaml();
+        Map<String, String> load = yaml.load(Main.class.getClassLoader().getResourceAsStream("config.yaml"));
+
         Configuration.DEBUG.set(true);
         Configuration.DEBUG_MEMORY_ALLOCATOR.set(true);
         Configuration.DEBUG_LOADER.set(true);
@@ -45,14 +52,11 @@ public class Main {
         //loader
         RenderTraitLoader loader = new RenderTraitLoader();
         //events
-        EventManager em = new EventManager(ImmutableMap.of(
-                EventManager.Topics.INPUT_DATA_TOPIC.getId(), EventManager.Topics.INPUT_DATA_TOPIC
-        ));
+        EventManager em = new EventManager(scheduler);
         //Platform system
         PlatformManager pm = new GlfwPlatformManager(
                 new WindowConfig(600, 400, new Vector4f(0.8f, 0.8f, 0.8f, 1), false, 0),
-                em.createWriter(EventManager.Topics.INPUT_DATA_TOPIC)
-
+                em
         );
         pm.createWindow();
         pm.showWindow();
@@ -66,12 +70,11 @@ public class Main {
         UpdateSystem updateSystem = new UpdateSystem();
         InputSystem inputSystem = new InputSystem();
 
-
         //tasks
         TaskConfigurer configurer = new TaskConfigurer(lm, em, pm.getInput());
 
         ComponentTask updateTask = updateSystem.task();
-        configurer.inj(updateSystem, updateTask);
+        ComponentTask renderTask = renderSystem.task();
 
         TaskChain taskChain = configurer.injectManagers(
                 TaskChain
@@ -85,7 +88,7 @@ public class Main {
                         .onFinish(updateTask)
                         //back to render
                         .andThen(renderSystem.prepareTask())
-                        .andThen(renderSystem.renderTask())
+                        .andThen(renderTask)
                         //sequential teardown tasks
                         .andThen(renderSystem.closeTask())
                         .andThen(TaskUtils.close(Context.SIDE, loader))
@@ -93,11 +96,17 @@ public class Main {
 
         scheduler.propose(taskChain.head());
 
+        configurer.inj(updateSystem, updateTask);
+        configurer.inj(renderSystem, renderTask);
         pm.detachContext();
 
         //main loop
 //        RateLimiter limiter = RateLimiter.create(1);
         RateLimiter limiter = RateLimiter.create(100_000_000);
+
+        //event listeners
+        TopicReader<Vector2i> reader = em.createReader(EventManager.Topics.FRAMEBUFFER_CHANGED);
+        em.listen(TaskUtils.frameBufferRefresh(reader), reader);
 
         while (!pm.shouldClose()) {
             //process platform layer

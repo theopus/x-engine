@@ -1,0 +1,71 @@
+############### STATE ###############
+State:
+    + EntityManager;
+    + time:
+    + StateHolders:
+        keyholder
+
+
+############### RENDER ###############
+Render:
+    - loadProjection(mtx4)
+    - loadView(mtx4)
+    - render(id)
+    - render(id[])
+    - setTime(long)
+    - bind(id, type, ... type properties)
+
+RenderTrait:
+    +mat4 position
+    +int renderId;
+
+
+RenderImpl:
+    + all render models each will be represented as simple int in trait databody:
+            1.ModelCat
+                :vao
+                :vbo
+            2.ModeLog
+            3.Rocket particle
+            4.Rocket model
+    + shaders
+    + ordered list RenderCommands(Concrete Renders, or sub renders) so they can be applied step by step.
+    //// make factory for render trait, so it can be tracked // fire event on creation of new render trait, so render ctx can be refreshed on next, render run or on separate listener run
+    + map of:
+        model:
+            id0
+            id1
+            id2
+
+
+
+    //// map<type, id[]>
+            1) find intersection of type ids
+            2) if intersection is present, sub render will be launched and intersection will be used as iterate target for render
+                desc: bit comparing operations is pretty fast so it is not a performance issue
+    -render(id)
+
+
+    ///about time-value for shaders
+    ~ since time is should be eqaual for all entities we could have global trait, or global state which will hold a time value:
+            for slowing objects may just modify divider value( f.e. with div 10:
+                                                                        tick 1 = 1 / 10 = 0 ;
+                                                                        tick 2 = 2 / 10 = 0;
+                                                                        tick 10 = 10 / 10 = 1;
+                                                                        tick 30 = 30 / 10 = 3;
+            also could play with % or << operations.
+
+    all above applies to animations and sounds to.
+
+in Render:
+    1) accept list of render candidates;
+    2) map candidates to models;
+
+
+
+##### RENDER_MODELS ######
+##### SCRIPT ENGINE ######
+lang: js/python
+
+Will run through events: Each script run request will fire task with need. So we`ll have task running on demand
+

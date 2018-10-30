@@ -2,10 +2,13 @@ package com.theopus.xengine.nscheduler.platform;
 
 import com.theopus.xengine.WindowConfig;
 import com.theopus.xengine.nscheduler.Context;
+import com.theopus.xengine.nscheduler.event.Event;
+import com.theopus.xengine.nscheduler.event.EventManager;
 import com.theopus.xengine.nscheduler.event.InputData;
 import com.theopus.xengine.nscheduler.event.TopicWriter;
 import com.theopus.xengine.nscheduler.input.GlfwInput;
 import com.theopus.xengine.nscheduler.input.InputManager;
+import org.joml.Vector2i;
 import org.joml.Vector4f;
 import org.lwjgl.glfw.*;
 import org.lwjgl.opengl.GL;
@@ -24,6 +27,8 @@ import static org.lwjgl.system.MemoryUtil.NULL;
 public class GlfwPlatformManager implements PlatformManager {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(GlfwPlatformManager.class);
+
+    private TopicWriter<Vector2i> framebufferWriter;
     public int width;
     public int height;
     public long mainContext;
@@ -36,10 +41,12 @@ public class GlfwPlatformManager implements PlatformManager {
     private long sideContext;
     private GLCapabilities sideCapabilities;
 
-    public GlfwPlatformManager(WindowConfig windowConfig, TopicWriter<InputData> writer) {
+    public GlfwPlatformManager(WindowConfig windowConfig, EventManager em) {
         this.width = windowConfig.getWidth();
         this.height = windowConfig.getHeight();
-        this.hub = new GlfwInput(writer);
+        this.hub = new GlfwInput(em.createWriter(EventManager.Topics.INPUT_DATA));
+        this.framebufferWriter = em.createWriter(EventManager.Topics.FRAMEBUFFER_CHANGED);
+
         this.color = windowConfig.getColor();
         this.vSync = windowConfig.getvSync();
         this.primitiveCompatible = windowConfig.isPrimitivesCompatible();
@@ -110,11 +117,16 @@ public class GlfwPlatformManager implements PlatformManager {
             );
         }
 
+
         GLFW.glfwMakeContextCurrent(mainContext);
         mainCapabilities = GL.createCapabilities();
         LOGGER.info("Created capabilietes for mainContext OPENGL");
         GLFW.glfwMakeContextCurrent(sideContext);
         sideCapabilities = GL.createCapabilities();
+
+        GLFW.glfwSetFramebufferSizeCallback(mainContext, (window, width1, height1) -> {
+            framebufferWriter.write(new Event<>(new Vector2i(width1, height1)));
+        });
 
         detachContext();
         attachMainContext();
@@ -136,9 +148,11 @@ public class GlfwPlatformManager implements PlatformManager {
 
     @Override
     public void processEvents() {
+        this.framebufferWriter.prepare();
         this.hub.prepare();
         GLFW.glfwPollEvents();
         this.hub.finish();
+        this.framebufferWriter.finish();
     }
 
     @Override

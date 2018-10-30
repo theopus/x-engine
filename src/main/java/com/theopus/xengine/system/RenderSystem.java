@@ -2,15 +2,19 @@ package com.theopus.xengine.system;
 
 import com.theopus.xengine.conc.SystemRTask;
 import com.theopus.xengine.conc.SystemRWTask;
+import com.theopus.xengine.inject.InjectEvent;
 import com.theopus.xengine.nscheduler.Context;
+import com.theopus.xengine.nscheduler.event.TopicReader;
 import com.theopus.xengine.nscheduler.platform.PlatformManager;
+import com.theopus.xengine.nscheduler.task.ComponentTask;
 import com.theopus.xengine.nscheduler.task.Task;
-import com.theopus.xengine.opengl.Render;
-import com.theopus.xengine.opengl.StaticShader;
+import com.theopus.xengine.opengl.BaseRender;
+import com.theopus.xengine.opengl.shader.StaticShader;
 import com.theopus.xengine.trait.EntityManager;
 import com.theopus.xengine.trait.TraitMapper;
 import com.theopus.xengine.trait.custom.RenderTrait;
 import com.theopus.xengine.utils.OpsCounter;
+import org.joml.Vector2i;
 import org.lwjgl.opengl.GL11;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,7 +27,10 @@ public class RenderSystem extends EntitySystem {
     private final OpsCounter fps;
     private TraitMapper<RenderTrait> renderMapper;
     private PlatformManager pm;
-    private Render render;
+    private BaseRender render;
+
+    @InjectEvent(topicId = 1,type = InjectEvent.READ)
+    private TopicReader<Vector2i> reader;
 
 
     public RenderSystem(PlatformManager pm) {
@@ -34,6 +41,8 @@ public class RenderSystem extends EntitySystem {
 
     @Override
     public void process(IntStream entities) {
+        reader.read().forEach(vector -> {});
+
         entities.forEach(id -> {
             RenderTrait renderTrait = renderMapper.get(id);
             render.render(renderTrait);
@@ -55,7 +64,7 @@ public class RenderSystem extends EntitySystem {
         this.renderMapper = em.getMapper(RenderTrait.class);
     }
 
-    public Task renderTask() {
+    public ComponentTask task() {
         return new SystemRTask(Context.MAIN, true, Integer.MAX_VALUE, this);
     }
 
@@ -66,7 +75,7 @@ public class RenderSystem extends EntitySystem {
                 LOGGER.info("Preparing");
                 pm.attachContext(Context.MAIN);
                 StaticShader staticShader = new StaticShader("static.vert", "static.frag");
-                render = new Render(staticShader);
+                render = new BaseRender(staticShader);
             }
         };
     }

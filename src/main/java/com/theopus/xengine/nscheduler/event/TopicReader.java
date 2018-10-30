@@ -25,6 +25,10 @@ public class TopicReader<D> implements TaskComponent {
         return events;
     }
 
+    public int offset(){
+        return manager.getOffsetValue(id, topicId);
+    }
+
     /**
      * Notify about read end
      */
@@ -48,5 +52,9 @@ public class TopicReader<D> implements TaskComponent {
     @Override
     public boolean rollback() {
         return false;
+    }
+
+    public int toRead() {
+        return manager.toRead(id, topicId);
     }
 }

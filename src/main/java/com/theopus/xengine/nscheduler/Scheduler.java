@@ -53,11 +53,10 @@ public class Scheduler implements AutoCloseable {
             scheduler.process();
         }
         scheduler.close();
-//        LOGGER.info("Finished list{}", scheduler.getFinished().stream().map(Task::toString).collect(Collectors.joining("\n")));
     }
 
     public void propose(Task task) {
-        if (task == null) {
+        if (task == null || task.getStatus() != Status.NEW) {
             return;
         }
         queue.add(task);

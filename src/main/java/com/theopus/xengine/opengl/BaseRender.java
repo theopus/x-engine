@@ -1,15 +1,15 @@
 package com.theopus.xengine.opengl;
 
+import com.theopus.xengine.opengl.shader.StaticShader;
 import com.theopus.xengine.trait.custom.RenderTrait;
 import org.lwjgl.opengl.GL11;
-import org.lwjgl.opengl.GL20;
 import org.lwjgl.opengl.GL30;
 
-public class Render {
+public class BaseRender {
 
     private StaticShader staticShader;
 
-    public Render(StaticShader staticShader) {
+    public BaseRender(StaticShader staticShader) {
         this.staticShader = staticShader;
     }
 
@@ -17,7 +17,7 @@ public class Render {
         staticShader.bind();
         GL30.glBindVertexArray(trait.getVaoId());
 
-        staticShader.loadTransformationMatrix(
+        staticShader.transformation().load(
                 trait.getTransformation()
         );
         GL30.glDrawElements(GL11.GL_TRIANGLES, trait.getVertexCount(), GL30.GL_UNSIGNED_INT, 0);

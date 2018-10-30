@@ -1,4 +1,4 @@
-package com.theopus.xengine.opengl;
+package com.theopus.xengine.opengl.shader;
 
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
@@ -12,6 +12,9 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.nio.FloatBuffer;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 public abstract class ShaderProgram {
 
@@ -20,6 +23,8 @@ public abstract class ShaderProgram {
     private final int vertexShaderID;
     private final int fragmentShaderID;
     private final FloatBuffer matrixBuffer;
+
+    protected List<Uniform<?>> uniforms = new ArrayList<>();
 
     public ShaderProgram(int vertexShaderID, int fragmentShaderID) {
         this.vertexShaderID = vertexShaderID;
@@ -32,8 +37,11 @@ public abstract class ShaderProgram {
         bindAllAttributes();
         GL20.glLinkProgram(programID);
         GL20.glValidateProgram(programID);
-        getAllUniformLocations();
+
+        this.uniforms = uniforms();
+        this.uniforms.forEach(uniform -> uniform.prepare(this));
     }
+
 
     public ShaderProgram(String vertexFile, String fragmentFile) throws IOException {
         this(
@@ -69,44 +77,9 @@ public abstract class ShaderProgram {
         return shaderSource;
     }
 
-    protected abstract void getAllUniformLocations();
-
-    protected int getUniformLocation(String uniformName) {
-        int i = GL20.glGetUniformLocation(programID, uniformName);
-        LOGGER.info("Uniform {} to {}", uniformName, i);
-        return i;
-    }
-
-    protected int getStructUniformLocation(String structName, String uniformName) {
-        int i = GL20.glGetUniformLocation(programID, structName + uniformName);
-        LOGGER.info("Struct uniform {} to {}", structName + uniformName, i);
-        return i;
-    }
+    protected abstract List<Uniform<?>> uniforms();
 
     protected abstract void bindAllAttributes();
-
-    public void loadFloat(int location, float value) {
-        GL20.glUniform1f(location, value);
-    }
-
-    public void loadInt(int location, int value) {
-        GL20.glUniform1i(location, value);
-    }
-
-    public void loadVector3f(int location, Vector3f value) {
-        GL20.glUniform3f(location, value.x, value.y, value.z);
-    }
-
-    public void loadBool(int location, boolean value) {
-        GL20.glUniform1f(location, value ? 1 : 0);
-    }
-
-    public void loadMatrix4f(int location, Matrix4f value) {
-        matrixBuffer.clear();
-        FloatBuffer floatBuffer = value.get(matrixBuffer);
-        GL20.glUniformMatrix4fv(location, false, floatBuffer);
-        matrixBuffer.clear();
-    }
 
     protected void bindAttribute(int position, String placeholder) {
         GL20.glBindAttribLocation(programID, position, placeholder);
@@ -126,7 +99,13 @@ public abstract class ShaderProgram {
         GL20.glDeleteShader(fragmentShaderID);
         GL20.glDeleteProgram(programID);
         MemoryUtil.memFree(matrixBuffer);
+        uniforms.forEach(Uniform::close);
     }
+
+    public int getId() {
+        return programID;
+    }
+
 
 
     public enum Type {
@@ -145,38 +124,4 @@ public abstract class ShaderProgram {
     }
 
 
-    public static final class Uniforms {
-        public static final String TRANSFORMATION_MATRIX = "transformationMatrix";
-        public static final String PROJECTION_MATRIX = "projectionMatrix";
-        public static final String VIEW_MATRIX = "viewMatrix";
-        public static final String LIGHT_POSITION = "lightPosition";
-        public static final String LIGHT_COLOR = "lightColor";
-
-
-        public static class Material {
-            public static final String VARIABLE = "mat";
-            public static final String HAS_TEXTURE = ".hasTexture";
-            public static final String REFLECTIVITY = ".reflectivity";
-            public static final String SHINE_DAMPER = ".shineDamper";
-            public static final String HAS_TRANSPARENCY = ".hasTransparency";
-            public static final String USE_FAKE_LIGHT = ".useFakeLight";
-        }
-
-        public static class Fog {
-            public static final String VARIABLE = "fog";
-            public static final String ENABLED = ".enabled";
-            public static final String COLOR = ".color";
-            public static final String DESITY = ".density";
-            public static final String GRADIENT = ".gradient";
-        }
-
-
-        public static class BlendTextures {
-            public static final String BLEND_MAP = "blendMapTexture";
-            public static final String BACKGROUND = "bgTexture";
-            public static final String R = "rTexture";
-            public static final String G = "gTexture";
-            public static final String B = "bTexture";
-        }
-    }
 }

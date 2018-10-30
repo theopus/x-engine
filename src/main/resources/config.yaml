@@ -1,4 +1,5 @@
-throttle:
-  scheduler: -1
-  render: -1
-  update; 60
+k:
+  r: 1
+  g: 2
+  b: 3
+L: "l"
