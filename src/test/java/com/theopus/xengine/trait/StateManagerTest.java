@@ -1,10 +1,10 @@
 package com.theopus.xengine.trait;
 
 import com.google.common.collect.ImmutableMap;
-import com.theopus.xengine.trait.custom.PositionTrait;
-import com.theopus.xengine.trait.custom.PositionTraitEditor;
-import com.theopus.xengine.trait.custom.RenderTrait;
-import com.theopus.xengine.trait.custom.RenderTraitEditor;
+import com.theopus.client.ecs.trait.PositionTrait;
+import com.theopus.client.ecs.trait.PositionTraitEditor;
+import com.theopus.client.ecs.trait.WorldPositionTrait;
+import com.theopus.client.ecs.trait.WorldPositionTraitEditor;
 import org.junit.Test;
 
 public class StateManagerTest {
@@ -13,7 +13,7 @@ public class StateManagerTest {
     public void name() {
 
         EntityManagerFactory factory = new EntityManagerFactory(ImmutableMap.of(
-                RenderTrait.class, RenderTraitEditor.class,
+                WorldPositionTrait.class, WorldPositionTraitEditor.class,
                 PositionTrait.class, PositionTraitEditor.class
         ));
 

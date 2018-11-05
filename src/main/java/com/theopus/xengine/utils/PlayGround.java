@@ -4,28 +4,31 @@ import com.theopus.xengine.conc.State;
 import com.theopus.xengine.conc.SystemRWTask;
 import com.theopus.xengine.nscheduler.Context;
 import com.theopus.xengine.nscheduler.task.ComponentTask;
-import com.theopus.xengine.opengl.RenderTraitLoader;
+import com.theopus.xengine.render.Render;
+import com.theopus.client.render.Ver0Module;
+import com.theopus.client.render.Ver0Model;
 import com.theopus.xengine.system.Configurer;
+import com.theopus.client.ecs.system.RenderSystem;
 import com.theopus.xengine.system.System;
 import com.theopus.xengine.trait.EntityManager;
-import com.theopus.xengine.trait.custom.PositionTrait;
-import com.theopus.xengine.trait.custom.RenderTrait;
+import com.theopus.client.ecs.trait.PositionTrait;
+import com.theopus.client.ecs.trait.WorldPositionTrait;
 import org.joml.Vector3f;
 
 public class PlayGround {
 
 
-    public static ComponentTask ver0(RenderTraitLoader renderTraitLoader) {
+    public static ComponentTask ver0(RenderSystem system) {
         System tmpSys = new System() {
 
             private EntityManager manager;
 
             @Override
             public void process() {
-                int e = manager.createEntity();
-                RenderTrait trait = manager.getMapper(RenderTrait.class).get(e);
-                RenderTrait renderTrait = renderTraitLoader.loadEntity(
-                        trait,
+                Render render = system.getRender();
+                Ver0Module module = render.module(Ver0Module.class);
+
+                int modelID = module.load(new Ver0Model(
                         new float[]{
                                 -0.5f, 0.5f, 0,
                                 -0.5f, -0.5f, 0,
@@ -34,34 +37,39 @@ public class PlayGround {
                         },
                         new int[]{
                                 0, 1, 3,
-                                3,1,2
-                        }
-                );
+                                3, 1, 2
+                        }));
 
-                RenderTrait renderTrait1 = manager.getMapper(RenderTrait.class).get(1);
-                renderTrait.duplicateTo(renderTrait1);
-                RenderTrait renderTrait2 = manager.getMapper(RenderTrait.class).get(2);
-                renderTrait.duplicateTo(renderTrait2);
-                RenderTrait renderTrait3 = manager.getMapper(RenderTrait.class).get(3);
-                renderTrait.duplicateTo(renderTrait3);
+                int e0 = manager.createEntity();
+                int e1 = manager.createEntity();
+                int e2 = manager.createEntity();
+                int e3 = manager.createEntity();
 
-                PositionTrait positionTrait0 = manager.getMapper(PositionTrait.class).get(0);
+                render.bind(e0, Ver0Module.class, modelID);
+                render.bind(e1, Ver0Module.class, modelID);
+                render.bind(e2, Ver0Module.class, modelID);
+                render.bind(e3, Ver0Module.class, modelID);
 
-                PositionTrait positionTrait1 = manager.getMapper(PositionTrait.class).get(1);
+
+                PositionTrait positionTrait0 = manager.getMapper(PositionTrait.class).get(e0);
+
+                PositionTrait positionTrait1 = manager.getMapper(PositionTrait.class).get(e1);
                 positionTrait1.setPosition(new Vector3f(-1, -1, 0));
-                PositionTrait positionTrait2 = manager.getMapper(PositionTrait.class).get(2);
+                PositionTrait positionTrait2 = manager.getMapper(PositionTrait.class).get(e2);
                 positionTrait2.setPosition(new Vector3f(1, -1, 0));
-                PositionTrait positionTrait3 = manager.getMapper(PositionTrait.class).get(3);
+                PositionTrait positionTrait3 = manager.getMapper(PositionTrait.class).get(e3);
                 positionTrait3.setPosition(new Vector3f(1, 1, 0));
+
+
+                manager.getMapper(WorldPositionTrait.class).get(e0).changed();
+                manager.getMapper(WorldPositionTrait.class).get(e1).changed();
+                manager.getMapper(WorldPositionTrait.class).get(e2).changed();
+                manager.getMapper(WorldPositionTrait.class).get(e3).changed();
 
                 positionTrait0.changed();
                 positionTrait1.changed();
                 positionTrait2.changed();
                 positionTrait3.changed();
-                renderTrait.changed();
-                renderTrait1.changed();
-                renderTrait2.changed();
-                renderTrait3.changed();
             }
 
             @Override

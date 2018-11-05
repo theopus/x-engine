@@ -1,6 +1,7 @@
 package com.theopus.xengine.nscheduler.platform;
 
 import com.theopus.xengine.WindowConfig;
+import com.theopus.xengine.inject.Inject;
 import com.theopus.xengine.nscheduler.Context;
 import com.theopus.xengine.nscheduler.event.Event;
 import com.theopus.xengine.nscheduler.event.EventManager;
@@ -41,6 +42,7 @@ public class GlfwPlatformManager implements PlatformManager {
     private long sideContext;
     private GLCapabilities sideCapabilities;
 
+    @Inject
     public GlfwPlatformManager(WindowConfig windowConfig, EventManager em) {
         this.width = windowConfig.getWidth();
         this.height = windowConfig.getHeight();
@@ -124,9 +126,11 @@ public class GlfwPlatformManager implements PlatformManager {
         GLFW.glfwMakeContextCurrent(sideContext);
         sideCapabilities = GL.createCapabilities();
 
-        GLFW.glfwSetFramebufferSizeCallback(mainContext, (window, width1, height1) -> {
-            framebufferWriter.write(new Event<>(new Vector2i(width1, height1)));
-        });
+        if (framebufferWriter != null) {
+            GLFW.glfwSetFramebufferSizeCallback(mainContext, (window, width1, height1) -> {
+                framebufferWriter.write(new Event<>(new Vector2i(width1, height1)));
+            });
+        }
 
         detachContext();
         attachMainContext();
@@ -148,11 +152,11 @@ public class GlfwPlatformManager implements PlatformManager {
 
     @Override
     public void processEvents() {
-        this.framebufferWriter.prepare();
-        this.hub.prepare();
+        if (framebufferWriter != null) this.framebufferWriter.prepare();
+        if (hub != null) this.hub.prepare();
         GLFW.glfwPollEvents();
-        this.hub.finish();
-        this.framebufferWriter.finish();
+        if (hub != null) this.hub.finish();
+        if (framebufferWriter != null) this.framebufferWriter.finish();
     }
 
     @Override

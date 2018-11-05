@@ -105,7 +105,7 @@ public final class Vorbis implements AutoCloseable {
             // by the system on monitors that do not match the system DPI. This
             // causes rendering problems.
             //
-            // Workaround: Build a custom executable and launch the JVM using JNI
+            // Workaround: Build a trait executable and launch the JVM using JNI
             // after calling SetProcessDpiAwarenessContext(DPI_AWARENESS_CONTEXT_PER_MONITOR_AWARE)
 
             if (User32.Functions.SetThreadDpiAwarenessContext != NULL) {

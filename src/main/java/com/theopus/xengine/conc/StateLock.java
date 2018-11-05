@@ -14,6 +14,7 @@ public class StateLock extends Lock<State> {
 
     @Override
     public void resolve(Lock<com.theopus.xengine.conc.State> lastLock) {
+        LOGGER.warn("Collision {}->{}, applying over {}", this.getFrame(), this.getNextFrame(), lastLock.getFrame());
         lastLock.getOf().getManager().copyTo(this.getOf().getManager());
         getOf().getManager().reApplyTransformations();
 

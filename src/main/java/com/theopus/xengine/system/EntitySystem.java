@@ -25,12 +25,12 @@ public abstract class EntitySystem implements System {
     public void process() {
         injectEm(em);
         BitSet bitSet = em.entitiesWith(targets);
-        process(bitSet.stream());
+        process(bitSet);
     }
 
-    public abstract void process(IntStream entities);
+    public abstract void process(BitSet entities);
 
-    abstract void injectEm(EntityManager em);
+    public abstract void injectEm(EntityManager em);
 
     @Override
     public Configurer configurer() {

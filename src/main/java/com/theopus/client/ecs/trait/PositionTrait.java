@@ -1,4 +1,4 @@
-package com.theopus.xengine.trait.custom;
+package com.theopus.client.ecs.trait;
 
 import com.theopus.xengine.trait.IDuplicate;
 import com.theopus.xengine.trait.Trait;

@@ -1,16 +1,17 @@
-package com.theopus.xengine.system;
+package com.theopus.client.ecs.system;
 
 import com.theopus.xengine.conc.SystemRWTask;
 import com.theopus.xengine.nscheduler.Context;
 import com.theopus.xengine.nscheduler.task.Task;
+import com.theopus.xengine.system.EntitySystem;
 import com.theopus.xengine.trait.EntityManager;
 import com.theopus.xengine.trait.TraitMapper;
-import com.theopus.xengine.trait.custom.PositionTrait;
-import com.theopus.xengine.trait.custom.PositionTraitEditor;
+import com.theopus.client.ecs.trait.PositionTrait;
+import com.theopus.client.ecs.trait.PositionTraitEditor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.stream.IntStream;
+import java.util.BitSet;
 
 public class InputSystem extends EntitySystem {
 
@@ -20,12 +21,12 @@ public class InputSystem extends EntitySystem {
     private PositionTraitEditor positionEditor;
 
     @Override
-    public void process(IntStream entities) {
+    public void process(BitSet entities) {
 
     }
 
     @Override
-    void injectEm(EntityManager em) {
+    public void injectEm(EntityManager em) {
         LOGGER.info("em {}  ", em);
         positionEditor = (PositionTraitEditor) em.getEditor(PositionTrait.class);
     }

@@ -1,6 +1,7 @@
 package com.theopus.xengine.nscheduler.event;
 
 import com.google.common.collect.ImmutableMap;
+import com.theopus.xengine.inject.Inject;
 import com.theopus.xengine.nscheduler.Context;
 import com.theopus.xengine.nscheduler.Scheduler;
 import com.theopus.xengine.nscheduler.Status;
@@ -27,6 +28,7 @@ public class EventManager {
     private static final AtomicInteger count = new AtomicInteger();
     private Map<Integer, Topic<?>> map;
 
+    @Inject
     public EventManager(Scheduler scheduler) {
         this();
         this.scheduler = scheduler;

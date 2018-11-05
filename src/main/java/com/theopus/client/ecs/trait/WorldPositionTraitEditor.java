@@ -1,4 +1,4 @@
-package com.theopus.xengine.trait.custom;
+package com.theopus.client.ecs.trait;
 
 import com.theopus.xengine.trait.TraitEditor;
 import com.theopus.xengine.trait.Transformation;
@@ -7,27 +7,27 @@ import org.joml.Vector3f;
 
 import java.util.List;
 
-public class RenderTraitEditor extends TraitEditor<RenderTrait> {
+public class WorldPositionTraitEditor extends TraitEditor<WorldPositionTrait> {
 
-    public RenderTraitEditor() {
+    public WorldPositionTraitEditor() {
     }
 
-    public RenderTraitEditor(List<Transformation<RenderTrait>> transformations) {
+    public WorldPositionTraitEditor(List<Transformation<WorldPositionTrait>> transformations) {
         this.transformations = transformations;
     }
 
     public void transformWith(int entityId, Vector3f position, float xRot, float yRot, float zRot, float scale) {
-        Transformation<RenderTrait> action = (mapper) -> {
-            RenderTrait renderTrait = mapper.get(entityId);
+        Transformation<WorldPositionTrait> action = (mapper) -> {
+            WorldPositionTrait worldPositionTrait = mapper.get(entityId);
             Maths.applyTransformations(
                     position,
                     xRot,
                     yRot,
                     zRot,
                     scale,
-                    renderTrait.getTransformation()
+                    worldPositionTrait.getTransformation()
             );
-            renderTrait.changed();
+            worldPositionTrait.changed();
         };
         transformations.add(action);
         action.transform(mapper);

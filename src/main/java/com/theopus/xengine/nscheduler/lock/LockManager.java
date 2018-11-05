@@ -1,5 +1,6 @@
 package com.theopus.xengine.nscheduler.lock;
 
+import com.theopus.xengine.inject.Inject;
 import com.theopus.xengine.utils.UpdatableTreeSet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -16,6 +17,7 @@ public class LockManager<T> {
     private int currentFrame;
     private Lock<T> lastFrameLock;
 
+    @Inject
     public LockManager(LockFactory<T> factory, int count) {
         this.locks = new UpdatableTreeSet<>(Lock.frameComparatorDesc);
         this.currentFrame = 0;

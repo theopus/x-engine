@@ -1,7 +1,7 @@
 ############### STATE ###############
 State:
     + EntityManager;
-    + time:
+    + time;
     + StateHolders:
         keyholder
 
@@ -16,8 +16,12 @@ Render:
     - bind(id, type, ... type properties)
 
 RenderTrait:
-    +mat4 position
+    +mat4 position;
     +int renderId;
+
+RenderTargets:
+    id; - representation of of model of type
+    type; - indicates which shaders and which subrender should be applied. each render type should have separate module.
 
 
 RenderImpl:
@@ -31,6 +35,8 @@ RenderImpl:
     + shaders
     + ordered list RenderCommands(Concrete Renders, or sub renders) so they can be applied step by step.
     //// make factory for render trait, so it can be tracked // fire event on creation of new render trait, so render ctx can be refreshed on next, render run or on separate listener run
+
+    types : models, ids
     + map of:
         model:
             id0

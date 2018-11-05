@@ -5,6 +5,7 @@ public class VaoBuilder {
     private Vbo ebo;
     private Vbo[] vbos;
     private Attribute[] attributes;
+    private int length;
 
     public VaoBuilder setId(int id) {
         this.id = id;
@@ -27,6 +28,11 @@ public class VaoBuilder {
     }
 
     public Vao createVao() {
-        return new Vao(id, ebo, vbos, attributes);
+        return new Vao(id, ebo, vbos, attributes, length);
+    }
+
+    public VaoBuilder setVertexes(int length) {
+        this.length = length;
+        return this;
     }
 }

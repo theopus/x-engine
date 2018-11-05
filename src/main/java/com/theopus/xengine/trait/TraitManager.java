@@ -2,6 +2,7 @@ package com.theopus.xengine.trait;
 
 import com.theopus.xengine.utils.Reflection;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
@@ -32,7 +33,6 @@ public class TraitManager {
         return traitMappers().stream().map(TraitMapper::getEditor);
     }
 
-
     public void clearEditors() {
         mappers.values().forEach(TraitMapper::clearEditor);
     }
@@ -42,6 +42,5 @@ public class TraitManager {
             TraitEditor<? extends Trait> editor = traitMapper.getEditor();
             editor.transformations.forEach(transformation -> transformation.transform(traitMapper));
         }
-
     }
 }

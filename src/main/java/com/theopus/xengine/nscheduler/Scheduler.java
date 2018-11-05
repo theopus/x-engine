@@ -1,5 +1,6 @@
 package com.theopus.xengine.nscheduler;
 
+import com.theopus.xengine.inject.Inject;
 import com.theopus.xengine.nscheduler.event.EventManager;
 import com.theopus.xengine.nscheduler.input.InputManager;
 import com.theopus.xengine.nscheduler.lock.LockManager;
@@ -26,33 +27,10 @@ public class Scheduler implements AutoCloseable {
     private boolean cycle;
     private long tick = 0L;
 
+    @Inject
     public Scheduler(Feeder feeder) {
         this.feeder = feeder;
         this.cycle = true;
-    }
-
-    public static void main(String[] args) throws InterruptedException, ExecutionException {
-        Scheduler scheduler = new Scheduler(new ExecutorServiceFeeder());
-
-        Task processed = new Task(Context.INLINE, true, Integer.MAX_VALUE) {
-            @Override
-            public void process() throws Exception {
-                LOGGER.info("Processed");
-            }
-
-            @Override
-            public void injectManagers(EventManager em, InputManager im, LockManager lm) {
-
-            }
-        };
-        scheduler.propose(processed);
-
-        for (int i = 0; i < 10_000_0_000; i++) {
-            System.out.println(processed);
-            System.out.println(scheduler.tick);
-            scheduler.process();
-        }
-        scheduler.close();
     }
 
     public void propose(Task task) {

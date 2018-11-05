@@ -15,14 +15,15 @@ import com.theopus.xengine.nscheduler.platform.PlatformManager;
 import com.theopus.xengine.nscheduler.task.ComponentTask;
 import com.theopus.xengine.nscheduler.task.ExecutorServiceFeeder;
 import com.theopus.xengine.nscheduler.task.TaskChain;
-import com.theopus.xengine.opengl.RenderTraitLoader;
-import com.theopus.xengine.system.InputSystem;
-import com.theopus.xengine.system.RenderSystem;
-import com.theopus.xengine.system.UpdateSystem;
-import com.theopus.xengine.trait.custom.PositionTrait;
-import com.theopus.xengine.trait.custom.PositionTraitEditor;
-import com.theopus.xengine.trait.custom.RenderTrait;
-import com.theopus.xengine.trait.custom.RenderTraitEditor;
+import com.theopus.xengine.opengl.SimpleLoader;
+import com.theopus.client.ecs.system.InputSystem;
+import com.theopus.client.ecs.system.RenderSystem;
+import com.theopus.client.ecs.system.UpdateSystem;
+import com.theopus.client.ecs.trait.PositionTrait;
+import com.theopus.client.ecs.trait.PositionTraitEditor;
+import com.theopus.client.ecs.trait.WorldPositionTrait;
+import com.theopus.client.ecs.trait.WorldPositionTraitEditor;
+import com.theopus.xengine.utils.EcsConfig;
 import com.theopus.xengine.utils.PlayGround;
 import com.theopus.xengine.utils.TaskUtils;
 import org.joml.Vector2i;
@@ -50,7 +51,7 @@ public class Main {
         //scheduler
         Scheduler scheduler = new Scheduler(new ExecutorServiceFeeder());
         //loader
-        RenderTraitLoader loader = new RenderTraitLoader();
+        SimpleLoader loader = new SimpleLoader();
         //events
         EventManager em = new EventManager(scheduler);
         //Platform system
@@ -61,10 +62,10 @@ public class Main {
         pm.createWindow();
         pm.showWindow();
         //lock & entities & systems
-        LockManager<State> lm = new LockManager<State>(new StateFactory(ImmutableMap.of(
-                RenderTrait.class, RenderTraitEditor.class,
+        LockManager<State> lm = new LockManager<State>(new StateFactory(new EcsConfig(ImmutableMap.of(
+                WorldPositionTrait.class, WorldPositionTraitEditor.class,
                 PositionTrait.class, PositionTraitEditor.class
-        )), 3);
+        ))), 3);
 
         RenderSystem renderSystem = new RenderSystem(pm);
         UpdateSystem updateSystem = new UpdateSystem();
@@ -83,11 +84,11 @@ public class Main {
                         .onFinish(em.task(5))
                         //back to chain
                         .andThen(TaskUtils.initCtx(pm, Context.SIDE))
-                        .andThen(PlayGround.ver0(loader))
+                        .andThen(renderSystem.prepareTask())
+                        .andThen(PlayGround.ver0(renderSystem))
                         //update chain split
                         .onFinish(updateTask)
                         //back to render
-                        .andThen(renderSystem.prepareTask())
                         .andThen(renderTask)
                         //sequential teardown tasks
                         .andThen(renderSystem.closeTask())
@@ -106,7 +107,7 @@ public class Main {
 
         //event listeners
         TopicReader<Vector2i> reader = em.createReader(EventManager.Topics.FRAMEBUFFER_CHANGED);
-        em.listen(TaskUtils.frameBufferRefresh(reader), reader);
+        em.listen(renderSystem.frameBufferRefresh(reader), reader);
 
         while (!pm.shouldClose()) {
             //process platform layer

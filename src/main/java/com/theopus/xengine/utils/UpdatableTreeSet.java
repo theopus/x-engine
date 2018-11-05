@@ -1,5 +1,6 @@
 package com.theopus.xengine.utils;
 
+import java.util.Collection;
 import java.util.Comparator;
 import java.util.TreeSet;
 
@@ -23,6 +24,11 @@ public class UpdatableTreeSet<E> extends TreeSet<E> {
             add(element);
             return false;
         }
+    }
+
+    @Override
+    public boolean addAll(Collection<? extends E> c) {
+        return super.addAll(c);
     }
 
     public interface Update<E> {
