@@ -22,7 +22,7 @@ public class EntitySystemManager {
         traits.forEach(c -> {
             TraitsWrapper[] wrappers = IntStream
                     .range(0, number)
-                    .mapToObj(i -> new TraitsWrapper<>(c))
+                    .mapToObj(i -> new TraitsWrapper<>(c, i))
                     .collect(Collectors.toList())
                     .toArray(new TraitsWrapper[number]);
             packs.put(c, new WrappersPack<>(wrappers));
@@ -59,37 +59,19 @@ public class EntitySystemManager {
         return new WriteTraitMultiMapper(this, Sets.intersection(new HashSet<>(classes), packs.keySet()));
     }
 
-    <T extends Trait> void releaseRead(Class<T> tclass, TraitsWrapper<T> wrapper) {
-        WrappersPack<T> wrappersPack = (WrappersPack<T>) packs.get(tclass);
-        packs.get(tclass).releaseWrite(wrapper);
+    <T extends Trait> WrappersPack<T> pack(Class<T> tclass) {
+        return (WrappersPack<T>) packs.get(tclass);
     }
 
-    <T extends Trait> void releaseWrite(Class<T> tclass, TraitsWrapper<T> wrapper) {
-        WrappersPack<T> wrappersPack = (WrappersPack<T>) packs.get(tclass);
-        wrappersPack.releaseWrite(wrapper);
-    }
-
-    public <T extends Trait> TraitsWrapper<T> wrapperForRead(Class<T> traitClass) {
-        //TODO [PERFORMANCE]
-        return (TraitsWrapper<T>) packs.get(traitClass).wrapperForRead();
-    }
-
-    public <T extends Trait> TraitsWrapper<T> wrapperForWrite(Class<T> traitClass) {
-        //TODO [PERFORMANCE]
-        return (TraitsWrapper<T>) packs.get(traitClass).wrapperForWrite();
-    }
-
-
-
-    private class WrappersPack<WT extends Trait> {
+    class WrappersPack<WT extends Trait> {
         private UpdatableTreeSet.Update<TraitsWrapper<WT>> defaultUpd = t -> t.setGen(t.getNextGen());
 
         private UpdatableTreeSet<TraitsWrapper<WT>> wrappers;
         private int currentGen;
         private TraitsWrapper<WT> lastGenWrapper;
 
-        public WrappersPack(TraitsWrapper<WT> ... wrappers) {
-            this.wrappers = new UpdatableTreeSet<>(null);
+        public WrappersPack(TraitsWrapper<WT>... wrappers) {
+            this.wrappers = new UpdatableTreeSet<>(TraitsWrapper.genComparatorDesc);
             this.wrappers.addAll(Arrays.asList(wrappers));
         }
 
@@ -139,6 +121,16 @@ public class EntitySystemManager {
             currentGen = wrapper.getGen();
             lastGenWrapper = wrapper;
             wrapper.setStatus(WrapperStatus.FREE);
+        }
+
+        @Override
+        public String toString() {
+            return "WrappersPack{" +
+                    "defaultUpd=" + defaultUpd +
+                    ", wrappers=" + wrappers +
+                    ", currentGen=" + currentGen +
+                    ", lastGenWrapper=" + lastGenWrapper +
+                    '}';
         }
     }
 }

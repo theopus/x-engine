@@ -10,18 +10,19 @@ public class EntitySystemManagerTest {
     @Test
     public void name() {
         EntitySystemManager manager = new EntitySystemManager(
-                Arrays.asList(PositionTrait.class)
+                Arrays.asList(PositionTrait.class), 3
         );
 
         @ReadOnly TraitMapper<PositionTrait> mapper = manager.getReadMapper(PositionTrait.class);
 
+        System.out.println(mapper);
 
-        PositionTrait trait = mapper.get(0);
+        mapper.prepare();
+        System.out.println(mapper);
 
-        @ReadWrite WriteTraitMapper<PositionTrait> wmapper = manager.getWriteMapper(PositionTrait.class);
+        mapper.finish();
+        System.out.println();
 
-        @ReadOnly TraitMultiMapper tmanager = manager.getReadManager();
-        @ReadWrite WriteTraitMultiMapper wtmanager = manager.getWriteManager();
 
     }
 }
