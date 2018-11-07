@@ -2,6 +2,7 @@ package com.theopus.xengine.ecs;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Sets;
+import com.theopus.client.ecs.trait.PositionTrait;
 import com.theopus.xengine.trait.Trait;
 import com.theopus.xengine.utils.UpdatableTreeSet;
 import org.slf4j.Logger;
@@ -121,16 +122,6 @@ public class EntitySystemManager {
             currentGen = wrapper.getGen();
             lastGenWrapper = wrapper;
             wrapper.setStatus(WrapperStatus.FREE);
-        }
-
-        @Override
-        public String toString() {
-            return "WrappersPack{" +
-                    "defaultUpd=" + defaultUpd +
-                    ", wrappers=" + wrappers +
-                    ", currentGen=" + currentGen +
-                    ", lastGenWrapper=" + lastGenWrapper +
-                    '}';
         }
     }
 }

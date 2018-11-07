@@ -19,6 +19,10 @@ public class EntitySystemManagerTest {
         JsonUtils.prettyPrintJson(mapper);
 
         mapper.prepare();
+
+        int entity = 0;
+        PositionTrait trait = mapper.get(entity);
+
         System.out.println(mapper);
 
         mapper.finish();

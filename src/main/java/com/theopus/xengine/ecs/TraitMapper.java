@@ -37,13 +37,4 @@ public class TraitMapper<T extends Trait> implements TaskComponent {
     public T get(int entity) {
         return wrapper.get(entity);
     }
-
-    @Override
-    public String toString() {
-        return "TraitMapper{" +
-                "pack=" + pack +
-                ", traitClass=" + traitClass +
-                ", wrapper=" + wrapper +
-                '}';
-    }
 }

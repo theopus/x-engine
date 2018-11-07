@@ -1,8 +1,9 @@
 package com.theopus.xengine.ecs;
 
 import com.theopus.xengine.trait.Trait;
+import com.theopus.xengine.utils.Reflection;
 
-import java.util.Comparator;
+import java.util.*;
 
 public class TraitsWrapper<T extends Trait> {
 
@@ -23,18 +24,42 @@ public class TraitsWrapper<T extends Trait> {
     private WrapperStatus status;
     private int readCount;
 
+    private BitSet available;
+    private Map<Integer, T> traits;
+    private List<Transformation<T>> transformations;
+
     public TraitsWrapper(Class<T> traitClass, int id) {
         this.traitClass = traitClass;
         this.id = id;
         this.status = WrapperStatus.FREE;
+        this.available = new BitSet();
+        this.traits = new HashMap<>();
+        this.transformations = new ArrayList<>();
     }
 
     public void resolve(TraitsWrapper<T> lastGenWrapper) {
 
     }
 
-    public T get(int entity) {
-        return null;
+    public boolean has(int entityId) {
+        return available.get(entityId);
+    }
+
+    public T get(int entityId) {
+        boolean contains = available.get(entityId);
+        if (contains) {
+            return traits.get(entityId);
+        } else {
+            T trait = Reflection.newInstance(traitClass);
+            available.set(entityId);
+            traits.put(entityId, trait);
+            return trait;
+        }
+    }
+
+    public T remove(int entityId) {
+        available.set(entityId, false);
+        return traits.remove(entityId);
     }
 
     public Class<T> getTraitClass() {
@@ -71,17 +96,5 @@ public class TraitsWrapper<T extends Trait> {
 
     public int getNextGen() {
         return nextGen;
-    }
-
-    @Override
-    public String toString() {
-        return "TraitsWrapper{" +
-                "id=" + id +
-                ", gen=" + gen +
-                ", nextGen=" + nextGen +
-                ", traitClass=" + traitClass +
-                ", status=" + status +
-                ", readCount=" + readCount +
-                '}';
     }
 }

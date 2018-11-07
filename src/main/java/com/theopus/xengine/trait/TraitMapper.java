@@ -16,7 +16,6 @@ public class TraitMapper<Trait extends com.theopus.xengine.trait.Trait> {
     private Map<Integer, Trait> traits;
 
     private BitSet available;
-
     private TraitEditor<Trait> editor;
 
     public TraitMapper(Class<Trait> traitClass, TraitEditor<Trait> editor) {
