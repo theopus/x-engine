@@ -1,6 +1,7 @@
 package com.theopus.xengine.ecs;
 
 import com.theopus.xengine.trait.Trait;
+import com.theopus.xengine.utils.BitSetUtils;
 import com.theopus.xengine.utils.Reflection;
 
 import java.util.*;
@@ -71,6 +72,7 @@ public class TraitsWrapper<T extends Trait> {
     }
 
     int getRead() {
+        status = WrapperStatus.READ;
         return ++readCount;
     }
 
@@ -96,5 +98,42 @@ public class TraitsWrapper<T extends Trait> {
 
     public int getNextGen() {
         return nextGen;
+    }
+
+    public void addTransformation(Transformation<T> transformation) {
+        transformations.add(transformation);
+    }
+
+    public BitSet bits(){
+        return available;
+    }
+
+    public void copyFrom(TraitsWrapper<T> from) {
+        BitSet fromBits = from.bits();
+        BitSet toBits = this.bits();
+        //TODO [PERFORMANCE]:Can be pooled
+        BitSet xor = BitSetUtils.xor(fromBits, toBits);
+
+        // 10101 - from
+        // 10011 - to
+
+        // 00110 - xor0
+
+        // 00010 - xor1 - toDelete
+
+        if (!xor.isEmpty()){
+            xor.xor(fromBits);
+            xor.stream().forEach(this::remove);
+        }
+        from.traits.forEach((k, v) -> v.duplicateTo(this.traits.get(k)));
+    }
+
+    public void addAndApply(Transformation<T> transformation) {
+        addTransformation(transformation);
+        transformation.apply(this);
+    }
+
+    public void getWrite() {
+        status = WrapperStatus.WRITE;
     }
 }

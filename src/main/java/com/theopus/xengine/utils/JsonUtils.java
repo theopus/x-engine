@@ -27,10 +27,10 @@ public class JsonUtils {
     }
 
     public static void prettyPrintJson(Object o) {
-        System.out.println("" + o.getClass() + "@" + o.hashCode() + "\n" + toJson(o, true));
+        System.out.println("" + o.getClass() + "@" + o.hashCode() + ":\n" + toJson(o, true));
     }
 
     public static void printJson(Object o) {
-        System.out.println("" + o.getClass() + "@" + o.hashCode() + ":\n" + toJson(o, false));
+        System.out.println("" + o.getClass() + "@" + o.hashCode() + ":" + toJson(o, false));
     }
 }

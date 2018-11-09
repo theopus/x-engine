@@ -3,7 +3,10 @@ package com.theopus.xengine.ecs;
 import com.theopus.xengine.nscheduler.task.TaskComponent;
 import com.theopus.xengine.trait.Trait;
 
-public class TraitMapper<T extends Trait> implements TaskComponent {
+import java.util.BitSet;
+import java.util.Iterator;
+
+public class TraitMapper<T extends Trait> implements TaskComponent, Iterable<T> {
 
     private final EntitySystemManager.WrappersPack<T> pack;
     private final Class<T> traitClass;
@@ -12,6 +15,28 @@ public class TraitMapper<T extends Trait> implements TaskComponent {
     public TraitMapper(EntitySystemManager pack, Class<T> traitClass) {
         this.pack = pack.pack(traitClass);
         this.traitClass = traitClass;
+    }
+
+    @Override
+    public Iterator<T> iterator(){
+        BitSet bits = bits();
+        return new Iterator<T>() {
+            int i = -1;
+            @Override
+            public boolean hasNext() {
+                i = bits.nextSetBit(i+1);
+                return i != -1;
+            }
+
+            @Override
+            public T next() {
+                return get(i);
+            }
+        };
+    }
+
+    public BitSet bits(){
+        return wrapper.bits();
     }
 
     @Override

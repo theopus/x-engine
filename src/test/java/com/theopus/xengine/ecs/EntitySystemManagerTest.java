@@ -15,18 +15,23 @@ public class EntitySystemManagerTest {
         );
 
         @ReadOnly TraitMapper<PositionTrait> mapper = manager.getReadMapper(PositionTrait.class);
+        @ReadOnly WriteTraitMapper<PositionTrait> wmapper = manager.getWriteMapper(PositionTrait.class);
 
-        JsonUtils.prettyPrintJson(mapper);
+        wmapper.prepare();
+        JsonUtils.prettyPrintJson(wmapper);
+        wmapper.finish();
 
-        mapper.prepare();
+        wmapper.prepare();
+        JsonUtils.prettyPrintJson(wmapper);
+        wmapper.finish();
 
-        int entity = 0;
-        PositionTrait trait = mapper.get(entity);
-
-        System.out.println(mapper);
-
-        mapper.finish();
-
+        wmapper.prepare();
+        JsonUtils.prettyPrintJson(wmapper);
+        wmapper.finish();
+        
+        wmapper.prepare();
+        JsonUtils.prettyPrintJson(wmapper);
+        wmapper.finish();
 
     }
 }

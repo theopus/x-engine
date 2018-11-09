@@ -81,7 +81,6 @@ public class EntitySystemManager {
                 WrapperStatus status = wrapper.getStatus();
                 if (status == WrapperStatus.FREE || status == WrapperStatus.READ) {
                     wrapper.getRead();
-                    wrapper.setStatus(WrapperStatus.READ);
                     return wrapper;
                 }
             }
@@ -93,8 +92,8 @@ public class EntitySystemManager {
                 TraitsWrapper<WT> wrapper = iterator.next();
                 WrapperStatus status = wrapper.getStatus();
                 if (status == WrapperStatus.FREE) {
+                    wrapper.getWrite();
                     wrapper.setNextGen(currentGen + 1);
-                    wrapper.setStatus(WrapperStatus.FREE);
                     return wrapper;
                 }
             }
@@ -102,7 +101,6 @@ public class EntitySystemManager {
         }
 
         public int releaseRead(TraitsWrapper<WT> wrapper) {
-            Preconditions.checkNotNull(wrapper);
             int inUseCount = wrapper.releaseRead();
             if (inUseCount == 0) {
                 wrapper.setStatus(WrapperStatus.FREE);
