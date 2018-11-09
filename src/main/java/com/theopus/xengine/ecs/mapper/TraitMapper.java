@@ -1,5 +1,7 @@
-package com.theopus.xengine.ecs;
+package com.theopus.xengine.ecs.mapper;
 
+import com.theopus.xengine.ecs.EntitySystemManager;
+import com.theopus.xengine.ecs.TraitsWrapper;
 import com.theopus.xengine.nscheduler.task.TaskComponent;
 import com.theopus.xengine.trait.Trait;
 
@@ -55,11 +57,16 @@ public class TraitMapper<T extends Trait> implements TaskComponent, Iterable<T> 
     @Override
     public boolean finish() {
         pack.releaseRead(wrapper);
+        wrapper.flush();
         wrapper = null;
         return true;
     }
 
     public T get(int entity) {
         return wrapper.get(entity);
+    }
+
+    public Class<T> getTraitClass() {
+        return traitClass;
     }
 }

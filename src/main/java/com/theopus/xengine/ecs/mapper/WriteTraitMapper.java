@@ -1,7 +1,12 @@
-package com.theopus.xengine.ecs;
+package com.theopus.xengine.ecs.mapper;
 
+import com.theopus.xengine.ecs.EntitySystemManager;
+import com.theopus.xengine.ecs.TraitsWrapper;
+import com.theopus.xengine.ecs.Transformation;
 import com.theopus.xengine.nscheduler.task.TaskComponent;
 import com.theopus.xengine.trait.Trait;
+
+import java.util.BitSet;
 
 public class WriteTraitMapper<T extends Trait> implements TaskComponent {
     private final EntitySystemManager.WrappersPack<T> pack;
@@ -40,12 +45,21 @@ public class WriteTraitMapper<T extends Trait> implements TaskComponent {
     public boolean finish() {
         pack.releaseRead(readWrapper);
         pack.releaseWrite(writeWrapper);
+        writeWrapper.flush();
         readWrapper = null;
         writeWrapper = null;
         return true;
     }
 
-    public void transform(Transformation<T> transformation) {
+    public void transform(int entity, Transformation<T> transformation) {
         writeWrapper.addAndApply(transformation);
+    }
+
+    public Class<T> getTraitClass() {
+        return traitClass;
+    }
+
+    public BitSet bits() {
+        return writeWrapper.bits();
     }
 }

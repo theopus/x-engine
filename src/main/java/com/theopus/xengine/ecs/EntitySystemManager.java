@@ -1,8 +1,8 @@
 package com.theopus.xengine.ecs;
 
-import com.google.common.base.Preconditions;
-import com.google.common.collect.Sets;
-import com.theopus.client.ecs.trait.PositionTrait;
+import com.theopus.xengine.ecs.mapper.EntityManager;
+import com.theopus.xengine.ecs.mapper.TraitMapper;
+import com.theopus.xengine.ecs.mapper.WriteTraitMapper;
 import com.theopus.xengine.trait.Trait;
 import com.theopus.xengine.utils.UpdatableTreeSet;
 import org.slf4j.Logger;
@@ -16,7 +16,7 @@ public class EntitySystemManager {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(EntitySystemManager.class);
 
-    private Map<Class<? extends Trait>, WrappersPack<? extends Trait>> packs;
+    Map<Class<? extends Trait>, WrappersPack<? extends Trait>> packs;
 
     public EntitySystemManager(List<Class<? extends Trait>> traits, int number) {
         packs = new HashMap<>();
@@ -38,33 +38,15 @@ public class EntitySystemManager {
         return new WriteTraitMapper<>(this, traitClass);
     }
 
-    public TraitMultiMapper getReadManager() {
-        return new TraitMultiMapper(this, packs.keySet());
-    }
-
-    public WriteTraitMultiMapper getWriteManager() {
-        return new WriteTraitMultiMapper(this, packs.keySet());
-    }
-
-    public TraitMultiMapper getReadManager(List<Class<? extends Trait>> classes) {
-        if (!packs.keySet().containsAll(classes)) {
-            throw new RuntimeException("Passed classes not configured. Intersection " + Sets.intersection(new HashSet<>(classes), packs.keySet()));
-        }
-        return new TraitMultiMapper(this, Sets.intersection(new HashSet<>(classes), packs.keySet()));
-    }
-
-    public WriteTraitMultiMapper getWriteManager(List<Class<? extends Trait>> classes) {
-        if (!packs.keySet().containsAll(classes)) {
-            throw new RuntimeException("Passed classes not configured. Intersection " + Sets.intersection(new HashSet<>(classes), packs.keySet()));
-        }
-        return new WriteTraitMultiMapper(this, Sets.intersection(new HashSet<>(classes), packs.keySet()));
-    }
-
-    <T extends Trait> WrappersPack<T> pack(Class<T> tclass) {
+    public <T extends Trait> WrappersPack<T> pack(Class<T> tclass) {
         return (WrappersPack<T>) packs.get(tclass);
     }
 
-    class WrappersPack<WT extends Trait> {
+    public EntityManager getEntityManager() {
+        return new EntityManager(this, packs.keySet());
+    }
+
+    public class WrappersPack<WT extends Trait> {
         private UpdatableTreeSet.Update<TraitsWrapper<WT>> defaultUpd = t -> t.setGen(t.getNextGen());
 
         private UpdatableTreeSet<TraitsWrapper<WT>> wrappers;
@@ -101,6 +83,9 @@ public class EntitySystemManager {
         }
 
         public int releaseRead(TraitsWrapper<WT> wrapper) {
+            if (wrapper == null){
+                return 0;
+            }
             int inUseCount = wrapper.releaseRead();
             if (inUseCount == 0) {
                 wrapper.setStatus(WrapperStatus.FREE);
@@ -109,6 +94,9 @@ public class EntitySystemManager {
         }
 
         public void releaseWrite(TraitsWrapper<WT> wrapper) {
+            if (wrapper == null){
+                return;
+            }
             int nextFrame = wrapper.getNextGen();
             if (nextFrame <= currentGen) {
                 wrapper.resolve(lastGenWrapper);

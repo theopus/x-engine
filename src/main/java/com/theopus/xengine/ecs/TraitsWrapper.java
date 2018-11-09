@@ -26,6 +26,7 @@ public class TraitsWrapper<T extends Trait> {
     private int readCount;
 
     private BitSet available;
+    private BitSet created;
     private Map<Integer, T> traits;
     private List<Transformation<T>> transformations;
 
@@ -34,12 +35,14 @@ public class TraitsWrapper<T extends Trait> {
         this.id = id;
         this.status = WrapperStatus.FREE;
         this.available = new BitSet();
+        this.created = new BitSet();
         this.traits = new HashMap<>();
         this.transformations = new ArrayList<>();
     }
 
     public void resolve(TraitsWrapper<T> lastGenWrapper) {
-
+        this.copyFrom(lastGenWrapper);
+        transformations.forEach(t-> t.apply(this));
     }
 
     public boolean has(int entityId) {
@@ -53,6 +56,7 @@ public class TraitsWrapper<T extends Trait> {
         } else {
             T trait = Reflection.newInstance(traitClass);
             available.set(entityId);
+            created.set(entityId);
             traits.put(entityId, trait);
             return trait;
         }
@@ -125,7 +129,8 @@ public class TraitsWrapper<T extends Trait> {
             xor.xor(fromBits);
             xor.stream().forEach(this::remove);
         }
-        from.traits.forEach((k, v) -> v.duplicateTo(this.traits.get(k)));
+        from.traits.forEach((k, v) -> v.duplicateTo(get(k)));
+        created.clear();
     }
 
     public void addAndApply(Transformation<T> transformation) {
@@ -135,5 +140,14 @@ public class TraitsWrapper<T extends Trait> {
 
     public void getWrite() {
         status = WrapperStatus.WRITE;
+    }
+
+    public void flush() {
+        transformations.clear();
+        created.clear();
+    }
+
+    public BitSet getCreated() {
+        return created;
     }
 }
