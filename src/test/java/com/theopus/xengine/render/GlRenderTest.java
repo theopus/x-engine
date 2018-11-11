@@ -3,7 +3,7 @@ package com.theopus.xengine.render;
 import com.google.common.collect.ImmutableMap;
 import com.theopus.client.render.Ver0Module;
 import com.theopus.xengine.nscheduler.Context;
-import com.theopus.xengine.nscheduler.platform.GlfwPlatformManager;
+import com.theopus.xengine.platform.GlfwPlatformManager;
 import com.theopus.xengine.render.opengl.GlRender;
 import com.theopus.client.render.Ver0Model;
 import com.theopus.client.render.Ver0ModuleImpl;

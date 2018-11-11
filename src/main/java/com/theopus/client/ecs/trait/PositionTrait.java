@@ -1,7 +1,7 @@
 package com.theopus.client.ecs.trait;
 
-import com.theopus.xengine.trait.IDuplicate;
-import com.theopus.xengine.trait.Trait;
+import com.theopus.xengine.ecs.Trait;
+import com.theopus.xengine.ecs.mapper.IDuplicate;
 import org.joml.Vector3f;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

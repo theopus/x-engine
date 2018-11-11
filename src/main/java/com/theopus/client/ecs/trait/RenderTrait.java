@@ -1,6 +1,7 @@
 package com.theopus.client.ecs.trait;
 
-import com.theopus.xengine.trait.Trait;
+
+import com.theopus.xengine.ecs.Trait;
 
 /**
  * Trait - marker

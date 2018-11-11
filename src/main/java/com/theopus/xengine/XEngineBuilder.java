@@ -1,55 +1,54 @@
 package com.theopus.xengine;
 
 import com.google.common.base.Preconditions;
-import com.theopus.xengine.conc.StateFactory;
+import com.theopus.xengine.ecs.*;
+import com.theopus.xengine.ecs.system.BaseSystem;
 import com.theopus.xengine.inject.Inject;
+import com.theopus.xengine.inject.TaskConfigurer;
+import com.theopus.xengine.nscheduler.Context;
 import com.theopus.xengine.nscheduler.Scheduler;
-import com.theopus.xengine.nscheduler.event.EventManager;
-import com.theopus.xengine.nscheduler.lock.LockFactory;
-import com.theopus.xengine.nscheduler.lock.LockManager;
-import com.theopus.xengine.nscheduler.platform.GlfwPlatformManager;
-import com.theopus.xengine.nscheduler.platform.PlatformManager;
+import com.theopus.xengine.event.EventManager;
+import com.theopus.xengine.event.EventProvider;
+import com.theopus.xengine.nscheduler.task.TaskChain;
+import com.theopus.xengine.platform.GlfwPlatformManager;
+import com.theopus.xengine.platform.PlatformManager;
 import com.theopus.xengine.nscheduler.task.Feeder;
+import com.theopus.xengine.nscheduler.task.Task;
 import com.theopus.xengine.render.Render;
+import com.theopus.xengine.render.RenderConfig;
 import com.theopus.xengine.render.RenderModule;
-import com.theopus.xengine.render.opengl.GlRender;
-import com.theopus.xengine.system.System;
-import com.theopus.xengine.utils.EcsConfig;
+import com.theopus.xengine.utils.TaskUtils;
+import org.lwjgl.system.Configuration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.*;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class XEngineBuilder {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(XEngineBuilder.class);
-
     private Map<Class<?>, Object> ctx = new HashMap<>();
 
-    private EcsConfig ecsConfig;
-    private List<Class<? extends System>> systems;
-    private WindowConfig windowConfig;
-    private int nStates;
+    private SystemsConfig systemsConfig;
+    private RenderConfig rerenderConfig;
 
     private Class<? extends PlatformManager> pm = GlfwPlatformManager.class;
-    private Class<? extends Render> renderClass = GlRender.class;
-    private List<Class<? extends RenderModule>> modules;
 
     public static XEngineBuilder create() {
         return new XEngineBuilder();
     }
 
-    public XEngineBuilder ecs(EcsConfig ecsConfig) {
-        this.ecsConfig = ecsConfig;
-        ctx.put(EcsConfig.class, ecsConfig);
+    public XEngineBuilder ecs(EntitySystemConfig ecsConfig) {
+        ctx.put(EntitySystemConfig.class, ecsConfig);
         return this;
     }
 
-    public XEngineBuilder systems(List<Class<? extends System>> systems) {
-        this.systems = systems;
+    public XEngineBuilder systems(SystemsConfig systems) {
+        this.systemsConfig = systems;
         return this;
     }
 
@@ -59,39 +58,65 @@ public class XEngineBuilder {
         return this;
     }
 
-    public XEngineBuilder statesCount(int nStates) {
-        this.nStates = nStates;
-        this.ctx.put(int.class, nStates);
-        return this;
-    }
-
     public XEngineBuilder feeder(Feeder feeder) {
         ctx.put(Feeder.class, Preconditions.checkNotNull(feeder, "Feeder is null"));
         return this;
     }
 
 
-    public XEngineBuilder render(Class<? extends Render> renderClass) {
-        this.renderClass = Preconditions.checkNotNull(renderClass);
+    public XEngineBuilder render(RenderConfig renderClass) {
+        this.rerenderConfig = renderClass;
         return this;
     }
 
-
-    public XEngineBuilder modules(List<Class<? extends RenderModule>> modules) {
-        this.modules = modules;
-        return this;
-    }
 
     public XEngine build() {
+        Configuration.DEBUG.set(true);
+        Configuration.DEBUG_MEMORY_ALLOCATOR.set(true);
+        Configuration.DEBUG_LOADER.set(true);
+
         pm = Preconditions.checkNotNull(pm, "Platform manager class is null");
 
-        createInstance(Scheduler.class);
-        createInstance(EventManager.class);
-        createInstance(pm);
-        createInstance(StateFactory.class, LockFactory.class);
-        createInstance(LockManager.class);
+        Scheduler scheduler = createInstance(Scheduler.class);
+        EventManager em = createInstance(EventManager.class);
+        PlatformManager plm = createInstance(pm);
+        EntitySystemManager ecm = createInstance(EntitySystemManager.class);
 
-        return new XEngine(ctx);
+        plm.createWindow();
+        Render render = createRender(this.rerenderConfig);
+
+        Map<? extends BaseSystem, Task> systemsTasks = Stream.of(systemsConfig.getSystems())
+                .map(this::createInstance)
+                .collect(Collectors.toMap(s -> s, BaseSystem::task));
+
+        EcsProvider ecmProvider = ecm.getProvider();
+        EventProvider emProvider = em.getProvider();
+        TaskConfigurer taskConfigurer = new TaskConfigurer(ecmProvider, emProvider);
+        configureSystems(taskConfigurer, systemsTasks);
+
+
+        List<Task> tasks = new ArrayList<>();
+
+        tasks.addAll(systemsTasks.values());
+        tasks.add(em.task(10));
+
+        Task head = TaskChain
+                .startWith(TaskUtils.initCtx(plm, Context.MAIN))
+                .andThen(TaskUtils.initCtx(plm, Context.SIDE))
+                .andThen(new Task() {
+                    @Override
+                    public void process() {
+                        tasks.forEach(scheduler::propose);
+                    }
+                }).head();
+
+        scheduler.propose(head);
+        return new XEngine(scheduler, em, plm, ecm, render);
+    }
+
+    private void configureSystems(TaskConfigurer configurer, Map<? extends BaseSystem, Task> systemsTasks) {
+        systemsTasks.forEach(configurer::configure);
+        systemsTasks.keySet().forEach(BaseSystem::init);
     }
 
     private <T> T createInstance(Class<T> create) {
@@ -133,6 +158,22 @@ public class XEngineBuilder {
             LOGGER.info("Current ctx {}", ctx);
             return t;
         } catch (InstantiationException | IllegalAccessException | InvocationTargetException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private Render createRender(RenderConfig config) {
+        Map<Class<? extends RenderModule>, Class<? extends RenderModule>> modules = config.getModules();
+        try {
+            Map<Class<? extends RenderModule>, RenderModule> arg = new HashMap<>();
+            for (Map.Entry<Class<? extends RenderModule>, Class<? extends RenderModule>> ci : modules.entrySet()) {
+                arg.put(ci.getKey(), ci.getValue().newInstance());
+            }
+
+            Render render = config.getRender().getConstructor(Map.class).newInstance(new Object[]{arg});
+            ctx.put(Render.class, render);
+            return render;
+        } catch (NoSuchMethodException | IllegalAccessException | InstantiationException | InvocationTargetException e) {
             throw new RuntimeException(e);
         }
     }

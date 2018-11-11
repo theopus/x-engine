@@ -1,11 +1,10 @@
 package com.theopus.client.render;
 
+import com.theopus.client.ecs.trait.WorldPositionTrait;
+import com.theopus.xengine.ecs.mapper.ViewEntityManager;
 import com.theopus.xengine.opengl.SimpleLoader;
 import com.theopus.xengine.opengl.Vao;
 import com.theopus.xengine.opengl.shader.StaticShader;
-import com.theopus.xengine.trait.EntityManager;
-import com.theopus.xengine.trait.TraitMapper;
-import com.theopus.client.ecs.trait.WorldPositionTrait;
 import com.theopus.xengine.utils.BitSetUtils;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL30;
@@ -54,7 +53,6 @@ public class Ver0ModuleImpl implements Ver0Module {
         }
     }
 
-
     @Override
     public void prepare(int modelId) {
         shader.bind();
@@ -67,9 +65,6 @@ public class Ver0ModuleImpl implements Ver0Module {
         shader.unbind();
     }
 
-    @Override
-    public void render(WorldPositionTrait trait) {
-    }
 
     private void render(Vao vao, WorldPositionTrait trait) {
         shader.transformation().load(
@@ -79,27 +74,9 @@ public class Ver0ModuleImpl implements Ver0Module {
     }
 
     @Override
-    public void render(BitSet entities, EntityManager em) {
+    public void render(BitSet entities) {
         BitSet bitSet = new BitSet();
         bitSet.or(entities);
-        TraitMapper<WorldPositionTrait> mapper = em.getMapper(WorldPositionTrait.class);
-
-        for (Map.Entry<Integer, BitSet> modelEntities : entityMap.entrySet()) {
-            BitSet entitiesValue = modelEntities.getValue();
-            Integer modelId = modelEntities.getKey();
-            if (bitSet.intersects(entitiesValue)) {
-                BitSet cross = BitSetUtils.cross(bitSet, entitiesValue);
-                prepare(modelId);
-                Vao vao = models.get(modelId);
-                for (int i = cross.nextSetBit(0); i >= 0; i = cross.nextSetBit(i + 1)) {
-                    render(vao, mapper.get(i));
-                }
-                finish(modelId);
-                bitSet.xor(cross);
-            }
-
-        }
-
 
     }
 
@@ -109,5 +86,21 @@ public class Ver0ModuleImpl implements Ver0Module {
         shader.cleanup();
     }
 
-
+    @Override
+    public void render(BitSet entities, ViewEntityManager em) {
+        for (Map.Entry<Integer, BitSet> modelEntities : entityMap.entrySet()) {
+            BitSet entitiesValue = modelEntities.getValue();
+            Integer modelId = modelEntities.getKey();
+            if (entities.intersects(entitiesValue)) {
+                BitSet cross = BitSetUtils.cross(entities, entitiesValue);
+                prepare(modelId);
+                Vao vao = models.get(modelId);
+                for (int i = cross.nextSetBit(0); i >= 0; i = cross.nextSetBit(i + 1)) {
+                    render(vao, em.get(i, WorldPositionTrait.class));
+                }
+                finish(modelId);
+                entities.xor(cross);
+            }
+        }
+    }
 }

@@ -102,7 +102,7 @@ public class Gears extends AbstractGears {
 			invokePPV(objc_msgSend, contentView, sel_getUid("setWantsBestResolutionOpenGLSurface:"), false);
 
 			boolean bool = invokePPZ(objc_msgSend, contentView, sel_getUid("wantsBestResolutionOpenGLSurface"));
-			System.out.println("wantsBestResolutionOpenGLSurface = " + bool);
+			BaseSystem.out.println("wantsBestResolutionOpenGLSurface = " + bool);
 		}
 		*/
 

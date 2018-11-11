@@ -1,7 +1,7 @@
 package com.theopus.xengine.utils;
 
 import com.theopus.xengine.nscheduler.Context;
-import com.theopus.xengine.nscheduler.platform.PlatformManager;
+import com.theopus.xengine.platform.PlatformManager;
 import com.theopus.xengine.nscheduler.task.ComponentTask;
 import com.theopus.xengine.opengl.SimpleLoader;
 
@@ -65,6 +65,14 @@ public class TaskUtils {
             @Override
             public void process() throws Exception {
                 platformManager.attachContext(ctx);
+            }
+        };
+    }
+    public static ComponentTask teardownCtx(PlatformManager platformManager, Context ctx) {
+        return new ComponentTask(ctx, false) {
+            @Override
+            public void process() throws Exception {
+                platformManager.detachContext();
             }
         };
     }

@@ -1,9 +1,6 @@
 package com.theopus.xengine.nscheduler.task;
 
 import com.theopus.xengine.nscheduler.Context;
-import com.theopus.xengine.nscheduler.event.EventManager;
-import com.theopus.xengine.nscheduler.input.InputManager;
-import com.theopus.xengine.nscheduler.lock.LockManager;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -19,11 +16,11 @@ public abstract class ComponentTask extends Task {
         super(type, cycled);
     }
 
-    public ComponentTask(Context type, boolean cycled, int rate) {
+    public ComponentTask(Context type, boolean cycled, float rate) {
         super(type, cycled, rate);
     }
 
-    public ComponentTask(Context type, boolean cycled, int rate, int priority) {
+    public ComponentTask(Context type, boolean cycled, float rate, int priority) {
         super(type, cycled, rate, priority);
     }
 
@@ -31,7 +28,7 @@ public abstract class ComponentTask extends Task {
     public boolean prepare() {
         for (TaskComponent component : components) {
             boolean prepare = component.prepare();
-            if (!prepare){
+            if (!prepare) {
                 return false;
             }
         }
@@ -49,13 +46,9 @@ public abstract class ComponentTask extends Task {
     @Override
     public boolean finish() {
         for (TaskComponent component : components) {
-            component.rollback();
+            component.finish();
         }
         return true;
     }
 
-    @Override
-    public void injectManagers(EventManager em, InputManager im, LockManager lm) {
-
-    }
 }

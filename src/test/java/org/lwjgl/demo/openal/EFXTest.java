@@ -307,7 +307,7 @@ public final class EFXTest {
         // Add low-pass filter to source send
         //AL11.alSource3i(source, EXTEfx.AL_AUXILIARY_SEND_FILTER, effectSlot, 0, filter);
         //
-        //System.out.println("Playing sound with reverb and aux send low pass filter ...");
+        //BaseSystem.out.println("Playing sound with reverb and aux send low pass filter ...");
         //AL10.alSourcePlay(source);
         //Thread.sleep(7500);
 

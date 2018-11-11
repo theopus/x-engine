@@ -2,8 +2,9 @@ package com.theopus.xengine.ecs;
 
 import com.theopus.xengine.ecs.mapper.EntityManager;
 import com.theopus.xengine.ecs.mapper.TraitMapper;
+import com.theopus.xengine.ecs.mapper.ViewEntityManager;
 import com.theopus.xengine.ecs.mapper.WriteTraitMapper;
-import com.theopus.xengine.trait.Trait;
+import com.theopus.xengine.inject.Inject;
 import com.theopus.xengine.utils.UpdatableTreeSet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -17,6 +18,12 @@ public class EntitySystemManager {
     private static final Logger LOGGER = LoggerFactory.getLogger(EntitySystemManager.class);
 
     Map<Class<? extends Trait>, WrappersPack<? extends Trait>> packs;
+
+
+    @Inject
+    public EntitySystemManager(EntitySystemConfig config) {
+        this(config.traits(), config.shardsNumber());
+    }
 
     public EntitySystemManager(List<Class<? extends Trait>> traits, int number) {
         packs = new HashMap<>();
@@ -44,6 +51,14 @@ public class EntitySystemManager {
 
     public EntityManager getEntityManager() {
         return new EntityManager(this, packs.keySet());
+    }
+
+    public EcsProvider getProvider() {
+        return new EcsProvider(this);
+    }
+
+    public ViewEntityManager getViewManager() {
+        return new ViewEntityManager(this, packs.keySet());
     }
 
     public class WrappersPack<WT extends Trait> {
@@ -83,7 +98,7 @@ public class EntitySystemManager {
         }
 
         public int releaseRead(TraitsWrapper<WT> wrapper) {
-            if (wrapper == null){
+            if (wrapper == null) {
                 return 0;
             }
             int inUseCount = wrapper.releaseRead();
@@ -94,7 +109,7 @@ public class EntitySystemManager {
         }
 
         public void releaseWrite(TraitsWrapper<WT> wrapper) {
-            if (wrapper == null){
+            if (wrapper == null) {
                 return;
             }
             int nextFrame = wrapper.getNextGen();
@@ -105,6 +120,7 @@ public class EntitySystemManager {
             } else {
                 wrappers.update(wrapper, defaultUpd);
             }
+            wrapper.setGen(wrapper.getNextGen());
             currentGen = wrapper.getGen();
             lastGenWrapper = wrapper;
             wrapper.setStatus(WrapperStatus.FREE);

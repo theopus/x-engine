@@ -7,39 +7,22 @@ import org.lwjgl.system.MemoryUtil;
 
 import java.nio.FloatBuffer;
 
-public class Uniform<T>{
-
-    public interface LoadFunction<V>{
-        void load(V v);
-    }
+public class Uniform<T> {
 
     protected String name;
     protected int location;
     private LoadFunction<T> function;
-
     public Uniform(String name, LoadFunction<T> function) {
         this.name = name;
         this.function = function;
     }
 
-    private Uniform(String name){
+    private Uniform(String name) {
         this.name = name;
     }
 
-    void prepare(ShaderProgram program){
-        GL20.glGetUniformLocation(program.getId(), name);
-    }
-
-    public void load(T t){
-        function.load(t);
-    }
-
-    void close() {
-
-    }
-
-    public static Uniform<Vector3f> ofVec3(String name){
-        return new Uniform<Vector3f>(name){
+    public static Uniform<Vector3f> ofVec3(String name) {
+        return new Uniform<Vector3f>(name) {
             @Override
             public void load(Vector3f value) {
                 GL20.glUniform3f(location, value.x, value.y, value.z);
@@ -47,8 +30,8 @@ public class Uniform<T>{
         };
     }
 
-    public static Uniform<Float> ofFloat(String name){
-        return new Uniform<Float>(name){
+    public static Uniform<Float> ofFloat(String name) {
+        return new Uniform<Float>(name) {
             @Override
             public void load(Float value) {
                 GL20.glUniform1f(location, value);
@@ -56,8 +39,8 @@ public class Uniform<T>{
         };
     }
 
-    public static Uniform<Integer> ofInt(String name){
-        return new Uniform<Integer>(name){
+    public static Uniform<Integer> ofInt(String name) {
+        return new Uniform<Integer>(name) {
             @Override
             public void load(Integer value) {
                 GL20.glUniform1i(location, value);
@@ -65,8 +48,8 @@ public class Uniform<T>{
         };
     }
 
-    public static Uniform<Boolean> ofBool(String name){
-        return new Uniform<Boolean>(name){
+    public static Uniform<Boolean> ofBool(String name) {
+        return new Uniform<Boolean>(name) {
             @Override
             public void load(Boolean value) {
                 GL20.glUniform1f(location, value ? 1 : 0);
@@ -74,8 +57,8 @@ public class Uniform<T>{
         };
     }
 
-    public static Uniform<Matrix4f> ofMatrix4f(String name){
-        return new Uniform<Matrix4f>(name){
+    public static Uniform<Matrix4f> ofMatrix4f(String name) {
+        return new Uniform<Matrix4f>(name) {
 
             private FloatBuffer matrixBuffer;
 
@@ -99,6 +82,22 @@ public class Uniform<T>{
                 MemoryUtil.memFree(matrixBuffer);
             }
         };
+    }
+
+    void prepare(ShaderProgram program) {
+        GL20.glGetUniformLocation(program.getId(), name);
+    }
+
+    public void load(T t) {
+        function.load(t);
+    }
+
+    void close() {
+
+    }
+
+    public interface LoadFunction<V> {
+        void load(V v);
     }
 
 }

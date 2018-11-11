@@ -15,7 +15,7 @@ public class Box<T> {
         this.t = t;
     }
 
-    public boolean exist(){
+    public boolean exist() {
         return t != null;
     }
 }

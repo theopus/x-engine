@@ -3,14 +3,9 @@ package com.theopus.xengine.nscheduler.task;
 import com.google.common.util.concurrent.RateLimiter;
 import com.theopus.xengine.nscheduler.Context;
 import com.theopus.xengine.nscheduler.Status;
-import com.theopus.xengine.nscheduler.event.EventManager;
-import com.theopus.xengine.nscheduler.input.InputManager;
-import com.theopus.xengine.nscheduler.lock.LockManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public abstract class Task implements Runnable, Comparable<Task> {
@@ -37,11 +32,11 @@ public abstract class Task implements Runnable, Comparable<Task> {
         this(type, cycled, 60);
     }
 
-    public Task(Context type, boolean cycled, int rate) {
+    public Task(Context type, boolean cycled, float rate) {
         this(type, cycled, rate, 10);
     }
 
-    public Task(Context type, boolean cycled, int rate, int priority) {
+    public Task(Context type, boolean cycled, float rate, int priority) {
         this.type = type;
         this.cycled = cycled;
         this.status = Status.NEW;
@@ -178,6 +173,4 @@ public abstract class Task implements Runnable, Comparable<Task> {
     public long getLastProcessTime() {
         return lastProcessTime;
     }
-
-    public abstract void injectManagers(EventManager em, InputManager im, LockManager lm);
 }

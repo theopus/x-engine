@@ -1,86 +1,63 @@
 package com.theopus.client.ecs.system;
 
-import com.theopus.xengine.conc.SystemRWTask;
-import com.theopus.xengine.inject.InjectEvent;
-import com.theopus.xengine.nscheduler.Context;
-import com.theopus.xengine.nscheduler.event.InputData;
-import com.theopus.xengine.nscheduler.event.TopicReader;
-import com.theopus.xengine.nscheduler.task.ComponentTask;
-import com.theopus.xengine.system.EntitySystem;
-import com.theopus.xengine.trait.EntityManager;
-import com.theopus.xengine.trait.TraitMapper;
 import com.theopus.client.ecs.trait.PositionTrait;
-import com.theopus.client.ecs.trait.PositionTraitEditor;
 import com.theopus.client.ecs.trait.WorldPositionTrait;
-import com.theopus.client.ecs.trait.WorldPositionTraitEditor;
+import com.theopus.xengine.ecs.Ecs;
+import com.theopus.xengine.ecs.mapper.WriteTraitMapper;
+import com.theopus.xengine.ecs.system.EntitySystem;
+import com.theopus.xengine.event.EventManager;
+import com.theopus.xengine.event.InputData;
+import com.theopus.xengine.event.TopicReader;
+import com.theopus.xengine.inject.Event;
+import com.theopus.xengine.inject.Inject;
+import com.theopus.xengine.nscheduler.Context;
+import com.theopus.xengine.utils.JsonUtils;
+import com.theopus.xengine.utils.Maths;
 import com.theopus.xengine.utils.OpsCounter;
-import org.lwjgl.glfw.GLFW;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.BitSet;
+import java.util.concurrent.ThreadLocalRandom;
 
 public class UpdateSystem extends EntitySystem {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(UpdateSystem.class);
-    private final OpsCounter ups;
 
-    private TraitMapper<WorldPositionTrait> rmapper;
-    private TraitMapper<PositionTrait> pmapper;
-    private WorldPositionTraitEditor reditor;
-    private PositionTraitEditor peditor;
+    private OpsCounter counter = new OpsCounter("Update");
 
-    @InjectEvent(topicId = 0, type = InjectEvent.READ)
+    @Ecs
+    private WriteTraitMapper<PositionTrait> position;
+    @Ecs
+    private WriteTraitMapper<WorldPositionTrait> worldPosition;
+
+    @Event(topicId = 0, type = Event.READ)
     private TopicReader<InputData> reader;
 
+
+    @Inject
     public UpdateSystem() {
-        super(WorldPositionTrait.class, PositionTrait.class);
-        ups = new OpsCounter("Updates");
+        super(Context.WORK, true, 60);
     }
 
     @Override
     public void process(BitSet entities) {
-
-        reader.read().forEach(d->{
-            if (d.data().action == GLFW.GLFW_PRESS){
-                peditor.rotateSpeed(0, 0.3f);
-                peditor.rotateSpeed(1, 0.4f);
-                peditor.rotateSpeed(2, 0.4f);
-                peditor.rotateSpeed(3, 0.4f);
-            } else {
-                peditor.rotateSpeed(0, 0f);
-            }
+        reader.read().forEach(ev -> {
+            int entity = ThreadLocalRandom.current().nextInt(2);
+            position.get(entity).setRotSpeed(0.1f);
         });
-
-        entities.stream().forEach(value -> {
-
-            PositionTrait positionTrait = pmapper.get(value);
-
-            peditor.rotateZ(value, positionTrait.getRotSpeed());
-            reditor.transformWith(value, positionTrait.getPosition(),
+        entities.stream().forEach(e -> {
+            PositionTrait positionTrait = position.get(e);
+            position.transform(e, w -> {
+                PositionTrait trait = w.get(e);
+                trait.setRotZ(trait.getRotZ()+trait.getRotSpeed());
+            });
+            worldPosition.transform(e, w -> Maths.applyTransformations(
+                    positionTrait.getPosition(),
                     positionTrait.getRotX(),
                     positionTrait.getRotY(),
                     positionTrait.getRotZ(),
-                    positionTrait.getScale()
-            );
+                    positionTrait.getScale(),
+                    w.get(e).getTransformation()));
         });
-        ups.operateAndLog();
-    }
 
-    @Override
-    public void injectEm(EntityManager em) {
-        pmapper = em.getMapper(PositionTrait.class);
-        peditor = (PositionTraitEditor) em.getEditor(PositionTrait.class);
-
-        rmapper = em.getMapper(WorldPositionTrait.class);
-        reditor = (WorldPositionTraitEditor) em.getEditor(WorldPositionTrait.class);
-    }
-
-    public void setReditor(WorldPositionTraitEditor reditor) {
-        this.reditor = reditor;
-    }
-
-    public ComponentTask task() {
-        return new SystemRWTask(Context.WORK, true, this);
+        counter.operateAndLog();
     }
 }

@@ -1,8 +1,8 @@
 package com.theopus.xengine.render.opengl;
 
+import com.theopus.xengine.ecs.mapper.ViewEntityManager;
 import com.theopus.xengine.render.Render;
 import com.theopus.xengine.render.RenderModule;
-import com.theopus.xengine.trait.EntityManager;
 import org.joml.Matrix4f;
 import org.lwjgl.opengl.GL11;
 import org.slf4j.Logger;
@@ -16,10 +16,10 @@ import java.util.Map;
 public class GlRender implements Render {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(GlRender.class);
+    private ViewEntityManager em;
 
 
     private Map<Class<? extends RenderModule>, ? extends RenderModule> modules;
-    private EntityManager em;
 
     public GlRender(Map<Class<? extends RenderModule>, ? extends RenderModule> modules) {
         this.modules = new LinkedHashMap<>(modules);
@@ -60,11 +60,6 @@ public class GlRender implements Render {
     }
 
     @Override
-    public void render(int model, Matrix4f transform) {
-
-    }
-
-    @Override
     public void clean() {
         GL11.glClear(GL11.GL_COLOR_BUFFER_BIT);
     }
@@ -76,9 +71,10 @@ public class GlRender implements Render {
     }
 
     @Override
-    public void prepare(EntityManager em) {
-        this.em = em;
+    public void prepare(ViewEntityManager manager) {
+        this.em = manager;
     }
+
 
     public void close() {
         modules.values().forEach(RenderModule::close);

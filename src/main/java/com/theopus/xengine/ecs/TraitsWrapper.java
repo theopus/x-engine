@@ -1,12 +1,15 @@
 package com.theopus.xengine.ecs;
 
-import com.theopus.xengine.trait.Trait;
 import com.theopus.xengine.utils.BitSetUtils;
 import com.theopus.xengine.utils.Reflection;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.*;
 
 public class TraitsWrapper<T extends Trait> {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(TraitsWrapper.class);
 
     public static final Comparator<TraitsWrapper<?>> genComparatorDesc = (o1, o2) -> {
         //TODO: replace via Long.compareUnsigned()
@@ -41,8 +44,9 @@ public class TraitsWrapper<T extends Trait> {
     }
 
     public void resolve(TraitsWrapper<T> lastGenWrapper) {
+        LOGGER.warn("Resolving expected to be [{}->{}], was [{}] on [{}]", gen, nextGen, lastGenWrapper.gen, traitClass);
         this.copyFrom(lastGenWrapper);
-        transformations.forEach(t-> t.apply(this));
+        transformations.forEach(t -> t.apply(this));
     }
 
     public boolean has(int entityId) {
@@ -80,35 +84,35 @@ public class TraitsWrapper<T extends Trait> {
         return ++readCount;
     }
 
-    public void setStatus(WrapperStatus status) {
-        this.status = status;
-    }
-
     public WrapperStatus getStatus() {
         return status;
     }
 
-    public void setNextGen(int gen) {
-        nextGen = gen;
-    }
-
-    public void setGen(int gen) {
-        this.gen = gen;
+    public void setStatus(WrapperStatus status) {
+        this.status = status;
     }
 
     public int getGen() {
         return gen;
     }
 
+    public void setGen(int gen) {
+        this.gen = gen;
+    }
+
     public int getNextGen() {
         return nextGen;
+    }
+
+    public void setNextGen(int gen) {
+        nextGen = gen;
     }
 
     public void addTransformation(Transformation<T> transformation) {
         transformations.add(transformation);
     }
 
-    public BitSet bits(){
+    public BitSet bits() {
         return available;
     }
 
@@ -125,15 +129,17 @@ public class TraitsWrapper<T extends Trait> {
 
         // 00010 - xor1 - toDelete
 
-        if (!xor.isEmpty()){
+        if (!xor.isEmpty()) {
             xor.xor(fromBits);
             xor.stream().forEach(this::remove);
         }
+//        System.out.println(from);
+//        System.out.println(this);
         from.traits.forEach((k, v) -> v.duplicateTo(get(k)));
         created.clear();
     }
 
-    public void addAndApply(Transformation<T> transformation) {
+    public void addAndApply(int entity, Transformation<T> transformation) {
         addTransformation(transformation);
         transformation.apply(this);
     }
@@ -149,5 +155,9 @@ public class TraitsWrapper<T extends Trait> {
 
     public BitSet getCreated() {
         return created;
+    }
+
+    public T create(Class<T> trait) {
+        return get(available.length());
     }
 }
