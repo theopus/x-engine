@@ -13,7 +13,7 @@ public abstract class TaskSystem implements BaseSystem {
     }
 
     @Override
-    public Task task(){
+    public Task task() {
         return task;
     }
 }

@@ -3,7 +3,6 @@ package com.theopus.client;
 import com.google.common.collect.ImmutableMap;
 import com.theopus.client.ecs.system.PlaygroundVer0System;
 import com.theopus.client.ecs.system.RenderSystem;
-import com.theopus.client.ecs.system.TestSystem;
 import com.theopus.client.ecs.system.UpdateSystem;
 import com.theopus.client.ecs.trait.PositionTrait;
 import com.theopus.client.ecs.trait.RenderTrait;
@@ -15,10 +14,13 @@ import com.theopus.xengine.XEngine;
 import com.theopus.xengine.XEngineBuilder;
 import com.theopus.xengine.ecs.EntitySystemConfig;
 import com.theopus.xengine.ecs.SystemsConfig;
+import com.theopus.xengine.event.EventConfig;
+import com.theopus.xengine.event.Topic;
 import com.theopus.xengine.nscheduler.task.ExecutorServiceFeeder;
 import com.theopus.xengine.platform.GlfwPlatformManager;
 import com.theopus.xengine.render.RenderConfig;
 import com.theopus.xengine.render.opengl.GlRender;
+import org.joml.Matrix4f;
 import org.joml.Vector4f;
 
 import java.util.Arrays;
@@ -35,13 +37,8 @@ public class Client {
                 .ecs(new EntitySystemConfig(5, Arrays.asList(
                         PositionTrait.class, RenderTrait.class, WorldPositionTrait.class
                 )))
-                .systems(new SystemsConfig(
-//                        TestSystem.class,
-                        PlaygroundVer0System.class,
-                        RenderSystem.class,
-                        UpdateSystem.class
-                        ))
-                ///
+                .systems(new SystemsConfig(PlaygroundVer0System.class, RenderSystem.class, UpdateSystem.class))
+                .event(new EventConfig(5, new Topic<>(3, Matrix4f.class)))
                 .platformManager(GlfwPlatformManager.class, windowConfig)
                 .feeder(new ExecutorServiceFeeder())
                 .render(new RenderConfig(GlRender.class, ImmutableMap.of(Ver0Module.class, Ver0ModuleImpl.class)))

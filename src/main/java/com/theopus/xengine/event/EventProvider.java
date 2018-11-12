@@ -27,11 +27,11 @@ public class EventProvider implements Provider {
             if (event) {
                 field.setAccessible(true);
                 Event annotation = field.getAnnotation(Event.class);
-                if (annotation.type() == Event.READ) {
+                if (field.getType().equals(TopicReader.class)) {
                     TopicReader<?> reader = manager.createReader(annotation.topicId());
                     container.add(reader);
                     field.set(target, reader);
-                } else if (annotation.type() == Event.WRITE) {
+                } else if (field.getType().equals(TopicWriter.class)) {
                     TopicWriter<?> writer = manager.createWriter(annotation.topicId());
                     container.add(writer);
                     field.set(target, writer);

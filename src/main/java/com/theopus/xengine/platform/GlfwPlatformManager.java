@@ -1,13 +1,13 @@
 package com.theopus.xengine.platform;
 
 import com.theopus.xengine.WindowConfig;
-import com.theopus.xengine.inject.Inject;
-import com.theopus.xengine.nscheduler.Context;
 import com.theopus.xengine.event.Event;
 import com.theopus.xengine.event.EventManager;
 import com.theopus.xengine.event.TopicWriter;
+import com.theopus.xengine.inject.Inject;
 import com.theopus.xengine.input.GlfwInput;
 import com.theopus.xengine.input.InputManager;
+import com.theopus.xengine.nscheduler.Context;
 import org.joml.Vector2i;
 import org.joml.Vector4f;
 import org.lwjgl.glfw.*;
@@ -89,7 +89,8 @@ public class GlfwPlatformManager implements PlatformManager {
         }
 
         mainContext = GLFW.glfwCreateWindow(width, height, "xEngine", NULL, NULL);
-        sideContext = GLFW.glfwCreateWindow(width, height, "", NULL, mainContext);
+        GLFW.glfwWindowHint(GLFW.GLFW_VISIBLE, GLFW.GLFW_FALSE);
+        sideContext = GLFW.glfwCreateWindow(width, height, "second", NULL, mainContext);
 
         if (listener != null) {
             listener = GLFW.glfwSetKeyCallback(mainContext, listener);
@@ -120,6 +121,7 @@ public class GlfwPlatformManager implements PlatformManager {
 
         GLFW.glfwMakeContextCurrent(mainContext);
         mainCapabilities = GL.createCapabilities();
+        detachContext();
         LOGGER.info("Created capabilietes for mainContext OPENGL");
         GLFW.glfwMakeContextCurrent(sideContext);
         sideCapabilities = GL.createCapabilities();
@@ -223,5 +225,13 @@ public class GlfwPlatformManager implements PlatformManager {
     @Override
     public InputManager getInput() {
         return hub;
+    }
+
+    @Override
+    public void scanErrors() {
+        int error = GL11.glGetError();
+        if (error != 0){
+            LOGGER.error("OpenGL Error: {}", error);
+        }
     }
 }

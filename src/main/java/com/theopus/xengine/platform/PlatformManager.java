@@ -1,7 +1,7 @@
 package com.theopus.xengine.platform;
 
-import com.theopus.xengine.nscheduler.Context;
 import com.theopus.xengine.input.InputManager;
+import com.theopus.xengine.nscheduler.Context;
 
 public interface PlatformManager extends AutoCloseable {
 
@@ -23,4 +23,5 @@ public interface PlatformManager extends AutoCloseable {
 
     InputManager getInput();
 
+    void scanErrors();
 }

@@ -11,7 +11,6 @@ import com.theopus.xengine.event.TopicReader;
 import com.theopus.xengine.inject.Event;
 import com.theopus.xengine.inject.Inject;
 import com.theopus.xengine.nscheduler.Context;
-import com.theopus.xengine.utils.JsonUtils;
 import com.theopus.xengine.utils.Maths;
 import com.theopus.xengine.utils.OpsCounter;
 
@@ -28,7 +27,7 @@ public class UpdateSystem extends EntitySystem {
     @Ecs
     private WriteTraitMapper<WorldPositionTrait> worldPosition;
 
-    @Event(topicId = 0, type = Event.READ)
+    @Event(topicId = EventManager.Topics.INPUT_DATA)
     private TopicReader<InputData> reader;
 
 
@@ -47,7 +46,7 @@ public class UpdateSystem extends EntitySystem {
             PositionTrait positionTrait = position.get(e);
             position.transform(e, w -> {
                 PositionTrait trait = w.get(e);
-                trait.setRotZ(trait.getRotZ()+trait.getRotSpeed());
+                trait.setRotZ(trait.getRotZ() + trait.getRotSpeed());
             });
             worldPosition.transform(e, w -> Maths.applyTransformations(
                     positionTrait.getPosition(),

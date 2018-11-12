@@ -1,9 +1,11 @@
 package com.theopus.xengine.utils;
 
 import com.theopus.xengine.nscheduler.Context;
-import com.theopus.xengine.platform.PlatformManager;
 import com.theopus.xengine.nscheduler.task.ComponentTask;
+import com.theopus.xengine.nscheduler.task.Task;
 import com.theopus.xengine.opengl.SimpleLoader;
+import com.theopus.xengine.platform.PlatformManager;
+import com.theopus.xengine.render.Render;
 
 import java.io.Closeable;
 import java.util.Collection;
@@ -68,11 +70,21 @@ public class TaskUtils {
             }
         };
     }
+
     public static ComponentTask teardownCtx(PlatformManager platformManager, Context ctx) {
         return new ComponentTask(ctx, false) {
             @Override
             public void process() throws Exception {
                 platformManager.detachContext();
+            }
+        };
+    }
+
+    public static Task prepareRender(Render render, Context main) {
+        return new ComponentTask(main, false) {
+            @Override
+            public void process() throws Exception {
+                render.init();
             }
         };
     }

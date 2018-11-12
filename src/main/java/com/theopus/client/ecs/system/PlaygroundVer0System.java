@@ -12,6 +12,7 @@ import com.theopus.xengine.inject.Inject;
 import com.theopus.xengine.nscheduler.Context;
 import com.theopus.xengine.render.Render;
 import org.joml.Vector3f;
+import org.lwjgl.opengl.GL11;
 
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.IntStream;
@@ -25,7 +26,7 @@ public class PlaygroundVer0System extends TaskSystem {
 
     @Inject
     public PlaygroundVer0System(Render render) {
-        super(Context.SIDE, false, 60);
+        super(Context.MAIN, false, 60);
         this.render = render;
     }
 
@@ -44,19 +45,21 @@ public class PlaygroundVer0System extends TaskSystem {
                         3, 1, 2
                 }));
 
-        IntStream.range(0, 10).forEach(i -> generate(module, load));
+        IntStream.range(0, 1).forEach(i -> generate(module, load));
+
     }
 
 
-    private void generate(Ver0Module module, int load){
+    private void generate(Ver0Module module, int load) {
         int entity = manager.create();
         manager.create(entity, RenderTrait.class);
         manager.transform(entity, PositionTrait.class, w -> w.get(entity).setPosition(new Vector3f(
-                ThreadLocalRandom.current().nextFloat() * 2 - 1,
-                ThreadLocalRandom.current().nextFloat() * 2 - 1,
+                ThreadLocalRandom.current().nextFloat(),
+                ThreadLocalRandom.current().nextFloat(),
                 0)));
         manager.transform(entity, WorldPositionTrait.class, w -> w.get(entity));
         module.bind(entity, load);
+
     }
 
     @Override

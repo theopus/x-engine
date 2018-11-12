@@ -65,7 +65,7 @@ public class EntityManager implements TaskComponent, Bits {
         return (T) writeTraitMapper.get(entity);
     }
 
-    public <T extends Trait> void transform(int entity, Class<T> trait, Transformation<T> transformation){
+    public <T extends Trait> void transform(int entity, Class<T> trait, Transformation<T> transformation) {
         WriteTraitMapper<T> writeTraitMapper = (WriteTraitMapper<T>) mappers.get(trait);
         writeTraitMapper.transform(entity, transformation);
     }

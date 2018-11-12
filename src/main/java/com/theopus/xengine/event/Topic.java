@@ -13,7 +13,7 @@ public class Topic<D> {
     private static final Logger LOGGER = LoggerFactory.getLogger(Topic.class);
     private static int count;
 
-    int id;
+    public final int id;
     private String description;
     private Class<D> dataClass;
 
@@ -33,7 +33,17 @@ public class Topic<D> {
     }
 
     public Topic(Class<D> dataClass) {
-        this("Topic for: " + dataClass, dataClass);
+        this.id = count++;
+        this.userOffsets = new HashMap<>();
+        this.dataClass = dataClass;
+        this.description = "Topic for: " + dataClass;
+    }
+
+    public Topic(int id, Class<D> dataClass) {
+        this.id = id;
+        this.userOffsets = new HashMap<>();
+        this.dataClass = dataClass;
+        this.description = "Topic for: " + dataClass;
     }
 
     void put(List<Event<D>> newEvents) {

@@ -12,6 +12,7 @@ public class Uniform<T> {
     protected String name;
     protected int location;
     private LoadFunction<T> function;
+
     public Uniform(String name, LoadFunction<T> function) {
         this.name = name;
         this.function = function;

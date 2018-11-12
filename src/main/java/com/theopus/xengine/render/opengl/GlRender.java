@@ -27,7 +27,6 @@ public class GlRender implements Render {
 
     @Override
     public void init() {
-
     }
 
     @Override

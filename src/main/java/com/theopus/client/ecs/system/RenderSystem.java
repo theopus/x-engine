@@ -10,6 +10,7 @@ import com.theopus.xengine.nscheduler.Context;
 import com.theopus.xengine.platform.PlatformManager;
 import com.theopus.xengine.render.Render;
 import com.theopus.xengine.utils.OpsCounter;
+import org.lwjgl.opengl.GL11;
 
 import java.util.BitSet;
 
@@ -25,7 +26,6 @@ public class RenderSystem extends EntitySystem {
     private Render render;
     private PlatformManager pm;
 
-
     @Inject
     public RenderSystem(Render render, PlatformManager pm) {
         super(Context.MAIN, true, 100_000_000);
@@ -40,6 +40,7 @@ public class RenderSystem extends EntitySystem {
         render.render(entities);
         pm.refreshWindow();
 
+        pm.scanErrors();
         counter.operateAndLog();
     }
 }

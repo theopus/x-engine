@@ -1,6 +1,5 @@
 package com.theopus.xengine.event;
 
-import com.google.common.collect.ImmutableMap;
 import com.theopus.xengine.inject.Inject;
 import com.theopus.xengine.nscheduler.Context;
 import com.theopus.xengine.nscheduler.Scheduler;
@@ -10,6 +9,7 @@ import com.theopus.xengine.nscheduler.task.Task;
 import org.joml.Vector2i;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -24,16 +24,27 @@ public class EventManager {
     private List<ListenEntry> entryList = new ArrayList<>();
 
     @Inject
+    public EventManager(EventConfig config, Scheduler scheduler) {
+        this(scheduler);
+        Stream.of(config.getTopics()).forEach(this::addTopic);
+    }
+
+
     public EventManager(Scheduler scheduler) {
         this();
         this.scheduler = scheduler;
     }
 
     public EventManager() {
-        this.map = ImmutableMap.of(
-                EventManager.Topics.INPUT_DATA.getId(), EventManager.Topics.INPUT_DATA,
-                EventManager.Topics.FRAMEBUFFER_CHANGED.getId(), EventManager.Topics.FRAMEBUFFER_CHANGED
-        );
+        this.map = new HashMap<>();
+        addTopic(Topics.INPUT_DATA_TOPIC);
+        addTopic(Topics.FRAMEBUFFER_CHANGED_TOPIC);
+    }
+
+    private void addTopic(Topic<?> topic) {
+        map.merge(topic.id, topic, (t1, t2) -> {
+            throw new RuntimeException("Key " + topic.id + " is already registered as topic key.");
+        });
     }
 
     public <D> void put(int topicId, List<Event<D>> event) {
@@ -84,7 +95,7 @@ public class EventManager {
         return new EventProvider(this);
     }
 
-    public void listen(Task callback, TopicReader<Vector2i> reader) {
+    public void listen(Task callback, TopicReader<?> reader) {
         entryList.add(new ListenEntry(callback, reader));
     }
 
@@ -108,15 +119,21 @@ public class EventManager {
     }
 
     public static final class Topics {
-        public static final Topic<InputData> INPUT_DATA = new Topic<>(InputData.class);
-        public static final Topic<Vector2i> FRAMEBUFFER_CHANGED = new Topic<>(Vector2i.class);
+        public static final int INPUT_DATA = 0;
+        public static final Class INPUT_DATA_CLASS = InputData.class;
+        public static final int FRAMEBUFFER_CHANGED = 1;
+        public static final Class FRAMEBUFFER_CHANGED_CLASS = Vector2i.class;
+
+
+        public static final Topic<InputData> INPUT_DATA_TOPIC = new Topic<>(INPUT_DATA, InputData.class);
+        public static final Topic<Vector2i> FRAMEBUFFER_CHANGED_TOPIC = new Topic<>(FRAMEBUFFER_CHANGED, Vector2i.class);
     }
 
     private static final class ListenEntry {
         private Task task;
         private TopicReader<?> reader;
 
-        private ListenEntry(Task callback, TopicReader<Vector2i> reader) {
+        private ListenEntry(Task callback, TopicReader<?> reader) {
             task = callback;
             this.reader = reader;
         }

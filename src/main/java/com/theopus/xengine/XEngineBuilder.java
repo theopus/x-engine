@@ -1,19 +1,23 @@
 package com.theopus.xengine;
 
 import com.google.common.base.Preconditions;
-import com.theopus.xengine.ecs.*;
+import com.theopus.xengine.ecs.EcsProvider;
+import com.theopus.xengine.ecs.EntitySystemConfig;
+import com.theopus.xengine.ecs.EntitySystemManager;
+import com.theopus.xengine.ecs.SystemsConfig;
 import com.theopus.xengine.ecs.system.BaseSystem;
+import com.theopus.xengine.event.EventConfig;
+import com.theopus.xengine.event.EventManager;
+import com.theopus.xengine.event.EventProvider;
 import com.theopus.xengine.inject.Inject;
 import com.theopus.xengine.inject.TaskConfigurer;
 import com.theopus.xengine.nscheduler.Context;
 import com.theopus.xengine.nscheduler.Scheduler;
-import com.theopus.xengine.event.EventManager;
-import com.theopus.xengine.event.EventProvider;
+import com.theopus.xengine.nscheduler.task.Feeder;
+import com.theopus.xengine.nscheduler.task.Task;
 import com.theopus.xengine.nscheduler.task.TaskChain;
 import com.theopus.xengine.platform.GlfwPlatformManager;
 import com.theopus.xengine.platform.PlatformManager;
-import com.theopus.xengine.nscheduler.task.Feeder;
-import com.theopus.xengine.nscheduler.task.Task;
 import com.theopus.xengine.render.Render;
 import com.theopus.xengine.render.RenderConfig;
 import com.theopus.xengine.render.RenderModule;
@@ -35,6 +39,7 @@ public class XEngineBuilder {
 
     private SystemsConfig systemsConfig;
     private RenderConfig rerenderConfig;
+    private EventConfig eventConfig;
 
     private Class<? extends PlatformManager> pm = GlfwPlatformManager.class;
 
@@ -98,11 +103,13 @@ public class XEngineBuilder {
         List<Task> tasks = new ArrayList<>();
 
         tasks.addAll(systemsTasks.values());
-        tasks.add(em.task(10));
+        tasks.add(em.task(eventConfig.getBatchRetention()));
 
+        render.init();
         Task head = TaskChain
                 .startWith(TaskUtils.initCtx(plm, Context.MAIN))
                 .andThen(TaskUtils.initCtx(plm, Context.SIDE))
+//                .andThen(TaskUtils.prepareRender(render, Context.MAIN))
                 .andThen(new Task() {
                     @Override
                     public void process() {
@@ -176,5 +183,11 @@ public class XEngineBuilder {
         } catch (NoSuchMethodException | IllegalAccessException | InstantiationException | InvocationTargetException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    public XEngineBuilder event(EventConfig eventConfig) {
+        this.eventConfig = eventConfig;
+        this.ctx.put(EventConfig.class, eventConfig);
+        return this;
     }
 }

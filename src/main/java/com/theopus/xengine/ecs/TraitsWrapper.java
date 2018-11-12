@@ -9,8 +9,6 @@ import java.util.*;
 
 public class TraitsWrapper<T extends Trait> {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(TraitsWrapper.class);
-
     public static final Comparator<TraitsWrapper<?>> genComparatorDesc = (o1, o2) -> {
         //TODO: replace via Long.compareUnsigned()
         int i = o2.gen - o1.gen;
@@ -20,7 +18,7 @@ public class TraitsWrapper<T extends Trait> {
             return i;
         }
     };
-
+    private static final Logger LOGGER = LoggerFactory.getLogger(TraitsWrapper.class);
     private int id;
     private int gen;
     private int nextGen;

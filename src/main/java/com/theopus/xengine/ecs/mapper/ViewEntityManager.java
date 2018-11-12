@@ -2,7 +2,6 @@ package com.theopus.xengine.ecs.mapper;
 
 import com.theopus.xengine.ecs.EntitySystemManager;
 import com.theopus.xengine.ecs.Trait;
-import com.theopus.xengine.ecs.Transformation;
 import com.theopus.xengine.nscheduler.task.TaskComponent;
 
 import java.util.BitSet;
@@ -48,7 +47,7 @@ public class ViewEntityManager implements TaskComponent, Bits {
         return true;
     }
 
-    public <T extends Trait> T get(int entity, Class<T> trait){
+    public <T extends Trait> T get(int entity, Class<T> trait) {
         return (T) mappers.get(trait).get(entity);
     }
 
