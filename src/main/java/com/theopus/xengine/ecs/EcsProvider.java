@@ -5,6 +5,7 @@ import com.theopus.xengine.ecs.mapper.TraitMapper;
 import com.theopus.xengine.ecs.mapper.ViewEntityManager;
 import com.theopus.xengine.ecs.mapper.WriteTraitMapper;
 import com.theopus.xengine.inject.Provider;
+import com.theopus.xengine.nscheduler.task.Task;
 import com.theopus.xengine.nscheduler.task.TaskComponent;
 
 import java.lang.reflect.Field;
@@ -20,13 +21,11 @@ public class EcsProvider implements Provider {
         this.manager = manager;
     }
 
-
     @Override
-    public void provide(Object target, List<TaskComponent> container) throws IllegalAccessException {
+    public void provide(Object target, List<TaskComponent> container, Task task) throws IllegalAccessException {
         Class<?> targetClass = target.getClass();
 
         List<Field> fields = collectFields(targetClass);
-//        Field[] fields = targetClass.getDeclaredFields();
 
         for (Field field : fields) {
             boolean annotated = field.isAnnotationPresent(Ecs.class);

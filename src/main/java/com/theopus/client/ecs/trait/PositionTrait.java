@@ -15,7 +15,6 @@ public class PositionTrait extends Trait<PositionTrait> implements IDuplicate<Po
     private float rotY;
     private float rotZ;
     private float scale = 1f;
-    private float rotSpeed = 0.000f;
 
     public Vector3f getPosition() {
         return position;
@@ -57,14 +56,6 @@ public class PositionTrait extends Trait<PositionTrait> implements IDuplicate<Po
         this.scale = scale;
     }
 
-    public float getRotSpeed() {
-        return rotSpeed;
-    }
-
-    public void setRotSpeed(float rotSpeed) {
-        this.rotSpeed = rotSpeed;
-    }
-
     @Override
     public PositionTrait duplicateTo(PositionTrait trait) {
         trait.position.x = this.position.x;
@@ -76,7 +67,6 @@ public class PositionTrait extends Trait<PositionTrait> implements IDuplicate<Po
         trait.rotZ = this.rotZ;
 
         trait.scale = this.scale;
-        trait.rotSpeed = this.rotSpeed;
 
         trait.gen = this.gen;
         return trait;

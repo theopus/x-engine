@@ -2,6 +2,7 @@ package com.theopus.xengine.event;
 
 import com.theopus.xengine.inject.Event;
 import com.theopus.xengine.inject.Provider;
+import com.theopus.xengine.nscheduler.task.Task;
 import com.theopus.xengine.nscheduler.task.TaskComponent;
 
 import java.lang.reflect.Field;
@@ -15,7 +16,7 @@ public class EventProvider implements Provider {
         this.manager = manager;
     }
 
-    public void provide(Object target, List<TaskComponent> container) throws IllegalAccessException {
+    public void provide(Object target, List<TaskComponent> container, Task task) throws IllegalAccessException {
 
         Class<?> targetClass = target.getClass();
 
@@ -28,9 +29,14 @@ public class EventProvider implements Provider {
                 field.setAccessible(true);
                 Event annotation = field.getAnnotation(Event.class);
                 if (field.getType().equals(TopicReader.class)) {
+                    boolean listener = annotation.listener();
                     TopicReader<?> reader = manager.createReader(annotation.topicId());
                     container.add(reader);
                     field.set(target, reader);
+
+                    if (listener) {
+                        manager.listen(task, reader);
+                    }
                 } else if (field.getType().equals(TopicWriter.class)) {
                     TopicWriter<?> writer = manager.createWriter(annotation.topicId());
                     container.add(writer);

@@ -2,12 +2,12 @@ package com.theopus.client.render;
 
 import com.theopus.client.ecs.trait.WorldPositionTrait;
 import com.theopus.xengine.ecs.mapper.ViewEntityManager;
+import com.theopus.xengine.opengl.DefaultRenderCommand;
 import com.theopus.xengine.opengl.SimpleLoader;
 import com.theopus.xengine.opengl.Vao;
 import com.theopus.xengine.opengl.shader.StaticShader;
 import com.theopus.xengine.utils.BitSetUtils;
-import org.lwjgl.opengl.GL11;
-import org.lwjgl.opengl.GL30;
+import org.joml.Matrix4f;
 
 import java.io.IOException;
 import java.util.BitSet;
@@ -21,11 +21,11 @@ public class Ver0ModuleImpl implements Ver0Module {
     private Map<Integer, Vao> models = new HashMap<>();
     private Map<Integer, BitSet> entityMap = new HashMap<>();
 
-    private StaticShader shader;
+    private DefaultRenderCommand command;
 
     public Ver0ModuleImpl() {
         try {
-            shader = new StaticShader("static.vert", "static.frag");
+            command = new DefaultRenderCommand(new StaticShader("static.vert", "static.frag"));
             loader = new SimpleLoader();
         } catch (IOException e) {
             throw new RuntimeException(e);
@@ -55,22 +55,17 @@ public class Ver0ModuleImpl implements Ver0Module {
 
     @Override
     public void prepare(int modelId) {
-        shader.bind();
-        GL30.glBindVertexArray(models.get(modelId).getId());
+        command.prepare(models.get(modelId));
     }
 
     @Override
     public void finish(int modelId) {
-        GL30.glBindVertexArray(0);
-        shader.unbind();
+        command.finish();
     }
 
 
     private void render(Vao vao, WorldPositionTrait trait) {
-        shader.transformation().load(
-                trait.getTransformation()
-        );
-        GL30.glDrawElements(GL11.GL_TRIANGLES, vao.getLength(), GL30.GL_UNSIGNED_INT, 0);
+        command.render(vao, trait.getTransformation());
     }
 
     @Override
@@ -83,7 +78,7 @@ public class Ver0ModuleImpl implements Ver0Module {
     @Override
     public void close() {
         loader.close();
-        shader.cleanup();
+        command.close();
     }
 
     @Override
@@ -102,5 +97,19 @@ public class Ver0ModuleImpl implements Ver0Module {
                 entities.xor(cross);
             }
         }
+    }
+
+    @Override
+    public void loadView(Matrix4f view) {
+        command.shader.bind();
+        command.loadView(view);
+        command.shader.unbind();
+    }
+
+    @Override
+    public void loadProjection(Matrix4f projection) {
+        command.shader.bind();
+        command.loadProjection(projection);
+        command.shader.unbind();
     }
 }

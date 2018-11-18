@@ -31,6 +31,7 @@ public class StaticShader extends ShaderProgram {
         super.bindAttribute(2, "normal");
     }
 
+
     public Uniform<Matrix4f> transformation() {
         return transformation;
     }

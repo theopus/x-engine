@@ -19,6 +19,10 @@ public class TaskConfigurer {
         this.eventProvider = eventProvider;
     }
 
+    public void configure(Task task){
+        configure(task, task);
+    }
+
     public void configure(Object target, Task task) {
         try {
             Field components = ComponentTask.class.getDeclaredField("components");
@@ -27,8 +31,8 @@ public class TaskConfigurer {
 
             List<TaskComponent> container = (List<TaskComponent>) components.get(task);
 
-            ecsProvider.provide(target, container);
-            eventProvider.provide(target, container);
+            ecsProvider.provide(target, container, task);
+            eventProvider.provide(target, container, task);
         } catch (NoSuchFieldException | IllegalAccessException e) {
             throw new RuntimeException(e);
         }

@@ -31,6 +31,10 @@ public class GlRender implements Render {
 
     @Override
     public void loadProjection(Matrix4f projection) {
+        for (RenderModule value : modules.values()) {
+            value.loadProjection(projection);
+        }
+
         LOGGER.info("Projections reload \n{}", projection);
     }
 
@@ -41,7 +45,9 @@ public class GlRender implements Render {
 
     @Override
     public void loadView(Matrix4f view) {
-
+        for (RenderModule value : modules.values()) {
+            value.loadView(view);
+        }
     }
 
     @Override

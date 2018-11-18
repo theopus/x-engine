@@ -4,10 +4,14 @@ import org.joml.Matrix4f;
 import org.joml.Vector3f;
 import org.lwjgl.opengl.GL20;
 import org.lwjgl.system.MemoryUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.nio.FloatBuffer;
 
 public class Uniform<T> {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(Uniform.class);
 
     protected String name;
     protected int location;
@@ -86,7 +90,8 @@ public class Uniform<T> {
     }
 
     void prepare(ShaderProgram program) {
-        GL20.glGetUniformLocation(program.getId(), name);
+        location = GL20.glGetUniformLocation(program.getId(), name);
+        LOGGER.info("Location for uniform '{}' = {}", name, location);
     }
 
     public void load(T t) {

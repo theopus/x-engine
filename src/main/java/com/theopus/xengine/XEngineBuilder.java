@@ -13,6 +13,7 @@ import com.theopus.xengine.inject.Inject;
 import com.theopus.xengine.inject.TaskConfigurer;
 import com.theopus.xengine.nscheduler.Context;
 import com.theopus.xengine.nscheduler.Scheduler;
+import com.theopus.xengine.nscheduler.task.ComponentTask;
 import com.theopus.xengine.nscheduler.task.Feeder;
 import com.theopus.xengine.nscheduler.task.Task;
 import com.theopus.xengine.nscheduler.task.TaskChain;
@@ -42,6 +43,7 @@ public class XEngineBuilder {
     private EventConfig eventConfig;
 
     private Class<? extends PlatformManager> pm = GlfwPlatformManager.class;
+    private List<Class<? extends ComponentTask>> tasksConfig;
 
     public static XEngineBuilder create() {
         return new XEngineBuilder();
@@ -93,23 +95,25 @@ public class XEngineBuilder {
         Map<? extends BaseSystem, Task> systemsTasks = Stream.of(systemsConfig.getSystems())
                 .map(this::createInstance)
                 .collect(Collectors.toMap(s -> s, BaseSystem::task));
+        List<? extends ComponentTask> task = tasksConfig.stream().map(this::createInstance).collect(Collectors.toList());
 
         EcsProvider ecmProvider = ecm.getProvider();
         EventProvider emProvider = em.getProvider();
         TaskConfigurer taskConfigurer = new TaskConfigurer(ecmProvider, emProvider);
         configureSystems(taskConfigurer, systemsTasks);
+        configureTasks(taskConfigurer, task);
 
 
         List<Task> tasks = new ArrayList<>();
 
         tasks.addAll(systemsTasks.values());
         tasks.add(em.task(eventConfig.getBatchRetention()));
+        tasks.addAll(task);
 
         render.init();
         Task head = TaskChain
                 .startWith(TaskUtils.initCtx(plm, Context.MAIN))
                 .andThen(TaskUtils.initCtx(plm, Context.SIDE))
-//                .andThen(TaskUtils.prepareRender(render, Context.MAIN))
                 .andThen(new Task() {
                     @Override
                     public void process() {
@@ -119,6 +123,10 @@ public class XEngineBuilder {
 
         scheduler.propose(head);
         return new XEngine(scheduler, em, plm, ecm, render);
+    }
+
+    private void configureTasks(TaskConfigurer task, List<? extends ComponentTask> tasks) {
+        tasks.forEach(task::configure);
     }
 
     private void configureSystems(TaskConfigurer configurer, Map<? extends BaseSystem, Task> systemsTasks) {
@@ -188,6 +196,11 @@ public class XEngineBuilder {
     public XEngineBuilder event(EventConfig eventConfig) {
         this.eventConfig = eventConfig;
         this.ctx.put(EventConfig.class, eventConfig);
+        return this;
+    }
+
+    public XEngineBuilder tasks(List<Class<? extends ComponentTask>> tasks) {
+        this.tasksConfig = tasks;
         return this;
     }
 }

@@ -1,8 +1,6 @@
 package com.theopus.client.ecs.system;
 
-import com.theopus.client.ecs.trait.PositionTrait;
-import com.theopus.client.ecs.trait.RenderTrait;
-import com.theopus.client.ecs.trait.WorldPositionTrait;
+import com.theopus.client.ecs.trait.*;
 import com.theopus.client.render.Ver0Model;
 import com.theopus.client.render.Ver0Module;
 import com.theopus.xengine.ecs.Ecs;
@@ -32,6 +30,13 @@ public class PlaygroundVer0System extends TaskSystem {
 
     @Override
     public void process() {
+
+        int camera = manager.create();
+        manager.transform(camera, CameraTrait.class, wrapper -> {
+            CameraTrait cameraTrait = wrapper.get(camera);
+            cameraTrait.setPositionReference(1);
+        });
+
         Ver0Module module = render.module(Ver0Module.class);
         int load = module.load(new Ver0Model(
                 new float[]{
@@ -45,7 +50,8 @@ public class PlaygroundVer0System extends TaskSystem {
                         3, 1, 2
                 }));
 
-        IntStream.range(0, 1).forEach(i -> generate(module, load));
+        IntStream.range(0, 5).forEach(i -> generate(module, load));
+
 
     }
 
@@ -58,6 +64,7 @@ public class PlaygroundVer0System extends TaskSystem {
                 ThreadLocalRandom.current().nextFloat(),
                 0)));
         manager.transform(entity, WorldPositionTrait.class, w -> w.get(entity));
+        manager.transform(entity, VelocityTrait.class, w -> w.get(entity));
         module.bind(entity, load);
 
     }
