@@ -52,6 +52,12 @@ public class InputMapper extends ComponentTask {
                         break;
                     case GLFW.GLFW_KEY_F:
                         moveData.rotZ(data.action != 0);
+                        break;
+                     case GLFW.GLFW_KEY_E:
+                        moveData.rotY(data.action != 0);
+                        break;
+                    case GLFW.GLFW_KEY_Q:
+                        moveData.rotY(data.action != 0);
                 }
                 moveDataTopic.write(new com.theopus.xengine.event.Event<>(moveData));
             }

@@ -56,6 +56,10 @@ public class UpdateSystem extends EntitySystem {
                 trait.setRotY(trait.getRotY() + velocityTrait.getRotation().y);
                 trait.setRotZ(trait.getRotZ() + velocityTrait.getRotation().z);
             });
+
+            if (e == 0){
+                System.out.println(positionTrait.getRotY());
+            }
             worldPosition.transform(e, w -> Maths.applyTransformations(
                     positionTrait.getPosition(),
                     positionTrait.getRotX(),

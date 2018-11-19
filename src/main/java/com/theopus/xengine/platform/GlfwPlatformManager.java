@@ -121,6 +121,7 @@ public class GlfwPlatformManager implements PlatformManager {
 
         GLFW.glfwMakeContextCurrent(mainContext);
         mainCapabilities = GL.createCapabilities();
+
         detachContext();
         LOGGER.info("Created capabilietes for mainContext OPENGL");
         GLFW.glfwMakeContextCurrent(sideContext);
@@ -134,6 +135,9 @@ public class GlfwPlatformManager implements PlatformManager {
 
         detachContext();
         attachMainContext();
+        framebufferWriter.prepare();
+        framebufferWriter.write(new Event<>(new Vector2i(width, width)));
+        framebufferWriter.finish();
 
         GLFW.glfwSwapInterval(vSync);
         GL11.glClearColor(color.x, color.y, color.z, color.w);

@@ -34,7 +34,20 @@ public class PlaygroundVer0System extends TaskSystem {
         int camera = manager.create();
         manager.transform(camera, CameraTrait.class, wrapper -> {
             CameraTrait cameraTrait = wrapper.get(camera);
-            cameraTrait.setPositionReference(1);
+            cameraTrait.setPositionReference(camera);
+        });
+
+        manager.transform(camera, PositionTrait.class, wrapper -> {
+            PositionTrait trait = wrapper.get(camera);
+            trait.setRotY(160);
+        });
+
+        manager.transform(camera, WorldPositionTrait.class, wrapper -> {
+            wrapper.get(camera);
+        });
+
+        manager.transform(camera, VelocityTrait.class, wrapper -> {
+            wrapper.get(camera);
         });
 
         Ver0Module module = render.module(Ver0Module.class);
@@ -62,7 +75,7 @@ public class PlaygroundVer0System extends TaskSystem {
         manager.transform(entity, PositionTrait.class, w -> w.get(entity).setPosition(new Vector3f(
                 ThreadLocalRandom.current().nextFloat(),
                 ThreadLocalRandom.current().nextFloat(),
-                0)));
+                0.3f)));
         manager.transform(entity, WorldPositionTrait.class, w -> w.get(entity));
         manager.transform(entity, VelocityTrait.class, w -> w.get(entity));
         module.bind(entity, load);

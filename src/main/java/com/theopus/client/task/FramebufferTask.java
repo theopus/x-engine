@@ -26,6 +26,7 @@ public class FramebufferTask extends ComponentTask {
     @Override
     public void process() {
         reader.read().forEach(v2 -> {
+            System.out.println(v2);
             render.loadViewPort(v2.data().x, v2.data().y);
             render.loadProjection(Maths.createProjectionMatrixAuto(
                     90, 0.1f, 1000, v2.data().x * 1.0f / v2.data().y

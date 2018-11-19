@@ -34,7 +34,7 @@ public class InputSystem extends EntitySystem {
         moveData.read().forEach(mde -> {
                 VelocityTrait trait = velocity.get(1);
                 MoveData data = mde.data();
-                applyMove(1,trait, data);
+                applyMove(0,trait, data);
         });
     }
 
@@ -77,6 +77,28 @@ public class InputSystem extends EntitySystem {
                     translation.y = -0.1f;
                 } else {
                     translation.y = 0f;
+                }
+            }
+            if (data.forward() != -1) {
+                if (data.forward() == 1) {
+                    translation.z = 0.1f;
+                } else {
+                    translation.z = 0f;
+                }
+            }
+            if (data.back() != -1) {
+                if (data.back() == 1) {
+                    translation.z = -0.1f;
+                } else {
+                    translation.z = 0f;
+                }
+            }
+
+            if (data.rotY() != -1) {
+                if (data.rotY() == 1) {
+                    rotation.y = (float) Math.toRadians(180);
+                } else {
+                    rotation.y = 0f;
                 }
             }
         });
