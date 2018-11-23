@@ -1,2 +1,5 @@
 rootProject.name = 'x-engine'
+include 'engine'
+include 'client'
+include 'opengl'
 

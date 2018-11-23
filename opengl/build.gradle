@@ -1,0 +1,18 @@
+plugins {
+    id 'java'
+}
+
+group 'com.theopus'
+version '1.0-SNAPSHOT'
+
+sourceCompatibility = 1.8
+
+
+dependencies {
+    compile libraries.lwjgl
+    compile libraries.joml
+    compile libraries.pngDecoder
+    compile libraries.lwjglNatives
+    compile libraries.logging
+    compile libraries.guava
+}

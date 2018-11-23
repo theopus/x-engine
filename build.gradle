@@ -1,65 +1,88 @@
 plugins {
     id 'java'
 }
-
 group 'com.theopus'
 version '1.0-SNAPSHOT'
 
 sourceCompatibility = 1.8
-
-import org.gradle.internal.os.OperatingSystem
-
-project.ext.lwjglVersion = "3.2.0"
-project.ext.jomlVersion = "1.9.11"
-
-switch (OperatingSystem.current()) {
-    case OperatingSystem.WINDOWS:
-        project.ext.lwjglNatives = "natives-windows"
-        break
-    case OperatingSystem.LINUX:
-        project.ext.lwjglNatives = "natives-linux"
-        break
-    case OperatingSystem.MAC_OS:
-        project.ext.lwjglNatives = "natives-macos"
-        break
-}
+project.ext.jomlVersion = ""
 
 repositories {
     mavenCentral()
 }
 
-dependencies {
-    compile "org.lwjgl:lwjgl:$lwjglVersion"
-    compile "org.lwjgl:lwjgl-assimp:$lwjglVersion"
-    compile "org.lwjgl:lwjgl-glfw:$lwjglVersion"
-    compile "org.lwjgl:lwjgl-jemalloc:$lwjglVersion"
-    compile "org.lwjgl:lwjgl-nanovg:$lwjglVersion"
-    compile "org.lwjgl:lwjgl-nuklear:$lwjglVersion"
-    compile "org.lwjgl:lwjgl-openal:$lwjglVersion"
-    compile "org.lwjgl:lwjgl-opencl:$lwjglVersion"
-    compile "org.lwjgl:lwjgl-opengl:$lwjglVersion"
-    compile "org.lwjgl:lwjgl-par:$lwjglVersion"
-    compile "org.lwjgl:lwjgl-remotery:$lwjglVersion"
-    compile "org.lwjgl:lwjgl-stb:$lwjglVersion"
-    compile "org.lwjgl:lwjgl:$lwjglVersion:$lwjglNatives"
-    compile "org.lwjgl:lwjgl-assimp:$lwjglVersion:$lwjglNatives"
-    compile "org.lwjgl:lwjgl-glfw:$lwjglVersion:$lwjglNatives"
-    compile "org.lwjgl:lwjgl-jemalloc:$lwjglVersion:$lwjglNatives"
-    compile "org.lwjgl:lwjgl-nanovg:$lwjglVersion:$lwjglNatives"
-    compile "org.lwjgl:lwjgl-nuklear:$lwjglVersion:$lwjglNatives"
-    compile "org.lwjgl:lwjgl-openal:$lwjglVersion:$lwjglNatives"
-    compile "org.lwjgl:lwjgl-opengl:$lwjglVersion:$lwjglNatives"
-    compile "org.lwjgl:lwjgl-par:$lwjglVersion:$lwjglNatives"
-    compile "org.lwjgl:lwjgl-remotery:$lwjglVersion:$lwjglNatives"
-    compile "org.lwjgl:lwjgl-stb:$lwjglVersion:$lwjglNatives"
-    compile "org.joml:joml:${jomlVersion}"
-
-    compile group: 'org.apache.logging.log4j', name: 'log4j-core', version: '2.11.1'
-    compile group: 'org.apache.logging.log4j', name: 'log4j-slf4j-impl', version: '2.11.1'
-    compile "org.l33tlabs.twl:pngdecoder:1.0"
-    compile group: 'com.google.guava', name: 'guava', version: '19.0'
-    compile group: 'com.fasterxml.jackson.dataformat', name: 'jackson-dataformat-yaml', version: '2.9.7'
-    compile group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.9.7'
-    compile group: 'org.roaringbitmap', name: 'RoaringBitmap', version: '0.7.23'
-
+subprojects {
+    repositories {
+        mavenCentral()
+    }
 }
+
+switch (org.gradle.internal.os.OperatingSystem.current()) {
+    case org.gradle.internal.os.OperatingSystem.WINDOWS:
+        project.ext.lwjglNatives = "natives-windows"
+        break
+    case org.gradle.internal.os.OperatingSystem.LINUX:
+        project.ext.lwjglNatives = "natives-linux"
+        break
+    case org.gradle.internal.os.OperatingSystem.MAC_OS:
+        project.ext.lwjglNatives = "natives-macos"
+        break
+}
+
+ext {
+    versions = [
+            joml   : "1.9.11",
+            log4j  : "2.11.1",
+            png    : "1.0",
+            guava  : "19.0",
+            jackson: "2.9.7",
+            lwjgl  : "3.2.0",
+    ]
+
+    libraries = [
+            joml        : "org.joml:joml:${versions.joml}",
+            pngDecoder  : "org.l33tlabs.twl:pngdecoder:${versions.png}",
+            guava       : "com.google.guava:guava:${versions.guava}",
+            jacksonYaml : "com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:${versions.jackson}",
+            jackson     : "com.fasterxml.jackson.core:jackson-databind:${versions.jackson}",
+
+            logging     : [
+                    "org.apache.logging.log4j:log4j-core:${versions.log4j}",
+                    "org.apache.logging.log4j:log4j-slf4j-impl:${versions.log4j}",
+            ],
+            lwjgl       : [
+                    "org.lwjgl:lwjgl:${versions.lwjgl}",
+                    "org.lwjgl:lwjgl-assimp:${versions.lwjgl}",
+                    "org.lwjgl:lwjgl-glfw:${versions.lwjgl}",
+                    "org.lwjgl:lwjgl-jemalloc:${versions.lwjgl}",
+                    "org.lwjgl:lwjgl-nanovg:${versions.lwjgl}",
+                    "org.lwjgl:lwjgl-nuklear:${versions.lwjgl}",
+                    "org.lwjgl:lwjgl-openal:${versions.lwjgl}",
+                    "org.lwjgl:lwjgl-opencl:${versions.lwjgl}",
+                    "org.lwjgl:lwjgl-opengl:${versions.lwjgl}",
+                    "org.lwjgl:lwjgl-par:${versions.lwjgl}",
+                    "org.lwjgl:lwjgl-remotery:${versions.lwjgl}",
+                    "org.lwjgl:lwjgl-stb:${versions.lwjgl}",
+            ],
+            lwjglNatives: [
+                    "org.lwjgl:lwjgl:${versions.lwjgl}:${lwjglNatives}",
+                    "org.lwjgl:lwjgl-assimp:${versions.lwjgl}:$lwjglNatives",
+                    "org.lwjgl:lwjgl-glfw:${versions.lwjgl}:$lwjglNatives",
+                    "org.lwjgl:lwjgl-jemalloc:${versions.lwjgl}:$lwjglNatives",
+                    "org.lwjgl:lwjgl-nanovg:${versions.lwjgl}:$lwjglNatives",
+                    "org.lwjgl:lwjgl-nuklear:${versions.lwjgl}:$lwjglNatives",
+                    "org.lwjgl:lwjgl-openal:${versions.lwjgl}:$lwjglNatives",
+                    "org.lwjgl:lwjgl-opengl:${versions.lwjgl}:$lwjglNatives",
+                    "org.lwjgl:lwjgl-par:${versions.lwjgl}:$lwjglNatives",
+                    "org.lwjgl:lwjgl-remotery:${versions.lwjgl}:$lwjglNatives",
+                    "org.lwjgl:lwjgl-stb:${versions.lwjgl}:$lwjglNatives",
+            ]
+    ]
+}
+
+
+//dependencies {
+//    libraries.each {
+//        name, dep -> compile dep
+//    }
+//}
