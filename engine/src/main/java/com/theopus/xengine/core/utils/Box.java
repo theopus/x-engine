@@ -1,4 +1,4 @@
-package com.theopus.xengine.utils;
+package com.theopus.xengine.core.utils;
 
 public class Box<T> {
 

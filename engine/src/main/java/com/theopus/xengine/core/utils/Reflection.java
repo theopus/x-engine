@@ -1,4 +1,4 @@
-package com.theopus.xengine.utils;
+package com.theopus.xengine.core.utils;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;

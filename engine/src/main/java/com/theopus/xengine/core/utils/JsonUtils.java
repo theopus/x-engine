@@ -1,4 +1,4 @@
-package com.theopus.xengine.utils;
+package com.theopus.xengine.core.utils;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.PropertyAccessor;

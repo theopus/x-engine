@@ -5,11 +5,6 @@ group 'com.theopus'
 version '1.0-SNAPSHOT'
 
 sourceCompatibility = 1.8
-project.ext.jomlVersion = ""
-
-repositories {
-    mavenCentral()
-}
 
 subprojects {
     repositories {
@@ -37,6 +32,7 @@ ext {
             guava  : "19.0",
             jackson: "2.9.7",
             lwjgl  : "3.2.0",
+            artemis: "2.1.0"
     ]
 
     libraries = [
@@ -45,6 +41,7 @@ ext {
             guava       : "com.google.guava:guava:${versions.guava}",
             jacksonYaml : "com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:${versions.jackson}",
             jackson     : "com.fasterxml.jackson.core:jackson-databind:${versions.jackson}",
+            artemis     : "net.onedaybeard.artemis:artemis-odb:${versions.artemis}",
 
             logging     : [
                     "org.apache.logging.log4j:log4j-core:${versions.log4j}",
@@ -79,10 +76,3 @@ ext {
             ]
     ]
 }
-
-
-//dependencies {
-//    libraries.each {
-//        name, dep -> compile dep
-//    }
-//}

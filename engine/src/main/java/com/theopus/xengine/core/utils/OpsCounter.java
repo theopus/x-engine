@@ -1,4 +1,4 @@
-package com.theopus.xengine.utils;
+package com.theopus.xengine.core.utils;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

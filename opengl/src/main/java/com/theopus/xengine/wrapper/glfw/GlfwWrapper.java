@@ -15,12 +15,12 @@ import static org.lwjgl.opengl.GL11.GL_FALSE;
 import static org.lwjgl.opengl.GL11.GL_TRUE;
 import static org.lwjgl.system.MemoryUtil.NULL;
 
-public class GlfwPlatformManager {
+public class GlfwWrapper {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(GlfwPlatformManager.class);
-    public int width;
-    public int height;
-    public long mainContext;
+    private static final Logger LOGGER = LoggerFactory.getLogger(GlfwWrapper.class);
+    private int width;
+    private int height;
+    private long mainContext;
     private Vector4f color;
     private boolean primitiveCompatible;
     private GLFWKeyCallback listener;
@@ -30,7 +30,7 @@ public class GlfwPlatformManager {
     private GLCapabilities sideCapabilities;
 
 
-    public GlfwPlatformManager(WindowConfig windowConfig, GLFWKeyCallback listener) {
+    public GlfwWrapper(WindowConfig windowConfig, GLFWKeyCallback listener) {
         this.width = windowConfig.getWidth();
         this.height = windowConfig.getHeight();
         this.color = windowConfig.getColor();

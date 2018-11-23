@@ -16,4 +16,7 @@ dependencies {
     compile libraries.logging
     compile libraries.guava
     compile libraries.jackson
+    compile libraries.artemis
+    
+    compile project(":opengl")
 }
