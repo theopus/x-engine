@@ -17,6 +17,7 @@ dependencies {
     compile libraries.guava
     compile libraries.jackson
     compile libraries.artemis
+    testCompile libraries.junit
     
     compile project(":opengl")
 }

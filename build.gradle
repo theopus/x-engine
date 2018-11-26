@@ -32,7 +32,8 @@ ext {
             guava  : "19.0",
             jackson: "2.9.7",
             lwjgl  : "3.2.0",
-            artemis: "2.1.0"
+            artemis: "2.1.0",
+            junit  : "4.12",
     ]
 
     libraries = [
@@ -42,6 +43,8 @@ ext {
             jacksonYaml : "com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:${versions.jackson}",
             jackson     : "com.fasterxml.jackson.core:jackson-databind:${versions.jackson}",
             artemis     : "net.onedaybeard.artemis:artemis-odb:${versions.artemis}",
+            junit : "junit:junit:${versions.junit}",
+
 
             logging     : [
                     "org.apache.logging.log4j:log4j-core:${versions.log4j}",

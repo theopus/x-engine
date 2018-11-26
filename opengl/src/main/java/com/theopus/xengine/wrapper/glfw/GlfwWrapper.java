@@ -4,6 +4,7 @@ import org.joml.Vector4f;
 import org.lwjgl.glfw.*;
 import org.lwjgl.opengl.GL;
 import org.lwjgl.opengl.GL11;
+import org.lwjgl.opengl.GL30;
 import org.lwjgl.opengl.GLCapabilities;
 import org.lwjgl.system.MemoryStack;
 import org.slf4j.Logger;
@@ -109,6 +110,10 @@ public class GlfwWrapper {
 
     public void showWindow() {
         GLFW.glfwShowWindow(mainContext);
+    }
+
+    public void clearColorBuffer(){
+        GL30.glClear(GL11.GL_COLOR_BUFFER_BIT);
     }
 
     public void processEvents() {
