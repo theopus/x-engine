@@ -24,20 +24,19 @@ public class GlfwWrapper {
     private long mainContext;
     private Vector4f color;
     private boolean primitiveCompatible;
-    private GLFWKeyCallback listener;
+    private GLFWKeyCallbackI listener;
     private GLCapabilities mainCapabilities;
     private int vSync;
     private long sideContext;
     private GLCapabilities sideCapabilities;
 
 
-    public GlfwWrapper(WindowConfig windowConfig, GLFWKeyCallback listener) {
+    public GlfwWrapper(WindowConfig windowConfig) {
         this.width = windowConfig.getWidth();
         this.height = windowConfig.getHeight();
         this.color = windowConfig.getColor();
         this.vSync = windowConfig.getvSync();
         this.primitiveCompatible = windowConfig.isPrimitivesCompatible();
-        this.listener = listener;
     }
 
     public void createWindow() {
@@ -54,8 +53,8 @@ public class GlfwWrapper {
         GLFW.glfwWindowHint(GLFW.GLFW_RESIZABLE, GL_TRUE); // the mainContext will be resizable
 
         if (!primitiveCompatible) {
-            GLFW.glfwWindowHint(GLFW.GLFW_CONTEXT_VERSION_MAJOR, 3);
-            GLFW.glfwWindowHint(GLFW.GLFW_CONTEXT_VERSION_MINOR, 2);
+            GLFW.glfwWindowHint(GLFW.GLFW_CONTEXT_VERSION_MAJOR, 3); //opengl 3.*
+            GLFW.glfwWindowHint(GLFW.GLFW_CONTEXT_VERSION_MINOR, 3); //opengl *.3
             GLFW.glfwWindowHint(GLFW.GLFW_OPENGL_PROFILE, GLFW.GLFW_OPENGL_CORE_PROFILE);
             GLFW.glfwWindowHint(GLFW.GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
         }
@@ -112,7 +111,7 @@ public class GlfwWrapper {
         GLFW.glfwShowWindow(mainContext);
     }
 
-    public void clearColorBuffer(){
+    public void clearColorBuffer() {
         GL30.glClear(GL11.GL_COLOR_BUFFER_BIT);
     }
 
@@ -146,8 +145,15 @@ public class GlfwWrapper {
     }
 
 
-    public void setCallback(GLFWKeyCallback glfwKeyCallback) {
+    public void setKeyCallback(GLFWKeyCallbackI glfwKeyCallback) {
         GLFWKeyCallback was = GLFW.glfwSetKeyCallback(mainContext, glfwKeyCallback);
+        if (was != null) {
+            was.free();
+        }
+    }
+
+    public void setMouseButtonCallback(GLFWMouseButtonCallbackI glfwKeyCallback) {
+        GLFWMouseButtonCallback was = GLFW.glfwSetMouseButtonCallback(mainContext, glfwKeyCallback);
         was.free();
     }
 
@@ -184,5 +190,9 @@ public class GlfwWrapper {
         if (error != 0) {
             LOGGER.error("OpenGL Error: {}", error);
         }
+    }
+
+    public void setShouldClose(boolean status) {
+        GLFW.glfwSetWindowShouldClose(mainContext, status);
     }
 }

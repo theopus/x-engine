@@ -12,6 +12,9 @@ import com.theopus.xengine.core.ecs.systems.EventSystem;
 import com.theopus.xengine.core.ecs.systems.ModelMatrixSystem;
 import com.theopus.xengine.core.ecs.systems.MoveSystem;
 import com.theopus.xengine.core.events.EventBus;
+import com.theopus.xengine.core.events.VoidEvent;
+import com.theopus.xengine.core.platform.GlfwPlatformManager;
+import com.theopus.xengine.core.platform.PlatformManager;
 import com.theopus.xengine.wrapper.glfw.Context;
 import com.theopus.xengine.wrapper.glfw.GlfwWrapper;
 import com.theopus.xengine.wrapper.glfw.WindowConfig;
@@ -23,26 +26,23 @@ public class XEngine {
 
     public void run() {
 
-
-        GlfwWrapper wrapper = new GlfwWrapper(new WindowConfig(600, 400, new Vector4f(1, 0, 0, 0), false, 0), new GLFWKeyCallback() {
-            @Override
-            public void invoke(long window, int key, int scancode, int action, int mods) {
-                if (key == GLFW.GLFW_KEY_ESCAPE) GLFW.glfwSetWindowShouldClose(window, true);
-            }
-        });
-
-        wrapper.createWindow();
-        wrapper.showWindow();
-        wrapper.attachContext(Context.MAIN);
-
         EventBus eventBus = new EventBus();
 
+        PlatformManager platformManager = new GlfwPlatformManager(new WindowConfig(600, 400, new Vector4f(1, 0, 0, 0), false, 0), eventBus);
+        platformManager.createWindow();
+
+        platformManager.init();
+        EventSystem eventSystem = new EventSystem();
+        eventBus.subscribe(VoidEvent.class, eventSystem);
+
         World world = new World(new WorldConfigurationBuilder()
-                .with(new EventSystem())
+                .with(eventSystem)
                 .with(new MoveSystem())
                 .with(new ModelMatrixSystem())
                 .build()
-                .register(eventBus));
+                .register(eventBus)
+                .register(platformManager)
+        );
 
         int i = world.create();
 
@@ -54,18 +54,19 @@ public class XEngine {
         long now;
         long elapsed;
 
-        while (!wrapper.shouldClose()) {
+        while (!platformManager.shouldClose()) {
             now = System.currentTimeMillis();
             elapsed = now - before;
             before = now;
 
-            wrapper.clearColorBuffer();
+            platformManager.clearColorBuffer();
             world.setDelta(elapsed);
             world.process();
-            wrapper.processEvents();
-            wrapper.refreshWindow();
+
+            platformManager.processEvents();
+            platformManager.refreshWindow();
         }
 
-        wrapper.close();
+        platformManager.close();
     }
 }
