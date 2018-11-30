@@ -11,7 +11,7 @@ public class StaticShader extends ShaderProgram {
     private Uniform<Matrix4f> projection;
     private Uniform<Matrix4f> view;
 
-    public StaticShader(String vertexFile, String fragmentFile) throws IOException {
+    public StaticShader(String vertexFile, String fragmentFile){
         super(vertexFile, fragmentFile);
     }
 

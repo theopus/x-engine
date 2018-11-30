@@ -7,8 +7,6 @@ import org.lwjgl.opengl.GL15;
 import org.lwjgl.opengl.GL30;
 
 public class SimpleLoader extends Loader {
-
-
     public Vao loadSimpleVao(float[] positions, int[] indexes) {
         int vao = createVAO();
         bindVao(vao);
@@ -33,10 +31,4 @@ public class SimpleLoader extends Loader {
                 .setEbo(ebo)
                 .createVao();
     }
-    public void loadAssimp(){
-        AIScene k = Assimp.aiImportFile("k", Assimp.aiProcess_Triangulate | Assimp.aiProcess_FlipUVs);
-        AIMaterial material;
-
-    }
-
 }

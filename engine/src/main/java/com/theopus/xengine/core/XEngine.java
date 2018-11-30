@@ -1,26 +1,28 @@
 package com.theopus.xengine.core;
 
+import com.artemis.Archetype;
+import com.artemis.ArchetypeBuilder;
 import com.artemis.World;
 import com.artemis.WorldConfigurationBuilder;
-import com.artemis.injection.ArtemisFieldResolver;
-import com.artemis.injection.FieldResolver;
-import com.artemis.utils.reflect.Field;
 import com.theopus.xengine.core.ecs.components.ModelMatrix;
 import com.theopus.xengine.core.ecs.components.Position;
+import com.theopus.xengine.core.ecs.components.Render;
 import com.theopus.xengine.core.ecs.components.Velocity;
+import com.theopus.xengine.core.ecs.managers.CustomGroupManager;
 import com.theopus.xengine.core.ecs.systems.EventSystem;
 import com.theopus.xengine.core.ecs.systems.ModelMatrixSystem;
 import com.theopus.xengine.core.ecs.systems.MoveSystem;
+import com.theopus.xengine.core.ecs.systems.RenderSystem;
 import com.theopus.xengine.core.events.EventBus;
-import com.theopus.xengine.core.events.VoidEvent;
 import com.theopus.xengine.core.platform.GlfwPlatformManager;
 import com.theopus.xengine.core.platform.PlatformManager;
-import com.theopus.xengine.wrapper.glfw.Context;
-import com.theopus.xengine.wrapper.glfw.GlfwWrapper;
+import com.theopus.xengine.core.render.BaseRenderer;
+import com.theopus.xengine.core.render.GlRenderer;
+import com.theopus.xengine.core.render.RenderModule;
+import com.theopus.xengine.core.render.modules.Ver0Data;
+import com.theopus.xengine.core.render.modules.Ver0Module;
 import com.theopus.xengine.wrapper.glfw.WindowConfig;
 import org.joml.Vector4f;
-import org.lwjgl.glfw.GLFW;
-import org.lwjgl.glfw.GLFWKeyCallback;
 
 public class XEngine {
 
@@ -33,22 +35,45 @@ public class XEngine {
 
         platformManager.init();
         EventSystem eventSystem = new EventSystem();
-        eventBus.subscribe(VoidEvent.class, eventSystem);
+        RenderSystem renderSystem = new RenderSystem();
+        BaseRenderer render = new GlRenderer();
 
         World world = new World(new WorldConfigurationBuilder()
                 .with(eventSystem)
                 .with(new MoveSystem())
                 .with(new ModelMatrixSystem())
+                .with(renderSystem)
+                .with(new CustomGroupManager())
                 .build()
                 .register(eventBus)
                 .register(platformManager)
+                .register("renderer", render)
         );
 
-        int i = world.create();
+        RenderModule<Ver0Data> module = new Ver0Module();
+        world.inject(module);
 
-        world.getMapper(ModelMatrix.class).create(i);
-        world.getMapper(Velocity.class).create(i);
-        world.getMapper(Position.class).create(i);
+        String model0 = module.load(new Ver0Data(
+                new float[]{
+                        -0.5f, 0.5f, 0,
+                        -0.5f, -0.5f, 0,
+                        0.5f, -0.5f, 0,
+                        0.5f, 0.5f, 0,
+                },
+                new int[]{
+                        0, 1, 3,
+                        3, 1, 2
+                }));
+
+
+        Archetype base = new ArchetypeBuilder().add(ModelMatrix.class, Velocity.class, Position.class, Render.class).build(world);
+
+        for (int j = 0; j < 50_000; j++) {
+            int i1 = world.create(base);
+            module.bind(model0, i1);
+            render.add(module);
+        }
+
 
         long before = System.currentTimeMillis();
         long now;

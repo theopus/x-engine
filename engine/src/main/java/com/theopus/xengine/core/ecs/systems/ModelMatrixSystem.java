@@ -16,12 +16,11 @@ public class ModelMatrixSystem extends IntervalIteratingSystem {
     private ComponentMapper<Position> mPosition;
 
     public ModelMatrixSystem() {
-        super(Aspect.all(), 1000);
+        super(Aspect.all(), 10);
     }
 
     @Override
     protected void process(int entityId) {
-        LOGGER.info("Mtx");
         ModelMatrix modelMatrix = mModelMatrix.get(entityId);
         Position position = mPosition.get(entityId);
 

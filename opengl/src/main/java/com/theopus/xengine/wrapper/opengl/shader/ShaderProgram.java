@@ -40,15 +40,20 @@ public abstract class ShaderProgram {
     }
 
 
-    public ShaderProgram(String vertexFile, String fragmentFile) throws IOException {
+    public ShaderProgram(String vertexFile, String fragmentFile) {
         this(
                 loadShader(vertexFile, Type.VERTEX),
                 loadShader(fragmentFile, Type.FRAGMENT)
         );
     }
 
-    public static int loadShader(String file, Type type) throws IOException {
-        StringBuilder shaderSource = fileToStringBuilder(file);
+    public static int loadShader(String file, Type type) {
+        StringBuilder shaderSource = null;
+        try {
+            shaderSource = fileToStringBuilder(file);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
 
         LOGGER.info("SHADER = \n{}", shaderSource);
         int shaderID = GL20.glCreateShader(type.binding());

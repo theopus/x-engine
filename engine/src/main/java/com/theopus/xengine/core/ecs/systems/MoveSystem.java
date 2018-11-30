@@ -2,30 +2,36 @@ package com.theopus.xengine.core.ecs.systems;
 
 import com.artemis.Aspect;
 import com.artemis.ComponentMapper;
-import com.artemis.managers.GroupManager;
-import com.artemis.managers.TagManager;
 import com.artemis.systems.IntervalIteratingSystem;
-import com.artemis.systems.IteratingSystem;
 import com.theopus.xengine.core.ecs.components.Position;
 import com.theopus.xengine.core.ecs.components.Velocity;
+import com.theopus.xengine.core.utils.OpsCounter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class MoveSystem extends IntervalIteratingSystem {
+    private final OpsCounter counter = new OpsCounter("Move");
     private static final Logger LOGGER = LoggerFactory.getLogger(MoveSystem.class);
 
     private ComponentMapper<Velocity> mVelocity;
     private ComponentMapper<Position> mPosition;
 
     public MoveSystem() {
-        super(Aspect.all(Position.class, Velocity.class), 1000);
+        super(Aspect.all(Position.class, Velocity.class), 10);
+    }
+
+    @Override
+    protected void processSystem() {
+        super.processSystem();
+        counter.operateAndLog();
     }
 
     @Override
     protected void process(int entityId) {
-        LOGGER.info("Move");
         Position position = mPosition.get(entityId);
         Velocity velocity = mVelocity.get(entityId);
+
+        velocity.rotation.z = 1f;
 
         position.position.x += velocity.position.x;
         position.position.y += velocity.position.y;
