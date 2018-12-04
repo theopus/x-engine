@@ -30,6 +30,9 @@ public class GlfwWrapper {
     private long sideContext;
     private GLCapabilities sideCapabilities;
 
+    public GlfwWrapper() {
+        this(new WindowConfig(600, 400, new Vector4f(1, 0, 0, 0), false, 0));
+    }
 
     public GlfwWrapper(WindowConfig windowConfig) {
         this.width = windowConfig.getWidth();

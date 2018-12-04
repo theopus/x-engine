@@ -1,7 +1,9 @@
 package com.theopus.xengine.wrapper.opengl.shader;
 
+import com.theopus.xengine.wrapper.opengl.UniformBlock;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL20;
+import org.lwjgl.opengl.GL33;
 import org.lwjgl.system.MemoryUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -65,6 +67,11 @@ public abstract class ShaderProgram {
 
         }
         return shaderID;
+    }
+
+    public void bindUniformBlock(UniformBlock uniformBlock){
+        int index = GL33.glGetUniformBlockIndex(programID, uniformBlock.getName());
+        GL33.glUniformBlockBinding(programID, index, uniformBlock.getBindingPoint());
     }
 
     private static StringBuilder fileToStringBuilder(String file) throws IOException {

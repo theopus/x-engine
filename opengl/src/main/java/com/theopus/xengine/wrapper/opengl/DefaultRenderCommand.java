@@ -1,5 +1,6 @@
 package com.theopus.xengine.wrapper.opengl;
 
+import com.theopus.xengine.wrapper.opengl.buffers.Vao;
 import com.theopus.xengine.wrapper.opengl.shader.StaticShader;
 import org.joml.Matrix4f;
 import org.lwjgl.opengl.GL11;

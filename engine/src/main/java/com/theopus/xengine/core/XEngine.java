@@ -1,19 +1,12 @@
 package com.theopus.xengine.core;
 
-import com.artemis.Archetype;
-import com.artemis.ArchetypeBuilder;
-import com.artemis.World;
-import com.artemis.WorldConfigurationBuilder;
-import com.theopus.xengine.core.ecs.components.ModelMatrix;
-import com.theopus.xengine.core.ecs.components.Position;
-import com.theopus.xengine.core.ecs.components.Render;
-import com.theopus.xengine.core.ecs.components.Velocity;
+import com.artemis.*;
+import com.artemis.managers.TagManager;
+import com.theopus.xengine.core.ecs.components.*;
 import com.theopus.xengine.core.ecs.managers.CustomGroupManager;
-import com.theopus.xengine.core.ecs.systems.EventSystem;
-import com.theopus.xengine.core.ecs.systems.ModelMatrixSystem;
-import com.theopus.xengine.core.ecs.systems.MoveSystem;
-import com.theopus.xengine.core.ecs.systems.RenderSystem;
+import com.theopus.xengine.core.ecs.systems.*;
 import com.theopus.xengine.core.events.EventBus;
+import com.theopus.xengine.core.input.InputEvent;
 import com.theopus.xengine.core.platform.GlfwPlatformManager;
 import com.theopus.xengine.core.platform.PlatformManager;
 import com.theopus.xengine.core.render.BaseRenderer;
@@ -25,6 +18,8 @@ import com.theopus.xengine.wrapper.glfw.WindowConfig;
 import org.joml.Vector4f;
 
 public class XEngine {
+
+    public static final String MAIN_CAMERA = "MAIN_CAMERA";
 
     public void run() {
 
@@ -38,12 +33,19 @@ public class XEngine {
         RenderSystem renderSystem = new RenderSystem();
         BaseRenderer render = new GlRenderer();
 
+        CustomGroupManager groupManager = new CustomGroupManager();
+        CameraSystem cameraSystem = new CameraSystem();
+
+        eventBus.subscribe(InputEvent.class, cameraSystem);
+        TagManager tagManager = new TagManager();
         World world = new World(new WorldConfigurationBuilder()
                 .with(eventSystem)
                 .with(new MoveSystem())
                 .with(new ModelMatrixSystem())
+                .with(cameraSystem)
                 .with(renderSystem)
-                .with(new CustomGroupManager())
+                .with(groupManager)
+                .with(tagManager)
                 .build()
                 .register(eventBus)
                 .register(platformManager)
@@ -68,12 +70,21 @@ public class XEngine {
 
         Archetype base = new ArchetypeBuilder().add(ModelMatrix.class, Velocity.class, Position.class, Render.class).build(world);
 
-        for (int j = 0; j < 50_000; j++) {
+        for (int j = 0; j < 3; j++) {
             int i1 = world.create(base);
             module.bind(model0, i1);
             render.add(module);
         }
 
+        int cameraAcnhor = world.create();
+        world.getMapper(Position.class).create(cameraAcnhor);
+        world.getMapper(Velocity.class).create(cameraAcnhor);
+        Archetype cameraArchetype = new ArchetypeBuilder().add(Camera.class).build(world);
+
+        int camera = world.create(cameraArchetype);
+        Camera camera1 = world.getMapper(Camera.class).get(camera);
+        camera1.target = cameraAcnhor;
+        tagManager.register(MAIN_CAMERA, camera);
 
         long before = System.currentTimeMillis();
         long now;

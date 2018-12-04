@@ -21,7 +21,7 @@ public class StaticShader extends ShaderProgram {
         projection = Uniform.ofMatrix4f(Uniforms.PROJECTION_MATRIX);
         view = Uniform.ofMatrix4f(Uniforms.VIEW_MATRIX);
 
-        return Arrays.asList(transformation, projection, view);
+        return Arrays.asList(transformation);
     }
 
     @Override

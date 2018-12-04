@@ -23,7 +23,7 @@ public class RenderSystem extends BaseSystem {
     @Override
     protected void processSystem() {
         renderer.clearBuffer();
-//        renderer.render();
+        renderer.render();
 
         counter.operateAndLog();
     }

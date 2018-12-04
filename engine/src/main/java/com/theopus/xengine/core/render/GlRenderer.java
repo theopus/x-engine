@@ -16,6 +16,6 @@ public class GlRenderer extends BaseRenderer {
 
     @Override
     public void loadViewMatrix(Matrix4f view) {
-
+        modules.forEach(renderModule -> renderModule.loadViewMatrix(view));
     }
 }

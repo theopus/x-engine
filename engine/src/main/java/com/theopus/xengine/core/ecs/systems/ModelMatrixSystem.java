@@ -16,7 +16,7 @@ public class ModelMatrixSystem extends IntervalIteratingSystem {
     private ComponentMapper<Position> mPosition;
 
     public ModelMatrixSystem() {
-        super(Aspect.all(), 10);
+        super(Aspect.all(Position.class, ModelMatrix.class), 10);
     }
 
     @Override

@@ -31,8 +31,6 @@ public class MoveSystem extends IntervalIteratingSystem {
         Position position = mPosition.get(entityId);
         Velocity velocity = mVelocity.get(entityId);
 
-        velocity.rotation.z = 1f;
-
         position.position.x += velocity.position.x;
         position.position.y += velocity.position.y;
         position.position.z += velocity.position.z;
