@@ -5,8 +5,8 @@ import com.artemis.annotations.Wire;
 import com.theopus.xengine.core.ecs.components.ModelMatrix;
 import com.theopus.xengine.core.render.ArtemisRenderModule;
 import com.theopus.xengine.core.render.GLContext;
-import com.theopus.xengine.wrapper.opengl.commands.SimpleVaoRenderCommand;
 import com.theopus.xengine.wrapper.opengl.SimpleLoader;
+import com.theopus.xengine.wrapper.opengl.commands.SimpleVaoRenderCommand;
 import com.theopus.xengine.wrapper.opengl.objects.Vao;
 import com.theopus.xengine.wrapper.opengl.shader.StaticShader;
 

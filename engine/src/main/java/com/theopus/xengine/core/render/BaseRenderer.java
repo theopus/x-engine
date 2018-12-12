@@ -27,6 +27,18 @@ public abstract class BaseRenderer {
         }
     }
 
+    /*
+    slow temporary shit
+     */
+    public <T extends RenderModule<?>> T get(Class<T> moduleClass) {
+        for (RenderModule module : modules) {
+            if (module.getClass().equals(moduleClass)) {
+                return (T) module;
+            }
+        }
+        throw new RuntimeException(String.format("Module %s not found", moduleClass));
+    }
+
     public abstract void clearBuffer();
 
     public abstract void loadProjectionMatrix(Matrix4f projection);

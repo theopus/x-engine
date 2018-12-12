@@ -2,7 +2,10 @@ package com.theopus.xengine.core;
 
 import com.artemis.*;
 import com.artemis.managers.TagManager;
-import com.theopus.xengine.core.ecs.components.*;
+import com.theopus.xengine.core.ecs.Archetypes;
+import com.theopus.xengine.core.ecs.components.Camera;
+import com.theopus.xengine.core.ecs.components.Position;
+import com.theopus.xengine.core.ecs.components.Velocity;
 import com.theopus.xengine.core.ecs.managers.CustomGroupManager;
 import com.theopus.xengine.core.ecs.systems.*;
 import com.theopus.xengine.core.events.EventBus;
@@ -66,40 +69,13 @@ public class XEngine {
         RenderModule<Ver1Data> module1 = new Ver1Module(glContext);
         world.inject(module0);
         world.inject(module1);
+        render.add(module0);
+        render.add(module1);
 
-        String model0 = module0.load(new Ver0Data(
-                new float[]{
-                        -0.5f, 0.5f, 0,
-                        -0.5f, -0.5f, 0,
-                        0.5f, -0.5f, 0,
-                        0.5f, 0.5f, 0,
-                },
-                new int[]{
-                        0, 1, 3,
-                        3, 1, 2
-                }));
+        String model0 = ModelUtils.simpleQuad(module0);
+        String texmodel = ModelUtils.texturedQuad(module1);
 
-        String texmodel = module1.load(new Ver1Data(
-                new float[]{
-                        -0.5f, 0.5f, 0,
-                        -0.5f, -0.5f, 0,
-                        0.5f, -0.5f, 0,
-                        0.5f, 0.5f, 0,
-                },
-                new float[]{
-                        0,0,
-                        0,1,
-                        1,1,
-                        1,0,
-                },
-                new int[]{
-                        0, 1, 3,
-                        3, 1, 2
-                },
-                "textures/chrome.png"));
-
-
-        Archetype base = new ArchetypeBuilder().add(ModelMatrix.class, Velocity.class, Position.class, Render.class).build(world);
+        Archetype base = Archetypes.base.build(world);
 
         ComponentMapper<Position> mapper = world.getMapper(Position.class);
 
@@ -119,55 +95,37 @@ public class XEngine {
         positionCas.position.y = 0;
         positionCas.position.z = -1f;
 
-        render.add(module0);
-        render.add(module1);
 
+        createCamera(tagManager, world);
 
+        new Loop.Builder()
+                .setCondition(() -> !platformManager.shouldClose())
+                .setRun(elapsed -> {
+                    platformManager.clearColorBuffer();
+                    world.setDelta(elapsed);
+                    world.process();
 
+                    platformManager.processEvents();
+                    platformManager.refreshWindow();
+                })
+                .setOnClose(() -> {
+                    platformManager.close();
+                    glContext.close();
+                })
+                .createLoop()
+                .run();
+    }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+    private Position createCamera(TagManager tagManager, World world) {
         int cameraAcnhor = world.create();
         world.getMapper(Position.class).create(cameraAcnhor);
         world.getMapper(Velocity.class).create(cameraAcnhor);
         Archetype cameraArchetype = new ArchetypeBuilder().add(Camera.class).build(world);
 
-        int camera = world.create(cameraArchetype);
-        Camera camera1 = world.getMapper(Camera.class).get(camera);
-        camera1.target = cameraAcnhor;
-        tagManager.register(MAIN_CAMERA, camera);
-
-        long before = System.currentTimeMillis();
-        long now;
-        long elapsed;
-
-        while (!platformManager.shouldClose()) {
-            now = System.currentTimeMillis();
-            elapsed = now - before;
-            before = now;
-
-            platformManager.clearColorBuffer();
-            world.setDelta(elapsed);
-            world.process();
-
-            platformManager.processEvents();
-            platformManager.refreshWindow();
-        }
-
-        platformManager.close();
-        glContext.close();
+        int id = world.create(cameraArchetype);
+        Camera camera = world.getMapper(Camera.class).get(id);
+        camera.target = cameraAcnhor;
+        tagManager.register(MAIN_CAMERA, id);
+        return world.getMapper(Position.class).get(cameraAcnhor);
     }
 }
