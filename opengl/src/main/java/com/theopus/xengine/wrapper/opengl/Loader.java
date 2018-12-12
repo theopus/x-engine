@@ -1,5 +1,6 @@
 package com.theopus.xengine.wrapper.opengl;
 
+import com.theopus.xengine.wrapper.opengl.objects.Texture;
 import de.matthiasmann.twl.utils.PNGDecoder;
 import org.lwjgl.opengl.*;
 import org.lwjgl.system.MemoryUtil;
@@ -22,6 +23,12 @@ public class Loader implements Closeable {
     private List<Integer> vao = new ArrayList<>();
     private List<Integer> vbo = new ArrayList<>();
     private List<Integer> textures = new ArrayList<>();
+
+    protected final MemoryContext context;
+
+    public Loader(MemoryContext context) {
+        this.context = context;
+    }
 
 
     protected int writeInVao(int attributeNumber, int coordinatesSize, float[] data) {

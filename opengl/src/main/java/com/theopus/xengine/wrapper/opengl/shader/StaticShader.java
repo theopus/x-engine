@@ -8,8 +8,6 @@ import java.util.List;
 
 public class StaticShader extends ShaderProgram {
     private Uniform<Matrix4f> transformation;
-    private Uniform<Matrix4f> projection;
-    private Uniform<Matrix4f> view;
 
     public StaticShader(String vertexFile, String fragmentFile){
         super(vertexFile, fragmentFile);
@@ -18,8 +16,6 @@ public class StaticShader extends ShaderProgram {
     @Override
     protected List<Uniform<?>> uniforms() {
         transformation = Uniform.ofMatrix4f(Uniforms.TRANSFORMATION_MATRIX);
-        projection = Uniform.ofMatrix4f(Uniforms.PROJECTION_MATRIX);
-        view = Uniform.ofMatrix4f(Uniforms.VIEW_MATRIX);
 
         return Arrays.asList(transformation);
     }
@@ -36,12 +32,5 @@ public class StaticShader extends ShaderProgram {
         return transformation;
     }
 
-    public Uniform<Matrix4f> projection() {
-        return projection;
-    }
-
-    public Uniform<Matrix4f> view() {
-        return view;
-    }
 }
 

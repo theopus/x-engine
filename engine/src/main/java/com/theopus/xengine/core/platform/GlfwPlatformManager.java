@@ -1,8 +1,6 @@
 package com.theopus.xengine.core.platform;
 
-import com.google.common.collect.ImmutableMap;
 import com.theopus.xengine.core.events.EventBus;
-import com.theopus.xengine.core.events.VoidEvent;
 import com.theopus.xengine.core.input.InputAction;
 import com.theopus.xengine.core.input.InputActionType;
 import com.theopus.xengine.core.input.InputEvent;
@@ -10,6 +8,7 @@ import com.theopus.xengine.wrapper.glfw.GlfwWrapper;
 import com.theopus.xengine.wrapper.glfw.WindowConfig;
 import org.lwjgl.glfw.GLFW;
 
+import java.util.HashMap;
 import java.util.Map;
 
 public class GlfwPlatformManager implements PlatformManager {
@@ -17,12 +16,17 @@ public class GlfwPlatformManager implements PlatformManager {
     private final EventBus eventBus;
     private GlfwWrapper wrapper;
 
-    private Map<Integer, InputAction> keymap = ImmutableMap.of(
-            GLFW.GLFW_KEY_D, InputAction.RIGHT,
-            GLFW.GLFW_KEY_A, InputAction.LEFT,
-            GLFW.GLFW_KEY_W, InputAction.UP,
-            GLFW.GLFW_KEY_S, InputAction.DOWN
-    );
+    private Map<Integer, InputAction> keymap = new HashMap<Integer, InputAction>() {{
+        put(GLFW.GLFW_KEY_D,InputAction.RIGHT);
+        put(GLFW.GLFW_KEY_A,InputAction.LEFT);
+        put(GLFW.GLFW_KEY_SPACE,InputAction.UP);
+        put(GLFW.GLFW_KEY_C,InputAction.DOWN);
+        put(GLFW.GLFW_KEY_W,InputAction.FORWARD);
+        put(GLFW.GLFW_KEY_S,InputAction.BACK);
+        put(GLFW.GLFW_KEY_E,InputAction.ROTATE_CW);
+        put(GLFW.GLFW_KEY_Q,InputAction.ROTATE_CCW);
+    }};
+
 
     public GlfwPlatformManager(WindowConfig config, EventBus eventBus) {
         this.wrapper = new GlfwWrapper(config);
@@ -30,12 +34,16 @@ public class GlfwPlatformManager implements PlatformManager {
     }
 
     @Override
-    public void init(){
+    public void init() {
         wrapper.setKeyCallback((window, key, scancode, action, mods) -> {
             if (action != GLFW.GLFW_REPEAT) {
                 eventBus.post(new InputEvent(keymap.getOrDefault(key, InputAction.UNIDENTIFIED), action == GLFW.GLFW_PRESS ? InputActionType.BEGIN : InputActionType.END));
             }
         });
+        wrapper.setFramebufferChangedCallback((window, width, height) -> {
+            eventBus.post(new FramebufferEvent(width, height));
+        });
+        eventBus.post(new FramebufferEvent(wrapper.getWidth(), wrapper.getHeight()));
     }
 
     @Override

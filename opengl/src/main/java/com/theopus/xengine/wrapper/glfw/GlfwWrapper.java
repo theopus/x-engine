@@ -198,4 +198,27 @@ public class GlfwWrapper {
     public void setShouldClose(boolean status) {
         GLFW.glfwSetWindowShouldClose(mainContext, status);
     }
+
+    public void setFramebufferChangedCallback(GLFWFramebufferSizeCallbackI glfwFramebufferSizeCallbackI) {
+        GLFWFramebufferSizeCallback was = GLFW.glfwSetFramebufferSizeCallback(mainContext, glfwFramebufferSizeCallbackI);
+        if (was != null) {
+            was.free();
+        }
+    }
+
+    public int getWidth() {
+        return width;
+    }
+
+    public void setWidth(int width) {
+        this.width = width;
+    }
+
+    public int getHeight() {
+        return height;
+    }
+
+    public void setHeight(int height) {
+        this.height = height;
+    }
 }

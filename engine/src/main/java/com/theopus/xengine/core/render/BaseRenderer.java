@@ -30,4 +30,5 @@ public abstract class BaseRenderer {
     public abstract void clearBuffer();
     public abstract void loadProjectionMatrix(Matrix4f projection);
     public abstract void loadViewMatrix(Matrix4f view);
+    public abstract void loadFramebufferSize(int width, int height);
 }

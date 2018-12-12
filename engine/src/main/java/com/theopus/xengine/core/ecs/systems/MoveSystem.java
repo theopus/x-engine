@@ -38,6 +38,7 @@ public class MoveSystem extends IntervalIteratingSystem {
         position.rotation.x += velocity.rotation.x;
         position.rotation.y += velocity.rotation.y;
         position.rotation.z += velocity.rotation.z;
+
     }
 
 }

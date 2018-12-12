@@ -1,17 +1,14 @@
 package com.theopus.xengine.wrapper.opengl.shader;
 
-import com.theopus.xengine.wrapper.opengl.UniformBlock;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL20;
 import org.lwjgl.opengl.GL33;
-import org.lwjgl.system.MemoryUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.nio.FloatBuffer;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -21,7 +18,6 @@ public abstract class ShaderProgram {
     private final int programID;
     private final int vertexShaderID;
     private final int fragmentShaderID;
-    private final FloatBuffer matrixBuffer;
 
     protected List<Uniform<?>> uniforms = new ArrayList<>();
 
@@ -29,7 +25,6 @@ public abstract class ShaderProgram {
         this.vertexShaderID = vertexShaderID;
         this.fragmentShaderID = fragmentShaderID;
         this.programID = GL20.glCreateProgram();
-        this.matrixBuffer = MemoryUtil.memAllocFloat(16);
 
         GL20.glAttachShader(programID, vertexShaderID);
         GL20.glAttachShader(programID, fragmentShaderID);
@@ -107,7 +102,6 @@ public abstract class ShaderProgram {
         GL20.glDeleteShader(vertexShaderID);
         GL20.glDeleteShader(fragmentShaderID);
         GL20.glDeleteProgram(programID);
-        MemoryUtil.memFree(matrixBuffer);
         uniforms.forEach(Uniform::close);
     }
 

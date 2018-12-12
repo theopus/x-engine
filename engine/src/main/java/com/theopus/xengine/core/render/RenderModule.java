@@ -16,6 +16,4 @@ public interface RenderModule<T> {
     void prepare();
 
     void finish();
-
-    void loadViewMatrix(Matrix4f view);
 }

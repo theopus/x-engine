@@ -38,7 +38,7 @@ public class Maths {
     }
 
     public static Matrix4f createProjectionMatrix(float FOV, float near, float far, int windowWidth, int windowHeight) {
-        Matrix4f result = new Matrix4f();
+        Matrix4f result = new Matrix4f().identity();
         float aspectRatio = (float) windowWidth / (float) windowHeight;
         float yScale = (float) ((1f / Math.tan(Math.toRadians(FOV / 2f))) * aspectRatio);
         float xScale = yScale / aspectRatio;

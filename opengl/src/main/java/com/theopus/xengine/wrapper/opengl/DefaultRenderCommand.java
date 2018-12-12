@@ -1,6 +1,6 @@
 package com.theopus.xengine.wrapper.opengl;
 
-import com.theopus.xengine.wrapper.opengl.buffers.Vao;
+import com.theopus.xengine.wrapper.opengl.objects.Vao;
 import com.theopus.xengine.wrapper.opengl.shader.StaticShader;
 import org.joml.Matrix4f;
 import org.lwjgl.opengl.GL11;
@@ -33,11 +33,4 @@ public class DefaultRenderCommand {
         shader.cleanup();
     }
 
-    public void loadView(Matrix4f view) {
-        shader.view().load(view);
-    }
-
-    public void loadProjection(Matrix4f projection) {
-        shader.projection().load(projection);
-    }
 }
