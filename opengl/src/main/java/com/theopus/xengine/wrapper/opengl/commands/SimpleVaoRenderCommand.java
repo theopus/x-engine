@@ -1,4 +1,4 @@
-package com.theopus.xengine.wrapper.opengl;
+package com.theopus.xengine.wrapper.opengl.commands;
 
 import com.theopus.xengine.wrapper.opengl.objects.Vao;
 import com.theopus.xengine.wrapper.opengl.shader.StaticShader;
@@ -6,11 +6,11 @@ import org.joml.Matrix4f;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL30;
 
-public class DefaultRenderCommand {
+public class SimpleVaoRenderCommand {
 
     public final StaticShader shader;
 
-    public DefaultRenderCommand(StaticShader shader) {
+    public SimpleVaoRenderCommand(StaticShader shader) {
         this.shader = shader;
     }
 

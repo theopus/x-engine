@@ -9,7 +9,7 @@ public class Ubo extends GlBuffer {
         super(size, type, usage);
     }
 
-    public void bindToIndex(int index){
+    public void bindToIndex(int index) {
         GL31.glBindBufferRange(type, index, id, 0, size);
     }
 }

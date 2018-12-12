@@ -3,7 +3,6 @@ package com.theopus.xengine.core.ecs.systems;
 import com.artemis.BaseSystem;
 import com.artemis.annotations.Wire;
 import com.theopus.xengine.core.events.Subscriber;
-import com.theopus.xengine.core.input.InputEvent;
 import com.theopus.xengine.core.platform.FramebufferEvent;
 import com.theopus.xengine.core.render.BaseRenderer;
 import com.theopus.xengine.core.utils.Maths;
@@ -20,8 +19,6 @@ public class ProjectionSystem extends BaseSystem implements Subscriber<Framebuff
 
     @Override
     public void onEvent(FramebufferEvent framebufferEvent) {
-        System.out.println(framebufferEvent.width);
-        System.out.println(framebufferEvent.height);
         Matrix4f projection = Maths
                 .createProjectionMatrixAuto((float) Math.toRadians(70), 0.1f, 1000f,
                         framebufferEvent.width * 1f / framebufferEvent.height);

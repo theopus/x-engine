@@ -1,15 +1,7 @@
 package com.theopus.xengine.core.ecs.systems;
 
 import com.artemis.BaseSystem;
-import com.artemis.EntitySubscription;
-import com.artemis.World;
-import com.artemis.annotations.AspectDescriptor;
 import com.artemis.annotations.Wire;
-import com.artemis.managers.GroupManager;
-import com.artemis.utils.EntityBuilder;
-import com.artemis.utils.IntBag;
-import com.theopus.xengine.core.ecs.components.ModelMatrix;
-import com.theopus.xengine.core.ecs.components.Render;
 import com.theopus.xengine.core.render.BaseRenderer;
 import com.theopus.xengine.core.utils.OpsCounter;
 

@@ -10,14 +10,15 @@ import org.lwjgl.opengl.GL15;
 import org.lwjgl.system.MemoryUtil;
 
 import java.nio.FloatBuffer;
+
 /**
  * expected to be:
- *
- *
+ * <p>
+ * <p>
  * layout (std140) uniform Matrices
  * {
- *     mat4 view;
- *     mat4 projection;
+ * mat4 view;
+ * mat4 projection;
  * };
  */
 public class MatricesUniformBlock extends UniformBlock {
@@ -45,19 +46,19 @@ public class MatricesUniformBlock extends UniformBlock {
         bindToIndex();
     }
 
-    public static MatricesUniformBlock withCtx(int bindingPoint, MemoryContext ctx){
+    public static MatricesUniformBlock withCtx(int bindingPoint, MemoryContext ctx) {
         Ubo ubo = new Ubo(SIZE, GL15.GL_STATIC_DRAW);
         ctx.put(ubo);
         return new MatricesUniformBlock(0, ubo);
     }
 
-    public void loadViewMatrix(Matrix4f view){
+    public void loadViewMatrix(Matrix4f view) {
         Buffers.put(view, viewMtxBuffer);
         ubo.bufferSubData(0, viewMtxBuffer);
         viewMtxBuffer.clear();
     }
 
-    public void loadProjectionMatrix(Matrix4f projection){
+    public void loadProjectionMatrix(Matrix4f projection) {
         Buffers.put(projection, projMtxBuffer);
         ubo.bufferSubData(MemorySizeConstants.MAT4_FLOAT, projMtxBuffer);
         projMtxBuffer.clear();

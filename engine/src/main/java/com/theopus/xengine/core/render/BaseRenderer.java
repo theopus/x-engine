@@ -13,7 +13,7 @@ public abstract class BaseRenderer {
         this.modules = new ArrayList<>();
     }
 
-    public void render(){
+    public void render() {
         for (RenderModule module : modules) {
             module.prepare();
             module.render();
@@ -21,14 +21,17 @@ public abstract class BaseRenderer {
         }
     }
 
-    public void add(RenderModule<?> module){
-        if (!modules.contains(module)){
+    public void add(RenderModule<?> module) {
+        if (!modules.contains(module)) {
             modules.add(module);
         }
     }
 
     public abstract void clearBuffer();
+
     public abstract void loadProjectionMatrix(Matrix4f projection);
+
     public abstract void loadViewMatrix(Matrix4f view);
+
     public abstract void loadFramebufferSize(int width, int height);
 }

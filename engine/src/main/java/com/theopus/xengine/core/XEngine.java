@@ -16,10 +16,10 @@ import com.theopus.xengine.core.render.GlRenderer;
 import com.theopus.xengine.core.render.RenderModule;
 import com.theopus.xengine.core.render.modules.v0.Ver0Data;
 import com.theopus.xengine.core.render.modules.v0.Ver0Module;
+import com.theopus.xengine.core.render.modules.v1.Ver1Data;
+import com.theopus.xengine.core.render.modules.v1.Ver1Module;
 import com.theopus.xengine.wrapper.glfw.WindowConfig;
 import org.joml.Vector4f;
-
-import java.util.concurrent.ThreadLocalRandom;
 
 public class XEngine {
 
@@ -28,7 +28,8 @@ public class XEngine {
     public void run() {
         EventBus eventBus = new EventBus();
 
-        PlatformManager platformManager = new GlfwPlatformManager(new WindowConfig(600, 400, new Vector4f(1, 0, 0, 0), false, 0), eventBus);
+        // 200/
+        PlatformManager platformManager = new GlfwPlatformManager(new WindowConfig(600, 400, new Vector4f(226f / 256f, 256f / 256f, 256f / 256f, 0), false, 0), eventBus);
         platformManager.createWindow();
         platformManager.init();
 
@@ -45,6 +46,7 @@ public class XEngine {
 
         eventBus.subscribe(InputEvent.class, cameraSystem);
         eventBus.subscribe(FramebufferEvent.class, projectionSystem);
+
         World world = new World(new WorldConfigurationBuilder()
                 .with(eventSystem)
                 .with(new MoveSystem())
@@ -60,10 +62,12 @@ public class XEngine {
                 .register("renderer", render)
         );
 
-        RenderModule<Ver0Data> module = new Ver0Module(glContext);
-        world.inject(module);
+        RenderModule<Ver0Data> module0 = new Ver0Module(glContext);
+        RenderModule<Ver1Data> module1 = new Ver1Module(glContext);
+        world.inject(module0);
+        world.inject(module1);
 
-        String model0 = module.load(new Ver0Data(
+        String model0 = module0.load(new Ver0Data(
                 new float[]{
                         -0.5f, 0.5f, 0,
                         -0.5f, -0.5f, 0,
@@ -75,20 +79,66 @@ public class XEngine {
                         3, 1, 2
                 }));
 
+        String texmodel = module1.load(new Ver1Data(
+                new float[]{
+                        -0.5f, 0.5f, 0,
+                        -0.5f, -0.5f, 0,
+                        0.5f, -0.5f, 0,
+                        0.5f, 0.5f, 0,
+                },
+                new float[]{
+                        0,0,
+                        0,1,
+                        1,1,
+                        1,0,
+                },
+                new int[]{
+                        0, 1, 3,
+                        3, 1, 2
+                },
+                "textures/chrome.png"));
+
 
         Archetype base = new ArchetypeBuilder().add(ModelMatrix.class, Velocity.class, Position.class, Render.class).build(world);
 
-        for (int j = 0; j < 2; j++) {
-            int i1 = world.create(base);
-            module.bind(model0, i1);
-            render.add(module);
-            ComponentMapper<Position> mapper = world.getMapper(Position.class);
-            Position position = mapper.get(i1);
+        ComponentMapper<Position> mapper = world.getMapper(Position.class);
 
-            position.position.x = 0;
-            position.position.y = 0;
-            position.position.z = -1f;
-        }
+        int texEnt = world.create(base);
+        module1.bind(texmodel, texEnt);
+        Position positionTex = mapper.get(texEnt);
+
+        positionTex.position.x = 1;
+        positionTex.position.y = 0;
+        positionTex.position.z = -1f;
+
+        int casEnt = world.create(base);
+        module0.bind(model0, casEnt);
+        Position positionCas = mapper.get(casEnt);
+
+        positionCas.position.x = -1;
+        positionCas.position.y = 0;
+        positionCas.position.z = -1f;
+
+        render.add(module0);
+        render.add(module1);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
         int cameraAcnhor = world.create();
         world.getMapper(Position.class).create(cameraAcnhor);

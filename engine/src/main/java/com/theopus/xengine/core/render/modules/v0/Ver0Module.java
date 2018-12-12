@@ -5,13 +5,13 @@ import com.artemis.annotations.Wire;
 import com.theopus.xengine.core.ecs.components.ModelMatrix;
 import com.theopus.xengine.core.render.ArtemisRenderModule;
 import com.theopus.xengine.core.render.GLContext;
-import com.theopus.xengine.wrapper.opengl.DefaultRenderCommand;
+import com.theopus.xengine.wrapper.opengl.commands.SimpleVaoRenderCommand;
 import com.theopus.xengine.wrapper.opengl.SimpleLoader;
 import com.theopus.xengine.wrapper.opengl.objects.Vao;
 import com.theopus.xengine.wrapper.opengl.shader.StaticShader;
 
 public class Ver0Module extends ArtemisRenderModule<Ver0Data, Vao> {
-    private DefaultRenderCommand renderCommand;
+    private SimpleVaoRenderCommand renderCommand;
     private SimpleLoader loader;
 
     @Wire
@@ -19,7 +19,7 @@ public class Ver0Module extends ArtemisRenderModule<Ver0Data, Vao> {
 
     public Ver0Module(GLContext glContext) {
         StaticShader staticShader = new StaticShader("v0/static.vert", "v0/static.frag");
-        renderCommand = new DefaultRenderCommand(staticShader);
+        renderCommand = new SimpleVaoRenderCommand(staticShader);
         loader = new SimpleLoader(glContext.getMemoryContext());
         staticShader.bindUniformBlock(glContext.getMatricesBlock());
     }
@@ -31,12 +31,12 @@ public class Ver0Module extends ArtemisRenderModule<Ver0Data, Vao> {
 
     @Override
     public Vao loadModel(Ver0Data d) {
-        return loader.loadSimpleVao(d.getPositions(), d.getIndexes());
+        return loader.load(d.getPositions(), d.getIndexes());
     }
 
     @Override
     public void prepareModel(Vao vao) {
-        renderCommand.prepare(vao);;
+        renderCommand.prepare(vao);
     }
 
     @Override

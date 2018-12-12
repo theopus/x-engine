@@ -10,9 +10,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class MoveSystem extends IntervalIteratingSystem {
-    private final OpsCounter counter = new OpsCounter("Move");
     private static final Logger LOGGER = LoggerFactory.getLogger(MoveSystem.class);
-
+    private final OpsCounter counter = new OpsCounter("Move");
     private ComponentMapper<Velocity> mVelocity;
     private ComponentMapper<Position> mPosition;
 

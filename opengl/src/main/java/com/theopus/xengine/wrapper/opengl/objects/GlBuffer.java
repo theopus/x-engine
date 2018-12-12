@@ -37,6 +37,10 @@ public class GlBuffer {
         bufferData(data);
     }
 
+    protected static int genBuffer() {
+        return GL15.glGenBuffers();
+    }
+
     public void bind() {
         GL15.glBindBuffer(type, id);
     }
@@ -44,12 +48,6 @@ public class GlBuffer {
     public void unbind() {
         GL15.glBindBuffer(type, 0);
     }
-
-
-    protected static int genBuffer() {
-        return GL15.glGenBuffers();
-    }
-
 
     public int bufferSize(int size) {
         bind();

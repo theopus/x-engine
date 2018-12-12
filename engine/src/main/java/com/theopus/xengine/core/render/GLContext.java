@@ -4,7 +4,6 @@ import com.theopus.xengine.wrapper.opengl.MemoryContext;
 import com.theopus.xengine.wrapper.opengl.shader.MatricesUniformBlock;
 
 import java.io.Closeable;
-import java.io.IOException;
 
 public class GLContext implements Closeable {
     private MatricesUniformBlock matricesBlock;

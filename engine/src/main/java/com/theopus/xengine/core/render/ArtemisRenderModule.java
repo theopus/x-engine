@@ -38,6 +38,8 @@ public abstract class ArtemisRenderModule<T, D> implements RenderModule<T> {
     public void bind(String model, int entityId) {
         if (groupMap.keySet().contains(model)) {
             groupManager.add(entityId, model);
+        } else {
+            throw new RuntimeException("Not found model: " + model);
         }
     }
 
@@ -54,6 +56,10 @@ public abstract class ArtemisRenderModule<T, D> implements RenderModule<T> {
             }
             finishModel(D);
         }
+    }
+
+    public String getPrefix() {
+        return prefix;
     }
 
     @Override
@@ -73,4 +79,5 @@ public abstract class ArtemisRenderModule<T, D> implements RenderModule<T> {
     public abstract void prepareModel(D d);
 
     public abstract void finishModel(D d);
+
 }

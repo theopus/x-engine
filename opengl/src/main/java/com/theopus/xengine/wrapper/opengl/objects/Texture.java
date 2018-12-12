@@ -24,7 +24,7 @@ public class Texture {
         return height;
     }
 
-    public  int getId() {
+    public int getId() {
         return textureId;
     }
 }

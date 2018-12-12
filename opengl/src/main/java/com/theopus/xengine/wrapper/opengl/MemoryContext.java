@@ -7,7 +7,6 @@ import org.lwjgl.opengl.GL15;
 import org.lwjgl.opengl.GL30;
 
 import java.io.Closeable;
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -27,8 +26,10 @@ public class MemoryContext implements Closeable {
         vaos.put(vao, "Undefined");
     }
 
-    public void put(GlBuffer glBuffer) {
-        buffers.put(glBuffer, "Undefined");
+    public void put(GlBuffer... glBuffer) {
+        for (GlBuffer buffer : glBuffer) {
+            buffers.put(buffer, "Undefined");
+        }
     }
 
     public void put(Texture texture) {

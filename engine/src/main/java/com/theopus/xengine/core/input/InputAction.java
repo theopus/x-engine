@@ -1,6 +1,6 @@
 package com.theopus.xengine.core.input;
 
-public enum  InputAction {
+public enum InputAction {
     LEFT,
     RIGHT,
     FORWARD,

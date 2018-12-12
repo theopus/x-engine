@@ -19,12 +19,10 @@ import java.util.List;
 public class Loader implements Closeable {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(Loader.class);
-
+    protected final MemoryContext context;
     private List<Integer> vao = new ArrayList<>();
     private List<Integer> vbo = new ArrayList<>();
     private List<Integer> textures = new ArrayList<>();
-
-    protected final MemoryContext context;
 
     public Loader(MemoryContext context) {
         this.context = context;

@@ -2,14 +2,13 @@ package com.theopus.xengine.wrapper.opengl.shader;
 
 import org.joml.Matrix4f;
 
-import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 
 public class StaticShader extends ShaderProgram {
     private Uniform<Matrix4f> transformation;
 
-    public StaticShader(String vertexFile, String fragmentFile){
+    public StaticShader(String vertexFile, String fragmentFile) {
         super(vertexFile, fragmentFile);
     }
 
@@ -22,9 +21,9 @@ public class StaticShader extends ShaderProgram {
 
     @Override
     protected void bindAllAttributes() {
-        super.bindAttribute(0, "position");
-        super.bindAttribute(1, "uv");
-        super.bindAttribute(2, "normal");
+//        super.bindAttribute(0, "position");
+//        super.bindAttribute(1, "uv");
+//        super.bindAttribute(2, "normal");
     }
 
 

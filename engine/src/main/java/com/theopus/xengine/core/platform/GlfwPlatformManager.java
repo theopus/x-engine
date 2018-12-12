@@ -17,14 +17,14 @@ public class GlfwPlatformManager implements PlatformManager {
     private GlfwWrapper wrapper;
 
     private Map<Integer, InputAction> keymap = new HashMap<Integer, InputAction>() {{
-        put(GLFW.GLFW_KEY_D,InputAction.RIGHT);
-        put(GLFW.GLFW_KEY_A,InputAction.LEFT);
-        put(GLFW.GLFW_KEY_SPACE,InputAction.UP);
-        put(GLFW.GLFW_KEY_C,InputAction.DOWN);
-        put(GLFW.GLFW_KEY_W,InputAction.FORWARD);
-        put(GLFW.GLFW_KEY_S,InputAction.BACK);
-        put(GLFW.GLFW_KEY_E,InputAction.ROTATE_CW);
-        put(GLFW.GLFW_KEY_Q,InputAction.ROTATE_CCW);
+        put(GLFW.GLFW_KEY_D, InputAction.RIGHT);
+        put(GLFW.GLFW_KEY_A, InputAction.LEFT);
+        put(GLFW.GLFW_KEY_SPACE, InputAction.UP);
+        put(GLFW.GLFW_KEY_C, InputAction.DOWN);
+        put(GLFW.GLFW_KEY_W, InputAction.FORWARD);
+        put(GLFW.GLFW_KEY_S, InputAction.BACK);
+        put(GLFW.GLFW_KEY_E, InputAction.ROTATE_CW);
+        put(GLFW.GLFW_KEY_Q, InputAction.ROTATE_CCW);
     }};
 
 

@@ -5,10 +5,10 @@ import com.theopus.xengine.wrapper.opengl.objects.Ubo;
 import java.io.Closeable;
 
 public abstract class UniformBlock implements Closeable {
+    protected final Ubo ubo;
     private final int bindingPoint;
     private final String name;
     private final int size;
-    protected final Ubo ubo;
 
     public UniformBlock(int bindingPoint, String name, Ubo ubo) {
         this.bindingPoint = bindingPoint;
@@ -17,7 +17,7 @@ public abstract class UniformBlock implements Closeable {
         this.ubo = ubo;
     }
 
-    public void bindToIndex(){
+    public void bindToIndex() {
         ubo.bindToIndex(bindingPoint);
     }
 

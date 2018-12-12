@@ -1,8 +1,5 @@
 package com.theopus.xengine.core.render;
 
-import com.artemis.Component;
-import org.joml.Matrix4f;
-
 /**
  * @param <T> is data-type for uploading
  */

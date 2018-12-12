@@ -23,6 +23,7 @@ public class Maths {
                 .rotate(((float) Math.toRadians(rz)), new Vector3f(0, 0, 1))
                 .scale(scale);
     }
+
     public static Matrix4f createTransformationMatrix(Vector3f vector3f, Vector3f rotation, float scale) {
         return createTransformationMatrix(vector3f, rotation.x, rotation.y, rotation.z, scale);
     }

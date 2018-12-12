@@ -64,11 +64,6 @@ public abstract class ShaderProgram {
         return shaderID;
     }
 
-    public void bindUniformBlock(UniformBlock uniformBlock){
-        int index = GL33.glGetUniformBlockIndex(programID, uniformBlock.getName());
-        GL33.glUniformBlockBinding(programID, index, uniformBlock.getBindingPoint());
-    }
-
     private static StringBuilder fileToStringBuilder(String file) throws IOException {
         StringBuilder shaderSource = new StringBuilder();
 
@@ -79,6 +74,11 @@ public abstract class ShaderProgram {
             }
         }
         return shaderSource;
+    }
+
+    public void bindUniformBlock(UniformBlock uniformBlock) {
+        int index = GL33.glGetUniformBlockIndex(programID, uniformBlock.getName());
+        GL33.glUniformBlockBinding(programID, index, uniformBlock.getBindingPoint());
     }
 
     protected abstract List<Uniform<?>> uniforms();
