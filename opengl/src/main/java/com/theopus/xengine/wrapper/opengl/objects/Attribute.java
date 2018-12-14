@@ -1,6 +1,11 @@
 package com.theopus.xengine.wrapper.opengl.objects;
 
+import com.theopus.xengine.wrapper.GlDataType;
 import com.theopus.xengine.wrapper.opengl.utils.GlToString;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
 
 public class Attribute {
 
@@ -58,9 +63,73 @@ public class Attribute {
         this.instanced = instanced;
     }
 
-    public static Attribute singleVboAttribute(int index, int type, Vbo vbo, int size, int typeSize) {
-        return new Attribute(index, size, type, size * typeSize, 0, vbo, false);
+    public static Attribute singleVboAttribute(int index, GlDataType type, Vbo vbo, int size) {
+        return new Attribute(index, size, type.glType, type.bytes * size, 0, vbo, false);
     }
+
+    private static Attribute sharedVboAttribute(int index, int type, Vbo vbo, int size, int stride, int pointer) {
+        return new Attribute(index, size, type, stride, pointer, vbo, false);
+    }
+
+
+    public static class SharedAttributeBuilder {
+
+        private final Vbo sharedVbo;
+        private int currentPointer = 0;
+        private int indexPointer;
+        private int stride;
+        private List<Entry> attributeEntry;
+
+        public SharedAttributeBuilder(Vbo sharedVbo) {
+            this.sharedVbo = sharedVbo;
+            attributeEntry = new ArrayList<>();
+        }
+
+        public SharedAttributeBuilder add(GlDataType type) {
+            int packBytesSize = type.byteSize();
+            this.stride += packBytesSize;
+            if (this.stride > sharedVbo.size) {
+                throw new RuntimeException("To big for selected vbo");
+            }
+
+            attributeEntry.add(new Entry(indexPointer, type, type.size, currentPointer));
+            currentPointer += packBytesSize;
+
+            if (packBytesSize <= GlDataType.VEC4_FLOAT.byteSize()){
+                indexPointer++;
+            } else {
+                int div = packBytesSize / GlDataType.VEC4_FLOAT.bytes;
+                int mod = packBytesSize % GlDataType.VEC4_FLOAT.bytes;
+                if (mod != 0){
+                   indexPointer+=div + 1;
+                } else {
+                    indexPointer+=div;
+                }
+            }
+            return this;
+        }
+
+        public List<Attribute> build() {
+            return attributeEntry.stream()
+                    .map(entry -> sharedVboAttribute(entry.index, entry.type.glType, sharedVbo, entry.size, stride, entry.pointer))
+                    .collect(Collectors.toList());
+        }
+
+        private class Entry {
+            int index;
+            GlDataType type;
+            int size;
+            int pointer;
+
+            Entry(int index, GlDataType type, int size, int pointer) {
+                this.index = index;
+                this.type = type;
+                this.size = size;
+                this.pointer = pointer;
+            }
+        }
+    }
+
 
     @Override
     public String toString() {

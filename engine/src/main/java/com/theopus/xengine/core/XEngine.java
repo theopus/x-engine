@@ -31,7 +31,6 @@ public class XEngine {
     public void run() {
         EventBus eventBus = new EventBus();
 
-        // 200/
         PlatformManager platformManager = new GlfwPlatformManager(new WindowConfig(600, 400, new Vector4f(226f / 256f, 256f / 256f, 256f / 256f, 0), false, 0), eventBus);
         platformManager.createWindow();
         platformManager.init();
@@ -72,6 +71,7 @@ public class XEngine {
         render.add(module0);
         render.add(module1);
 
+        //bullshiting
         String model0 = ModelUtils.simpleQuad(module0);
         String texmodel = ModelUtils.texturedQuad(module1);
 
@@ -94,7 +94,7 @@ public class XEngine {
         positionCas.position.x = -1;
         positionCas.position.y = 0;
         positionCas.position.z = -1f;
-
+        //----------------------------------------
 
         createCamera(tagManager, world);
 
