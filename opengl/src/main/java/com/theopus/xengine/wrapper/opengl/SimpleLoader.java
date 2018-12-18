@@ -1,9 +1,11 @@
 package com.theopus.xengine.wrapper.opengl;
 
-import com.theopus.xengine.wrapper.GlDataType;
 import com.theopus.xengine.wrapper.opengl.objects.*;
+import com.theopus.xengine.wrapper.opengl.utils.GlDataType;
+import com.theopus.xengine.wrapper.utils.ObjParser;
 import org.lwjgl.opengl.GL15;
 
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 
@@ -17,7 +19,7 @@ public class SimpleLoader extends Loader {
         Ebo ebo = new Ebo(indexes, GL15.GL_STATIC_DRAW);
         Vbo vbo = new Vbo(positions, GL15.GL_STATIC_DRAW);
         Attribute posAttr = Attribute
-                .singleVboAttribute(0, GlDataType.FLOAT, vbo, 3);
+                .singleVboAttribute(0, GlDataType.VEC3_FLOAT, vbo);
 
         context.put(ebo, vbo);
         return new Vao(ebo, posAttr);
@@ -28,20 +30,6 @@ public class SimpleLoader extends Loader {
 
         float[] mixed = mixPositionsAndUv(positions, uvs);
         Vbo posUv = new Vbo(mixed, GL15.GL_STATIC_DRAW);
-
-//        Attribute posAttr = Attribute.sharedVboAttribute(0, GL15.GL_FLOAT, posUv, 3, MemorySizeConstants.VEC3_FLOAT + MemorySizeConstants.VEC2_FLOAT, 0);
-//        Attribute uvAttr = Attribute.sharedVboAttribute(1, GL15.GL_FLOAT, posUv, 2, MemorySizeConstants.VEC3_FLOAT + MemorySizeConstants.VEC2_FLOAT, MemorySizeConstants.VEC3_FLOAT);
-
-//        new Attribute.SharedAttributeBuilder()
-//                .add()
-//        Vbo pos = new Vbo(positions, GL15.GL_STATIC_DRAW);
-//        Vbo uv = new Vbo(uvs, GL15.GL_STATIC_DRAW);
-//
-//        Attribute posAttr = Attribute
-//                .singleVboAttribute(0, GlDataType.FLOAT, pos, 3);
-//
-//        Attribute uvAttr = Attribute
-//                .singleVboAttribute(1, GlDataType.FLOAT, uv, 2);
 
         List<Attribute> build = new Attribute.SharedAttributeBuilder(posUv)
                 .add(GlDataType.VEC3_FLOAT)
@@ -54,8 +42,22 @@ public class SimpleLoader extends Loader {
         context.put(ebo, posUv);
         context.put(texture);
 
-        System.out.println(Arrays.toString(mixPositionsAndUv(positions, uvs)));
         return new TexturedVao(vao, texture);
+    }
+
+    public TexturedVao load(float[] positions, float[] uvs, float[] normals, int[] indexes, String texture) {
+        Ebo ebo = new Ebo(indexes, GL15.GL_STATIC_DRAW);
+        Vbo posVbo = new Vbo(positions, GL15.GL_STATIC_DRAW);
+        Vbo uvVbo = new Vbo(uvs, GL15.GL_STATIC_DRAW);
+        Vbo normalVbo = new Vbo(normals, GL15.GL_STATIC_DRAW);
+
+        Attribute posAttr = Attribute.singleVboAttribute(0, GlDataType.VEC3_FLOAT, posVbo);
+        Attribute uvAttr = Attribute.singleVboAttribute(1, GlDataType.VEC2_FLOAT, uvVbo);
+        Attribute normalAttr = Attribute.singleVboAttribute(2, GlDataType.VEC3_FLOAT, normalVbo);
+
+        Vao vao = new Vao(ebo, posAttr, uvAttr, normalAttr);
+        Texture t = Texture.loadTexture(texture);
+        return new TexturedVao(vao, t);
     }
 
     private float[] mixPositionsAndUv(float[] positions, float[] uv) {
@@ -75,6 +77,17 @@ public class SimpleLoader extends Loader {
         }
 
         return result;
+    }
+
+
+    public TexturedVao load(String obj) {
+        ObjParser.Result parse;
+        try {
+            parse = ObjParser.parse(obj);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+        return load(parse.getPosArr(), parse.getTextCoordArr(), parse.getNormArr(), parse.getIndicesArr(), "textures/white.png");
     }
 
 

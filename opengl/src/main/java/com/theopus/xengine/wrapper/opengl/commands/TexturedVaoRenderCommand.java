@@ -5,6 +5,7 @@ import com.theopus.xengine.wrapper.opengl.shader.StaticShader;
 import org.joml.Matrix4f;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL13;
+import org.lwjgl.opengl.GL15;
 import org.lwjgl.opengl.GL30;
 
 public class TexturedVaoRenderCommand {
@@ -17,6 +18,7 @@ public class TexturedVaoRenderCommand {
     }
 
     public void prepare(TexturedVao obj) {
+        GL11.glEnable(GL15.GL_DEPTH_TEST);
         GL13.glActiveTexture(GL13.GL_TEXTURE0);
         GL11.glBindTexture(GL11.GL_TEXTURE_2D, obj.texture.getId());
         GL30.glBindVertexArray(obj.vao.getId());

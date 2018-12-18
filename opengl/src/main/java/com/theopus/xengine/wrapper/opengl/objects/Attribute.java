@@ -1,6 +1,6 @@
 package com.theopus.xengine.wrapper.opengl.objects;
 
-import com.theopus.xengine.wrapper.GlDataType;
+import com.theopus.xengine.wrapper.opengl.utils.GlDataType;
 import com.theopus.xengine.wrapper.opengl.utils.GlToString;
 
 import java.util.ArrayList;
@@ -63,8 +63,8 @@ public class Attribute {
         this.instanced = instanced;
     }
 
-    public static Attribute singleVboAttribute(int index, GlDataType type, Vbo vbo, int size) {
-        return new Attribute(index, size, type.glType, type.bytes * size, 0, vbo, false);
+    public static Attribute singleVboAttribute(int index, GlDataType type, Vbo vbo) {
+        return new Attribute(index, type.size, type.glType, type.byteSize(), 0, vbo, false);
     }
 
     private static Attribute sharedVboAttribute(int index, int type, Vbo vbo, int size, int stride, int pointer) {

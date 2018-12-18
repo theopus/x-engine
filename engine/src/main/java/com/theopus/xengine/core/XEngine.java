@@ -21,6 +21,8 @@ import com.theopus.xengine.core.render.modules.v0.Ver0Data;
 import com.theopus.xengine.core.render.modules.v0.Ver0Module;
 import com.theopus.xengine.core.render.modules.v1.Ver1Data;
 import com.theopus.xengine.core.render.modules.v1.Ver1Module;
+import com.theopus.xengine.core.render.modules.v2.Ver2Data;
+import com.theopus.xengine.core.render.modules.v2.Ver2Module;
 import com.theopus.xengine.wrapper.glfw.WindowConfig;
 import org.joml.Vector4f;
 
@@ -66,14 +68,19 @@ public class XEngine {
 
         RenderModule<Ver0Data> module0 = new Ver0Module(glContext);
         RenderModule<Ver1Data> module1 = new Ver1Module(glContext);
+        RenderModule<Ver2Data> module2 = new Ver2Module(glContext);
+
         world.inject(module0);
         world.inject(module1);
+        world.inject(module2);
         render.add(module0);
         render.add(module1);
+        render.add(module2);
 
         //bullshiting
         String model0 = ModelUtils.simpleQuad(module0);
         String texmodel = ModelUtils.texturedQuad(module1);
+        String objectModel = module2.load(new Ver2Data("objects/dragon.obj"));
 
         Archetype base = Archetypes.base.build(world);
 
@@ -88,7 +95,7 @@ public class XEngine {
         positionTex.position.z = -1f;
 
         int casEnt = world.create(base);
-        module0.bind(model0, casEnt);
+        module2.bind(objectModel, casEnt);
         Position positionCas = mapper.get(casEnt);
 
         positionCas.position.x = -1;
