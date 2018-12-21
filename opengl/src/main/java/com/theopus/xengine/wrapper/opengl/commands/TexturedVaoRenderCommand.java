@@ -1,5 +1,6 @@
 package com.theopus.xengine.wrapper.opengl.commands;
 
+import com.theopus.xengine.wrapper.opengl.GlState;
 import com.theopus.xengine.wrapper.opengl.objects.TexturedVao;
 import com.theopus.xengine.wrapper.opengl.shader.StaticShader;
 import org.joml.Matrix4f;
@@ -12,13 +13,17 @@ public class TexturedVaoRenderCommand {
 
 
     public final StaticShader shader;
+    private final GlState state;
 
-    public TexturedVaoRenderCommand(StaticShader shader) {
+    public TexturedVaoRenderCommand(StaticShader shader, GlState state) {
         this.shader = shader;
+        this.state = state;
     }
 
     public void prepare(TexturedVao obj) {
-        GL11.glEnable(GL15.GL_DEPTH_TEST);
+        state.depthTest.update(true);
+        state.backFaceCulling.update(true);
+
         GL13.glActiveTexture(GL13.GL_TEXTURE0);
         GL11.glBindTexture(GL11.GL_TEXTURE_2D, obj.texture.getId());
         GL30.glBindVertexArray(obj.vao.getId());

@@ -14,6 +14,7 @@ import com.theopus.xengine.core.input.InputAction;
 import com.theopus.xengine.core.input.InputActionType;
 import com.theopus.xengine.core.input.InputEvent;
 import com.theopus.xengine.core.render.BaseRenderer;
+import com.theopus.xengine.core.render.GlRenderer;
 import com.theopus.xengine.core.utils.Maths;
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
@@ -39,6 +40,7 @@ public class CameraSystem extends IntervalIteratingSystem implements Subscriber<
         Matrix4f transformationMatrix = Maths.createTransformationMatrix(cameraposition, position.rotation, position.scale);
 
         renderer.loadViewMatrix(transformationMatrix);
+        GlRenderer renderer = (GlRenderer) this.renderer;
     }
 
     private Position getCameraPosition(int cameraId) {

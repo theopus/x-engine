@@ -24,6 +24,7 @@ import com.theopus.xengine.core.render.modules.v1.Ver1Module;
 import com.theopus.xengine.core.render.modules.v2.Ver2Data;
 import com.theopus.xengine.core.render.modules.v2.Ver2Module;
 import com.theopus.xengine.wrapper.glfw.WindowConfig;
+import org.joml.Vector3f;
 import org.joml.Vector4f;
 
 public class XEngine {
@@ -92,7 +93,7 @@ public class XEngine {
 
         positionTex.position.x = 1;
         positionTex.position.y = 0;
-        positionTex.position.z = -1f;
+        positionTex.position.z = -21f;
 
         int casEnt = world.create(base);
         module2.bind(objectModel, casEnt);
@@ -100,10 +101,13 @@ public class XEngine {
 
         positionCas.position.x = -1;
         positionCas.position.y = 0;
-        positionCas.position.z = -1f;
+        positionCas.position.z = -20f;
         //----------------------------------------
 
         createCamera(tagManager, world);
+
+        glContext.getLightBlock().loadPosition(new Vector3f(0, 100, 0));
+        glContext.getLightBlock().loadColor(new Vector3f(1, 0, 1));
 
         new Loop.Builder()
                 .setCondition(() -> !platformManager.shouldClose())

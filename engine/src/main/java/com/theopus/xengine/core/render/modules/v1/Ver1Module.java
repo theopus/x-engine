@@ -19,7 +19,7 @@ public class Ver1Module extends ArtemisRenderModule<Ver1Data, TexturedVao> {
 
     public Ver1Module(GLContext glContext) {
         StaticShader staticShader = new StaticShader("v1/static.vert", "v1/static.frag");
-        renderCommand = new TexturedVaoRenderCommand(staticShader);
+        renderCommand = new TexturedVaoRenderCommand(staticShader, glContext.getState());
         loader = new SimpleLoader(glContext.getMemoryContext());
         staticShader.bindUniformBlock(glContext.getMatricesBlock());
     }

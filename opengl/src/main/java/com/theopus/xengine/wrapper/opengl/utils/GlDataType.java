@@ -7,7 +7,8 @@ public enum GlDataType {
     FLOAT(4, GL15.GL_FLOAT, 1),
     VEC2_FLOAT(FLOAT.bytes, GL15.GL_FLOAT, 2),
     VEC3_FLOAT(FLOAT.bytes, GL15.GL_FLOAT, 3),
-    VEC4_FLOAT(FLOAT.bytes, GL15.GL_FLOAT, 4);
+    VEC4_FLOAT(FLOAT.bytes, GL15.GL_FLOAT, 4),
+    MAT4_FLOAT(FLOAT.bytes, GL15.GL_FLOAT, 16);
 
     public final int bytes;
     public final int glType;
