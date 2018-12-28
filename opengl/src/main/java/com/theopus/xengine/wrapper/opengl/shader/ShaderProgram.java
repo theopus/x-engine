@@ -1,5 +1,6 @@
 package com.theopus.xengine.wrapper.opengl.shader;
 
+import com.theopus.xengine.wrapper.opengl.shader.ubos.UniformBlock;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL20;
 import org.lwjgl.opengl.GL33;

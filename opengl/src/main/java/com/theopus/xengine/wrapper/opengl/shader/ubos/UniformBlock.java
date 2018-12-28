@@ -1,4 +1,4 @@
-package com.theopus.xengine.wrapper.opengl.shader;
+package com.theopus.xengine.wrapper.opengl.shader.ubos;
 
 import com.theopus.xengine.wrapper.opengl.objects.Ubo;
 

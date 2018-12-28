@@ -1,12 +1,10 @@
-package com.theopus.xengine.wrapper.opengl.shader;
+package com.theopus.xengine.wrapper.opengl.shader.ubos;
 
 import com.google.common.base.Preconditions;
 import com.theopus.xengine.wrapper.opengl.MemoryContext;
 import com.theopus.xengine.wrapper.opengl.objects.Ubo;
 import com.theopus.xengine.wrapper.opengl.utils.Buffers;
 import com.theopus.xengine.wrapper.opengl.utils.GlDataType;
-import com.theopus.xengine.wrapper.utils.State;
-import org.joml.Matrix4f;
 import org.joml.Vector3f;
 import org.lwjgl.opengl.GL15;
 import org.lwjgl.system.MemoryUtil;
@@ -28,10 +26,10 @@ public class LightUniformBlock extends UniformBlock {
     public static final int SIZE = GlDataType.VEC4_FLOAT.byteSize() * 3;
     public static final String NAME = "Light";
 
-    private static int COLOR_OFFSET = 0;
-    private static int POSITION_OFFSET = GlDataType.VEC4_FLOAT.byteSize();
-    private static int REFLECTIVITY_OFFSET = GlDataType.VEC4_FLOAT.byteSize() * 2;
-    private static int AMBIENT_LEVEL_OFFSET = GlDataType.VEC4_FLOAT.byteSize() * 3;
+    private static int POSITION_OFFSET = 0;
+    private static int DIFFUSE_INTENSITY = GlDataType.VEC4_FLOAT.byteSize();
+    private static int AMBIENT_INTENSITY = GlDataType.VEC4_FLOAT.byteSize() * 2;
+    private static int SPECULAR_INTENSITY = GlDataType.VEC4_FLOAT.byteSize() * 3;
 
     private FloatBuffer vector3fBuffer;
 
@@ -54,8 +52,9 @@ public class LightUniformBlock extends UniformBlock {
 
     public void init(){
         loadPosition(new Vector3f(1,1,1));
-        loadColor(new Vector3f(1,1,1));
-        loadReflectivity(new Vector3f(1,1,1));
+        loadDiffuse(new Vector3f(1,1,1));
+        loadAmbient(new Vector3f(1,1,1));
+        loadSpecular(new Vector3f(1,1,1));
     }
 
     public static LightUniformBlock withCtx(int bindingPoint, MemoryContext ctx) {
@@ -64,21 +63,27 @@ public class LightUniformBlock extends UniformBlock {
         return new LightUniformBlock(bindingPoint, ubo);
     }
 
-    public void loadColor(Vector3f light) {
-        Buffers.put(light, vector3fBuffer);
-        ubo.bufferSubData(COLOR_OFFSET, vector3fBuffer);
-        vector3fBuffer.clear();
-    }
-
     public void loadPosition(Vector3f pos) {
         Buffers.put(pos, vector3fBuffer);
         ubo.bufferSubData(POSITION_OFFSET, vector3fBuffer);
         vector3fBuffer.clear();
     }
 
-    public void loadReflectivity(Vector3f ref) {
+    public void loadDiffuse(Vector3f light) {
+        Buffers.put(light, vector3fBuffer);
+        ubo.bufferSubData(DIFFUSE_INTENSITY, vector3fBuffer);
+        vector3fBuffer.clear();
+    }
+
+    public void loadAmbient(Vector3f ref) {
         Buffers.put(ref, vector3fBuffer);
-        ubo.bufferSubData(REFLECTIVITY_OFFSET, vector3fBuffer);
+        ubo.bufferSubData(AMBIENT_INTENSITY, vector3fBuffer);
+        vector3fBuffer.clear();
+    }
+
+    public void loadSpecular(Vector3f specular){
+        Buffers.put(specular, vector3fBuffer);
+        ubo.bufferSubData(SPECULAR_INTENSITY, vector3fBuffer);
         vector3fBuffer.clear();
     }
 

@@ -106,8 +106,8 @@ public class XEngine {
 
         createCamera(tagManager, world);
 
-        glContext.getLightBlock().loadPosition(new Vector3f(0, 100, 0));
-        glContext.getLightBlock().loadColor(new Vector3f(1, 0, 1));
+        glContext.getLightBlock().loadPosition(new Vector3f(0, 1000, -10));
+        glContext.getLightBlock().loadDiffuse(new Vector3f(1, 0, 1));
 
         new Loop.Builder()
                 .setCondition(() -> !platformManager.shouldClose())
