@@ -17,7 +17,8 @@ public class Ver0Module extends ArtemisRenderModule<Ver0Data, Vao> {
     @Wire
     private ComponentMapper<ModelMatrix> mMapper;
 
-    public Ver0Module(GLContext glContext) {
+    @Override
+    public void setContext(GLContext glContext) {
         StaticShader staticShader = new StaticShader("v0/static.vert", "v0/static.frag");
         renderCommand = new SimpleVaoRenderCommand(staticShader);
         loader = new SimpleLoader(glContext.getMemoryContext());
@@ -43,4 +44,6 @@ public class Ver0Module extends ArtemisRenderModule<Ver0Data, Vao> {
     public void finishModel(Vao vao) {
         renderCommand.prepare(vao);
     }
+
+
 }

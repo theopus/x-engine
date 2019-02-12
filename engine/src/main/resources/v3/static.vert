@@ -10,13 +10,13 @@ out vec3 lightIntensity;
 uniform mat4 transformationMatrix;
 
 layout (std140) uniform Matrices {
-      mat4 view; //0
-      mat4 projection; //64
+      mat4 view;        //0
+      mat4 projection;  //64
 } mtx;
 
 layout (std140) uniform Light {
-      vec3 position;   //0
-      vec3 diffuse; //16
+      vec3 position;    //0
+      vec3 diffuse;     //16
 } light;
 
 

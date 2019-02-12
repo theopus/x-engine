@@ -1,5 +1,7 @@
 package com.theopus.xengine.core;
 
+import java.io.IOException;
+
 public class Loop {
     private final BoolFunction condition;
     private final RunFunction run;
@@ -20,10 +22,10 @@ public class Loop {
     }
 
     interface VoidFunction {
-        void execute();
+        void execute() throws IOException;
     }
 
-    public void run() {
+    public void run() throws IOException {
         long before = System.currentTimeMillis();
         long now;
         long elapsed;

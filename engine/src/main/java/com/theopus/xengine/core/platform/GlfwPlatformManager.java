@@ -40,9 +40,9 @@ public class GlfwPlatformManager implements PlatformManager {
                 eventBus.post(new InputEvent(keymap.getOrDefault(key, InputAction.UNIDENTIFIED), action == GLFW.GLFW_PRESS ? InputActionType.BEGIN : InputActionType.END));
             }
         });
-        wrapper.setFramebufferChangedCallback((window, width, height) -> {
-            eventBus.post(new FramebufferEvent(width, height));
-        });
+        wrapper.setFramebufferChangedCallback((window, width, height) -> eventBus.post(new FramebufferEvent(width, height)));
+        eventBus.post(new FramebufferEvent(wrapper.getWidth(), wrapper.getHeight()));
+        eventBus.post(new FramebufferEvent(wrapper.getWidth(), wrapper.getHeight()));
         eventBus.post(new FramebufferEvent(wrapper.getWidth(), wrapper.getHeight()));
     }
 

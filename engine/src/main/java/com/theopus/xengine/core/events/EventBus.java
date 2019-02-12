@@ -1,5 +1,9 @@
 package com.theopus.xengine.core.events;
 
+import com.artemis.BaseSystem;
+
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
 import java.util.*;
 
 public class EventBus {
@@ -9,6 +13,21 @@ public class EventBus {
 
     public void subscribe(Class eventClass, Subscriber subscriber) {
         getSubscribersList(eventClass).add(subscriber);
+    }
+    public void subscribe(Object subscriber) {
+
+        Type[] genericInterfaces = subscriber.getClass().getGenericInterfaces();
+        for (Type genericInterface : genericInterfaces) {
+            if (genericInterface instanceof ParameterizedType && ((ParameterizedType) genericInterface).getRawType().getTypeName().equals(Subscriber.class.getTypeName())) {
+                Type[] genericTypes = ((ParameterizedType) genericInterface).getActualTypeArguments();
+
+                for (Type genericType : genericTypes) {
+                    Class<?> eventClass = (Class<?>) genericType;
+                    getSubscribersList(eventClass).add((Subscriber) subscriber);
+                }
+            }
+        }
+
     }
 
     public void post(Object event) {
@@ -41,4 +60,6 @@ public class EventBus {
         }
         return subscribers;
     }
+
+
 }

@@ -2,10 +2,10 @@ package com.theopus.xengine.wrapper.opengl.shader.ubos;
 
 import com.google.common.base.Preconditions;
 import com.theopus.xengine.wrapper.opengl.MemoryContext;
-import com.theopus.xengine.wrapper.opengl.MemorySizeConstants;
 import com.theopus.xengine.wrapper.opengl.objects.Ubo;
 import com.theopus.xengine.wrapper.opengl.utils.Buffers;
 import com.theopus.xengine.wrapper.opengl.utils.GlDataType;
+import com.theopus.xengine.wrapper.utils.State;
 import org.joml.Matrix4f;
 import org.lwjgl.opengl.GL15;
 import org.lwjgl.system.MemoryUtil;
@@ -24,11 +24,14 @@ import java.nio.FloatBuffer;
  */
 public class MatricesUniformBlock extends UniformBlock {
 
-    public static final int SIZE = MemorySizeConstants.MAT4_FLOAT * 2;
+    public static final int SIZE = GlDataType.MAT4_FLOAT.byteSize * 2;
     public static final String NAME = "Matrices";
 
     private final FloatBuffer viewMtxBuffer;
     private final FloatBuffer projMtxBuffer;
+
+    private State<Matrix4f> viewMatrix;
+    private State<Matrix4f> projMatrix;
 
     public MatricesUniformBlock(int bindingPoint, Ubo ubo) {
         super(bindingPoint, NAME, ubo);
@@ -36,6 +39,7 @@ public class MatricesUniformBlock extends UniformBlock {
         this.viewMtxBuffer = MemoryUtil.memAllocFloat(GlDataType.MAT4_FLOAT.size);
         this.projMtxBuffer = MemoryUtil.memAllocFloat(GlDataType.MAT4_FLOAT.size);
         bindToIndex();
+        init();
     }
 
     public MatricesUniformBlock(int bindingPoint) {
@@ -45,6 +49,20 @@ public class MatricesUniformBlock extends UniformBlock {
         this.projMtxBuffer = MemoryUtil.memAllocFloat(GlDataType.MAT4_FLOAT.size);
         //TODO: [INVESTIGATE] Works fine (W10) bind before shader assignment
         bindToIndex();
+        init();
+    }
+
+    private void init() {
+        viewMatrix = State.mat4(new Matrix4f(), upd ->{
+            Buffers.put(upd, viewMtxBuffer);
+            ubo.bufferSubData(0, viewMtxBuffer);
+            viewMtxBuffer.clear();
+        });
+        projMatrix = State.mat4(new Matrix4f(), upd ->{
+            Buffers.put(upd, projMtxBuffer);
+            ubo.bufferSubData(GlDataType.MAT4_FLOAT.byteSize, projMtxBuffer);
+            projMtxBuffer.clear();
+        });
     }
 
     public static MatricesUniformBlock withCtx(int bindingPoint, MemoryContext ctx) {
@@ -54,15 +72,11 @@ public class MatricesUniformBlock extends UniformBlock {
     }
 
     public void loadViewMatrix(Matrix4f view) {
-        Buffers.put(view, viewMtxBuffer);
-        ubo.bufferSubData(0, viewMtxBuffer);
-        viewMtxBuffer.clear();
+        viewMatrix.update(view);
     }
 
     public void loadProjectionMatrix(Matrix4f projection) {
-        Buffers.put(projection, projMtxBuffer);
-        ubo.bufferSubData(MemorySizeConstants.MAT4_FLOAT, projMtxBuffer);
-        projMtxBuffer.clear();
+        projMatrix.update(projection);
     }
 
     @Override

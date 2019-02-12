@@ -1,6 +1,7 @@
 package com.theopus.xengine.core.render;
 
 import org.joml.Matrix4f;
+import org.joml.Vector3f;
 import org.lwjgl.opengl.GL11;
 
 public class GlRenderer extends BaseRenderer {
@@ -32,5 +33,11 @@ public class GlRenderer extends BaseRenderer {
     @Override
     public void loadFramebufferSize(int width, int height) {
         GL11.glViewport(0, 0, width, height);
+    }
+
+    @Override
+    public void loadLight(Vector3f diffuse, Vector3f position) {
+        glContext.getLightBlock().loadDiffuse(diffuse);
+        glContext.getLightBlock().loadPosition(position);
     }
 }

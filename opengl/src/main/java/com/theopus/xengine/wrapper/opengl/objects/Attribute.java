@@ -64,7 +64,7 @@ public class Attribute {
     }
 
     public static Attribute singleVboAttribute(int index, GlDataType type, Vbo vbo) {
-        return new Attribute(index, type.size, type.glType, type.byteSize(), 0, vbo, false);
+        return new Attribute(index, type.size, type.glType, type.byteSize, 0, vbo, false);
     }
 
     private static Attribute sharedVboAttribute(int index, int type, Vbo vbo, int size, int stride, int pointer) {
@@ -86,7 +86,7 @@ public class Attribute {
         }
 
         public SharedAttributeBuilder add(GlDataType type) {
-            int packBytesSize = type.byteSize();
+            int packBytesSize = type.byteSize;
             this.stride += packBytesSize;
             if (this.stride > sharedVbo.size) {
                 throw new RuntimeException("To big for selected vbo");
@@ -95,7 +95,7 @@ public class Attribute {
             attributeEntry.add(new Entry(indexPointer, type, type.size, currentPointer));
             currentPointer += packBytesSize;
 
-            if (packBytesSize <= GlDataType.VEC4_FLOAT.byteSize()){
+            if (packBytesSize <= GlDataType.VEC4_FLOAT.byteSize){
                 indexPointer++;
             } else {
                 int div = packBytesSize / GlDataType.VEC4_FLOAT.bytes;

@@ -5,6 +5,7 @@ import com.theopus.xengine.wrapper.opengl.MemoryContext;
 import com.theopus.xengine.wrapper.opengl.objects.Ubo;
 import com.theopus.xengine.wrapper.opengl.utils.Buffers;
 import com.theopus.xengine.wrapper.opengl.utils.GlDataType;
+import com.theopus.xengine.wrapper.utils.State;
 import org.joml.Vector3f;
 import org.lwjgl.opengl.GL15;
 import org.lwjgl.system.MemoryUtil;
@@ -23,15 +24,18 @@ import java.nio.FloatBuffer;
  */
 public class LightUniformBlock extends UniformBlock {
 
-    public static final int SIZE = GlDataType.VEC4_FLOAT.byteSize() * 3;
+    public static final int SIZE = GlDataType.VEC4_FLOAT.byteSize * 3;
     public static final String NAME = "Light";
 
     private static int POSITION_OFFSET = 0;
-    private static int DIFFUSE_INTENSITY = GlDataType.VEC4_FLOAT.byteSize();
-    private static int AMBIENT_INTENSITY = GlDataType.VEC4_FLOAT.byteSize() * 2;
-    private static int SPECULAR_INTENSITY = GlDataType.VEC4_FLOAT.byteSize() * 3;
+    private static int DIFFUSE_INTENSITY = GlDataType.VEC4_FLOAT.byteSize;
+    private static int AMBIENT_INTENSITY = GlDataType.VEC4_FLOAT.byteSize * 2;
+    private static int SPECULAR_INTENSITY = GlDataType.VEC4_FLOAT.byteSize * 3;
 
     private FloatBuffer vector3fBuffer;
+
+    private State<Vector3f> position;
+    private State<Vector3f> diffuse;
 
     public LightUniformBlock(int bindingPoint, Ubo ubo) {
         super(bindingPoint, NAME, ubo);
@@ -51,8 +55,18 @@ public class LightUniformBlock extends UniformBlock {
     }
 
     public void init(){
-        loadPosition(new Vector3f(1,1,1));
-        loadDiffuse(new Vector3f(1,1,1));
+        position = State.v3(new Vector3f(1,1,1), position -> {
+            Buffers.put(position, vector3fBuffer);
+            ubo.bufferSubData(POSITION_OFFSET, vector3fBuffer);
+            vector3fBuffer.clear();
+        });
+
+        diffuse = State.v3(new Vector3f(1,1,1), diffuse ->{
+            Buffers.put(diffuse, vector3fBuffer);
+            ubo.bufferSubData(DIFFUSE_INTENSITY, vector3fBuffer);
+            vector3fBuffer.clear();
+        });
+
         loadAmbient(new Vector3f(1,1,1));
         loadSpecular(new Vector3f(1,1,1));
     }
@@ -64,15 +78,11 @@ public class LightUniformBlock extends UniformBlock {
     }
 
     public void loadPosition(Vector3f pos) {
-        Buffers.put(pos, vector3fBuffer);
-        ubo.bufferSubData(POSITION_OFFSET, vector3fBuffer);
-        vector3fBuffer.clear();
+        position.update(pos);
     }
 
     public void loadDiffuse(Vector3f light) {
-        Buffers.put(light, vector3fBuffer);
-        ubo.bufferSubData(DIFFUSE_INTENSITY, vector3fBuffer);
-        vector3fBuffer.clear();
+        diffuse.update(light);
     }
 
     public void loadAmbient(Vector3f ref) {

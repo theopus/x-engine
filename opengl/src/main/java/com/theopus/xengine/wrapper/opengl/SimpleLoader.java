@@ -79,7 +79,6 @@ public class SimpleLoader extends Loader {
         return result;
     }
 
-
     public TexturedVao load(String obj) {
         ObjParser.Result parse;
         try {

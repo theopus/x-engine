@@ -40,7 +40,6 @@ public class CameraSystem extends IntervalIteratingSystem implements Subscriber<
         Matrix4f transformationMatrix = Maths.createTransformationMatrix(cameraposition, position.rotation, position.scale);
 
         renderer.loadViewMatrix(transformationMatrix);
-        GlRenderer renderer = (GlRenderer) this.renderer;
     }
 
     private Position getCameraPosition(int cameraId) {

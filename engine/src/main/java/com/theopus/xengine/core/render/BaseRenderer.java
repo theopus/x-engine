@@ -1,13 +1,15 @@
 package com.theopus.xengine.core.render;
 
+import com.artemis.World;
 import org.joml.Matrix4f;
+import org.joml.Vector3f;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public abstract class BaseRenderer {
 
-    protected List<RenderModule> modules;
+    protected List<RenderModule<?>> modules;
 
     public BaseRenderer() {
         this.modules = new ArrayList<>();
@@ -39,6 +41,13 @@ public abstract class BaseRenderer {
         throw new RuntimeException(String.format("Module %s not found", moduleClass));
     }
 
+    public void inject(World world) {
+        for (RenderModule module : modules) {
+            world.inject(module);
+        }
+    }
+
+
     public abstract void clearBuffer();
 
     public abstract void loadProjectionMatrix(Matrix4f projection);
@@ -46,4 +55,10 @@ public abstract class BaseRenderer {
     public abstract void loadViewMatrix(Matrix4f view);
 
     public abstract void loadFramebufferSize(int width, int height);
+
+    public List<RenderModule<?>> modules() {
+        return modules;
+    }
+
+    public abstract void loadLight(Vector3f diffuse, Vector3f position);
 }

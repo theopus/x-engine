@@ -17,13 +17,8 @@ import java.nio.FloatBuffer;
 
 public class MaterialUniformBlock extends UniformBlock {
 
-    public static final int SIZE = GlDataType.FLOAT.byteSize() * 4;
+    public static final int SIZE = GlDataType.FLOAT.byteSize * 4;
     public static final String NAME = "Material";
-
-    private static int AMBIENT_REF_OFFSET = 0;
-    private static int DIFFUSE_REF_OFFSET = GlDataType.FLOAT.byteSize();
-    private static int SPECULAR_REF_OFFSET = GlDataType.FLOAT.byteSize() * 2;
-    private static int SHININESS_OFFSET = GlDataType.FLOAT.byteSize() * 3;
 
     private FloatBuffer vector4fBuffer;
     private Vector4f v4 = new Vector4f();

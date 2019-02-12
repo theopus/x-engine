@@ -22,7 +22,6 @@ public class GLContext implements Closeable {
         this.lightBlock = LightUniformBlock.withCtx(1, memoryContext);
         this.materialBlock = MaterialUniformBlock.withCtx(2, memoryContext);
         this.state = new GlState();
-
     }
 
     public MatricesUniformBlock getMatricesBlock() {

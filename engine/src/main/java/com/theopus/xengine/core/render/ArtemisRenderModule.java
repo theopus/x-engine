@@ -7,13 +7,16 @@ import com.theopus.xengine.core.ecs.managers.CustomGroupManager;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 public abstract class ArtemisRenderModule<T, D> implements RenderModule<T> {
 
     private final Map<String, D> groupMap;
     private final String prefix;
 
-    @Wire
+    @Wire(injectInherited = true)
     private CustomGroupManager groupManager;
     private int count = 0;
 
@@ -56,8 +59,21 @@ public abstract class ArtemisRenderModule<T, D> implements RenderModule<T> {
             }
             finishModel(D);
         }
+
+
     }
 
+    @Override
+    public Map<String, ImmutableBag<Entity>> bindings(){
+        return models().stream().collect(Collectors.toMap(Function.identity(), m -> groupManager.getEntities(m)));
+    }
+
+    @Override
+    public Set<String> models(){
+        return groupMap.keySet();
+    }
+
+    @Override
     public String getPrefix() {
         return prefix;
     }
@@ -71,6 +87,8 @@ public abstract class ArtemisRenderModule<T, D> implements RenderModule<T> {
     public void finish() {
 
     }
+
+    public abstract void setContext(GLContext glContext);
 
     public abstract void renderModel(int entityId, D d);
 
