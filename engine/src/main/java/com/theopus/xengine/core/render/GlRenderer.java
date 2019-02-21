@@ -37,7 +37,7 @@ public class GlRenderer extends BaseRenderer {
 
     @Override
     public void loadLight(Vector3f diffuse, Vector3f position) {
-        glContext.getLightBlock().loadDiffuse(diffuse);
+        glContext.getLightBlock().loadInensity(diffuse);
         glContext.getLightBlock().loadPosition(position);
     }
 }

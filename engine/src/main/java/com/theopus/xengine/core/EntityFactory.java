@@ -10,6 +10,8 @@ import com.theopus.xengine.core.ecs.components.*;
 import com.theopus.xengine.core.render.BaseRenderer;
 import com.theopus.xengine.core.render.RenderModule;
 import com.theopus.xengine.core.render.modules.v2.Ver2Module;
+import com.theopus.xengine.core.render.modules.v3.Ver3Module;
+
 import org.joml.Vector3f;
 
 import java.util.List;
@@ -40,7 +42,7 @@ public class EntityFactory {
         this.world = world;
         world.inject(this);
         List<RenderModule<?>> modules = renderer.modules();
-        defaultModule = renderer.get(Ver2Module.class);
+        defaultModule = renderer.get(Ver3Module.class);
         defaultModel = defaultModule.models().stream().findFirst().get();
     }
     public int createEntity(){

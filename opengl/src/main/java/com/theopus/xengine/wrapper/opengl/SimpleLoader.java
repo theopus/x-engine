@@ -89,5 +89,9 @@ public class SimpleLoader extends Loader {
         return load(parse.getPosArr(), parse.getTextCoordArr(), parse.getNormArr(), parse.getIndicesArr(), "textures/white.png");
     }
 
+    public MaterialVao load(String obj, Material material) {
+        return new MaterialVao(load(obj), material);
+    }
+
 
 }

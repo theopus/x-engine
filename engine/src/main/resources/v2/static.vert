@@ -16,7 +16,7 @@ layout (std140) uniform Matrices {
 
 layout (std140) uniform Light {
       vec3 position;   //0
-      vec3 diffuse; //16
+      vec3 intensity; //16
 } light;
 
 
@@ -37,6 +37,6 @@ void main(void){
 //    vec3 toCameraVector = normalize((inverse(mtx.view) * vec4(0.0,0.0,0.0,1.0)).xyz - worldCoords.xyz);
 
     //final intensity
-    lightIntensity = light.diffuse.xyz * max( dot( toLightVector, surfaceNormal), 0.2);
+    lightIntensity = light.intensity.xyz * max( dot( toLightVector, surfaceNormal), 0.2);
     pass_uv = uv;
 }

@@ -16,26 +16,24 @@ import java.nio.FloatBuffer;
  * expected to be:
  * <p>
  * <p>
- * layout (std140) uniform Matrices
+ * layout (std140) uniform Light
  * {
- * mat4 view;
- * mat4 projection;
+ * vec3 position;
+ * vec3 intensity;
  * };
  */
 public class LightUniformBlock extends UniformBlock {
 
-    public static final int SIZE = GlDataType.VEC4_FLOAT.byteSize * 3;
+    public static final int SIZE = GlDataType.VEC4_FLOAT.byteSize * 2;
     public static final String NAME = "Light";
 
     private static int POSITION_OFFSET = 0;
-    private static int DIFFUSE_INTENSITY = GlDataType.VEC4_FLOAT.byteSize;
-    private static int AMBIENT_INTENSITY = GlDataType.VEC4_FLOAT.byteSize * 2;
-    private static int SPECULAR_INTENSITY = GlDataType.VEC4_FLOAT.byteSize * 3;
+    private static int INTENSITY_OFFSET = GlDataType.VEC4_FLOAT.byteSize;
 
     private FloatBuffer vector3fBuffer;
 
     private State<Vector3f> position;
-    private State<Vector3f> diffuse;
+    private State<Vector3f> intensity;
 
     public LightUniformBlock(int bindingPoint, Ubo ubo) {
         super(bindingPoint, NAME, ubo);
@@ -61,14 +59,11 @@ public class LightUniformBlock extends UniformBlock {
             vector3fBuffer.clear();
         });
 
-        diffuse = State.v3(new Vector3f(1,1,1), diffuse ->{
+        intensity = State.v3(new Vector3f(1,1,1), diffuse ->{
             Buffers.put(diffuse, vector3fBuffer);
-            ubo.bufferSubData(DIFFUSE_INTENSITY, vector3fBuffer);
+            ubo.bufferSubData(INTENSITY_OFFSET, vector3fBuffer);
             vector3fBuffer.clear();
         });
-
-        loadAmbient(new Vector3f(1,1,1));
-        loadSpecular(new Vector3f(1,1,1));
     }
 
     public static LightUniformBlock withCtx(int bindingPoint, MemoryContext ctx) {
@@ -81,21 +76,10 @@ public class LightUniformBlock extends UniformBlock {
         position.update(pos);
     }
 
-    public void loadDiffuse(Vector3f light) {
-        diffuse.update(light);
+    public void loadInensity(Vector3f light) {
+        intensity.update(light);
     }
 
-    public void loadAmbient(Vector3f ref) {
-        Buffers.put(ref, vector3fBuffer);
-        ubo.bufferSubData(AMBIENT_INTENSITY, vector3fBuffer);
-        vector3fBuffer.clear();
-    }
-
-    public void loadSpecular(Vector3f specular){
-        Buffers.put(specular, vector3fBuffer);
-        ubo.bufferSubData(SPECULAR_INTENSITY, vector3fBuffer);
-        vector3fBuffer.clear();
-    }
 
     @Override
     public void close() {

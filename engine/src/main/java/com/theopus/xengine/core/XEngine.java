@@ -18,6 +18,7 @@ import com.theopus.xengine.core.render.modules.v0.Ver0Module;
 import com.theopus.xengine.core.render.modules.v1.Ver1Module;
 import com.theopus.xengine.core.render.modules.v2.Ver2Data;
 import com.theopus.xengine.core.render.modules.v2.Ver2Module;
+import com.theopus.xengine.core.render.modules.v3.Ver3Data;
 import com.theopus.xengine.core.render.modules.v3.Ver3Module;
 import com.theopus.xengine.core.utils.Reflection;
 import com.theopus.xengine.wrapper.glfw.WindowConfig;
@@ -86,12 +87,13 @@ public class XEngine {
         Ver0Module module0 = render.get(Ver0Module.class);
         Ver1Module module1 = render.get(Ver1Module.class);
         Ver2Module module2 = render.get(Ver2Module.class);
+        Ver3Module module3 = render.get(Ver3Module.class);
 
         //TODO: MOVE ASSETS LOADING SOMEWHERE
         //bullshiting
         String model0 = ModelUtils.simpleQuad(module0);
         String texmodel = ModelUtils.texturedQuad(module1);
-        String objectModel = module2.load(new Ver2Data("objects/dragon.obj"));
+        String objectModel = module3.load(new Ver3Data("objects/dragon.obj", 0.1f,1f,0.3f,0.03f));
 
         //-----------[
 
@@ -100,7 +102,7 @@ public class XEngine {
 
         factory.createCamera();
         factory.createEntity(new Vector3f(0, 0, -5));
-        factory.createLight(new Vector3f(1, 1, 1), new Vector3f(5, 1, 10f));
+        factory.createLight(new Vector3f(1, 1, 1), new Vector3f(400, 1, 100f));
 
         new Loop.Builder()
                 .setCondition(() -> !platformManager.shouldClose())

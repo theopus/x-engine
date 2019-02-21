@@ -15,6 +15,18 @@ import org.lwjgl.system.MemoryUtil;
 import java.io.IOException;
 import java.nio.FloatBuffer;
 
+/**
+ * expected to be:
+ * <p>
+ * <p>
+ * layout (std140) uniform Material
+ * {
+ *      float ambientReflectivity;
+ *      float diffuseReflectivity;
+ *      float specularReflectivity;
+ *      float shininess;
+ * } material;
+ */
 public class MaterialUniformBlock extends UniformBlock {
 
     public static final int SIZE = GlDataType.FLOAT.byteSize * 4;
@@ -41,7 +53,7 @@ public class MaterialUniformBlock extends UniformBlock {
     }
 
     public void init(){
-        loadMaterial(new Material(1,1,1,1));
+        loadMaterial(new Material(0.1f,1f,0.3f,0.03f));
     }
 
     public void loadMaterial(Material material){
