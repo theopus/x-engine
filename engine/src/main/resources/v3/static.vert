@@ -41,8 +41,8 @@ void main(void){
     vec3 toLightVector = normalize(light.position - worldCoords.xyz);
 
     //TODO: investiagate difference
-    vec3 toCameraVector = normalize((inverse(mtx.view) * vec4(0.0,0.0,0.0,1.0)).xyz - worldCoords.xyz);
-//    vec3 toCameraVector = normalize(-cameraCoords.xyz);
+//    vec3 toCameraVector = normalize((inverse(mtx.view) * vec4(0.0,0.0,0.0,1.0)).xyz - worldCoords.xyz);
+    vec3 toCameraVector = normalize(-cameraCoords.xyz);
     vec3 reflectVector = reflect(-toLightVector, surfaceNormal);
 
     float toLightDot = max(dot(toLightVector, surfaceNormal), 0.0);
@@ -52,10 +52,11 @@ void main(void){
     vec3 specular = vec3(0.0);
     if(toLightDot > 0.0){
         specular = light.intensity * material.specularReflectivity *
-                pow(max(dot(reflectVector, toCameraVector), 0.0), material.shininess);
+               pow(max(dot(reflectVector, toCameraVector), 0.0), material.shininess);
     }
 
     lightIntensity = ambient + diffuse + specular;
+//    lightIntensity = vec3(material.shininess, 0.0 ,0.0);
 //    vector from vertex to viewer
 
 

@@ -41,13 +41,6 @@ public abstract class BaseRenderer {
         throw new RuntimeException(String.format("Module %s not found", moduleClass));
     }
 
-    public void inject(World world) {
-        for (RenderModule module : modules) {
-            world.inject(module);
-        }
-    }
-
-
     public abstract void clearBuffer();
 
     public abstract void loadProjectionMatrix(Matrix4f projection);

@@ -22,6 +22,7 @@ public class EntityFactory {
     private static final ArchetypeBuilder base = new ArchetypeBuilder().add(ModelMatrix.class, Velocity.class, Position.class, Render.class);
     private static final ArchetypeBuilder light = new ArchetypeBuilder().add(Light.class, Position.class);
 
+    @Wire
     private World world;
     @Wire
     private TagManager tagManager;
@@ -38,13 +39,11 @@ public class EntityFactory {
     private RenderModule<?> defaultModule;
     private String defaultModel;
 
-    public void inject(World world) {
-        this.world = world;
-        world.inject(this);
-        List<RenderModule<?>> modules = renderer.modules();
-        defaultModule = renderer.get(Ver3Module.class);
+    public void setDefaults(Class<? extends  RenderModule<?>> module){
+        defaultModule = renderer.get(module);
         defaultModel = defaultModule.models().stream().findFirst().get();
     }
+
     public int createEntity(){
         return createEntity(new Vector3f(0,0,0));
     }

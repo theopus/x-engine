@@ -37,6 +37,6 @@ void main(void){
 //    vec3 toCameraVector = normalize((inverse(mtx.view) * vec4(0.0,0.0,0.0,1.0)).xyz - worldCoords.xyz);
 
     //final intensity
-    lightIntensity = light.intensity.xyz * max( dot( toLightVector, surfaceNormal), 0.2);
+    lightIntensity = light.intensity.xyz * max( dot( toLightVector, surfaceNormal), 0.0);
     pass_uv = uv;
 }

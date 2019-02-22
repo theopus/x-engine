@@ -1,12 +1,14 @@
 package com.theopus.xengine.core;
 
 import com.artemis.*;
+import com.artemis.injection.CachedInjector;
 import com.artemis.managers.TagManager;
 import com.theopus.xengine.core.ecs.components.Camera;
 import com.theopus.xengine.core.ecs.components.Position;
 import com.theopus.xengine.core.ecs.components.Velocity;
 import com.theopus.xengine.core.ecs.managers.CustomGroupManager;
 import com.theopus.xengine.core.ecs.systems.*;
+import com.theopus.xengine.core.ecs.systems.scipting.ExecutingEngineContext;
 import com.theopus.xengine.core.events.EventBus;
 import com.theopus.xengine.core.platform.GlfwPlatformManager;
 import com.theopus.xengine.core.platform.PlatformManager;
@@ -20,6 +22,7 @@ import com.theopus.xengine.core.render.modules.v2.Ver2Data;
 import com.theopus.xengine.core.render.modules.v2.Ver2Module;
 import com.theopus.xengine.core.render.modules.v3.Ver3Data;
 import com.theopus.xengine.core.render.modules.v3.Ver3Module;
+import com.theopus.xengine.core.utils.CustomCachedInjector;
 import com.theopus.xengine.core.utils.Reflection;
 import com.theopus.xengine.wrapper.glfw.WindowConfig;
 import org.joml.Vector3f;
@@ -72,15 +75,20 @@ public class XEngine {
 
         BaseRenderer render = glRenderer(modules);
         List<BaseSystem> systems = createSystems(classes);
+        ExecutingEngineContext context = new ExecutingEngineContext();
 
         WorldConfigurationBuilder configurationBuilder = new WorldConfigurationBuilder();
         systems.forEach(eventBus::subscribe);
         systems.forEach(configurationBuilder::with);
+        CustomCachedInjector injector = new CustomCachedInjector();
+
         WorldConfiguration config = configurationBuilder.build()
                 .register(eventBus)
                 .register(platformManager)
                 .register("renderer", render)
-                .register(factory);
+                .register(factory)
+                .setInjector(injector)
+                .register(context);
 
         World world = new World(config);
 
@@ -91,18 +99,21 @@ public class XEngine {
 
         //TODO: MOVE ASSETS LOADING SOMEWHERE
         //bullshiting
-        String model0 = ModelUtils.simpleQuad(module0);
-        String texmodel = ModelUtils.texturedQuad(module1);
-        String objectModel = module3.load(new Ver3Data("objects/dragon.obj", 0.1f,1f,0.3f,0.03f));
+        ModelUtils.simpleQuad(module0);
+        ModelUtils.texturedQuad(module1);
+        module2.load(new Ver2Data("objects/dragon.obj"));
+        module3.load(new Ver3Data("objects/dragon.obj", 0,1f,1f,10f));
 
         //-----------[
 
-        render.inject(world);
-        factory.inject(world);
+        world.inject(context);
+        render.modules().forEach(world::inject);
+        world.inject(factory);
+        factory.setDefaults(Ver3Module.class);
 
         factory.createCamera();
         factory.createEntity(new Vector3f(0, 0, -5));
-        factory.createLight(new Vector3f(1, 1, 1), new Vector3f(400, 1, 100f));
+        factory.createLight(new Vector3f(1, 1, 1), new Vector3f(0, 200, -5));
 
         new Loop.Builder()
                 .setCondition(() -> !platformManager.shouldClose())
