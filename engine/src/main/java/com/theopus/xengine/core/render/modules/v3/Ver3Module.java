@@ -21,8 +21,10 @@ public class Ver3Module extends ArtemisRenderModule<Ver3Data, MaterialVao> {
     @Wire
     private ComponentMapper<ModelMatrix> mMapper;
 
-    @Override
-    public void setContext(GLContext glContext) {
+    @Wire
+    private GLContext glContext;
+
+    public void init() {
         StaticShader staticShader = new StaticShader("v3/static.vert", "v3/static.frag");
         renderCommand = new TexturedVaoRenderCommand(staticShader, glContext.getState());
         loader = new SimpleLoader(glContext.getMemoryContext());

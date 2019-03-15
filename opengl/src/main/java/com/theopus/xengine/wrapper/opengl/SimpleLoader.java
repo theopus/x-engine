@@ -1,5 +1,6 @@
 package com.theopus.xengine.wrapper.opengl;
 
+import com.theopus.xengine.wrapper.font.TextMeshData;
 import com.theopus.xengine.wrapper.opengl.objects.*;
 import com.theopus.xengine.wrapper.opengl.utils.GlDataType;
 import com.theopus.xengine.wrapper.utils.ObjParser;
@@ -93,5 +94,15 @@ public class SimpleLoader extends Loader {
         return new MaterialVao(load(obj), material);
     }
 
+    public TexturedVao loadText(float[] positions, float[] uvs, Texture texture){
+        Vbo posVbo = new Vbo(positions, GL15.GL_STATIC_DRAW);
+        Vbo uvVbo = new Vbo(uvs, GL15.GL_STATIC_DRAW);
+
+        Attribute posAttr = Attribute.singleVboAttribute(0, GlDataType.VEC3_FLOAT, posVbo);
+        Attribute uvAttr = Attribute.singleVboAttribute(1, GlDataType.VEC2_FLOAT, uvVbo);
+
+        Vao vao = new Vao(null, posAttr, uvAttr);
+        return new TexturedVao(vao, texture);
+    }
 
 }

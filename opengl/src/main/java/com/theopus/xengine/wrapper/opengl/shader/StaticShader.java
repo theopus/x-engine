@@ -15,15 +15,12 @@ public class StaticShader extends ShaderProgram {
     @Override
     protected List<Uniform<?>> uniforms() {
         transformation = Uniform.ofMatrix4f(Uniforms.TRANSFORMATION_MATRIX);
-
         return Arrays.asList(transformation);
     }
 
     @Override
     protected void bindAllAttributes() {
-//        super.bindAttribute(0, "position");
-//        super.bindAttribute(1, "uv");
-//        super.bindAttribute(2, "normal");
+
     }
 
 

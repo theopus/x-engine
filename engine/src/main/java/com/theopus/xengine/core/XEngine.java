@@ -1,7 +1,6 @@
 package com.theopus.xengine.core;
 
 import com.artemis.*;
-import com.artemis.injection.CachedInjector;
 import com.artemis.managers.TagManager;
 import com.theopus.xengine.core.ecs.components.Camera;
 import com.theopus.xengine.core.ecs.components.Position;
@@ -22,7 +21,7 @@ import com.theopus.xengine.core.render.modules.v2.Ver2Data;
 import com.theopus.xengine.core.render.modules.v2.Ver2Module;
 import com.theopus.xengine.core.render.modules.v3.Ver3Data;
 import com.theopus.xengine.core.render.modules.v3.Ver3Module;
-import com.theopus.xengine.core.utils.CustomCachedInjector;
+import com.theopus.xengine.core.utils.WorldAwareCachedInjector;
 import com.theopus.xengine.core.utils.Reflection;
 import com.theopus.xengine.wrapper.glfw.WindowConfig;
 import org.joml.Vector3f;
@@ -39,82 +38,17 @@ public class XEngine {
 
     public static final String MAIN_CAMERA = "MAIN_CAMERA";
 
-    private final List<Closeable> closeables = new ArrayList<>();
+    private final List<Closeable> closeables;
+    private final World world;
+    private final PlatformManager platformManager;
+
+    public XEngine(World world, PlatformManager platformManager, List<Closeable> closeables) {
+        this.world = world;
+        this.platformManager = platformManager;
+        this.closeables = closeables;
+    }
 
     public void run() throws IOException {
-        List<Class<? extends ArtemisRenderModule<?, ?>>> modules = Arrays.asList(
-                Ver0Module.class,
-                Ver1Module.class,
-                Ver2Module.class,
-                Ver3Module.class
-        );
-
-
-        List<Class<? extends BaseSystem>> classes = Arrays.asList(
-                TagManager.class,
-                EventSystem.class,
-                RenderSystem.class,
-                CustomGroupManager.class,
-                CameraSystem.class,
-                ProjectionSystem.class,
-                MoveSystem.class,
-                ModelMatrixSystem.class,
-                LightSystem.class
-        );
-
-        EventBus eventBus = new EventBus();
-        PlatformManager platformManager = new GlfwPlatformManager(
-                new WindowConfig(600, 400,
-                        new Vector4f(128f / 256f, 128f / 256f, 128f / 256f, 0), false,
-                        0),
-                eventBus);
-        platformManager.createWindow();
-        platformManager.init();
-
-        EntityFactory factory = new EntityFactory();
-
-        BaseRenderer render = glRenderer(modules);
-        List<BaseSystem> systems = createSystems(classes);
-        ExecutingEngineContext context = new ExecutingEngineContext();
-
-        WorldConfigurationBuilder configurationBuilder = new WorldConfigurationBuilder();
-        systems.forEach(eventBus::subscribe);
-        systems.forEach(configurationBuilder::with);
-        CustomCachedInjector injector = new CustomCachedInjector();
-
-        WorldConfiguration config = configurationBuilder.build()
-                .register(eventBus)
-                .register(platformManager)
-                .register("renderer", render)
-                .register(factory)
-                .setInjector(injector)
-                .register(context);
-
-        World world = new World(config);
-
-        Ver0Module module0 = render.get(Ver0Module.class);
-        Ver1Module module1 = render.get(Ver1Module.class);
-        Ver2Module module2 = render.get(Ver2Module.class);
-        Ver3Module module3 = render.get(Ver3Module.class);
-
-        //TODO: MOVE ASSETS LOADING SOMEWHERE
-        //bullshiting
-        ModelUtils.simpleQuad(module0);
-        ModelUtils.texturedQuad(module1);
-        module2.load(new Ver2Data("objects/dragon.obj"));
-        module3.load(new Ver3Data("objects/dragon.obj", 0,1f,1f,10f));
-
-        //-----------[
-
-        world.inject(context);
-        render.modules().forEach(world::inject);
-        world.inject(factory);
-        factory.setDefaults(Ver3Module.class);
-
-        factory.createCamera();
-        factory.createEntity(new Vector3f(0, 0, -5));
-        factory.createLight(new Vector3f(1, 1, 1), new Vector3f(0, 200, -5));
-
         new Loop.Builder()
                 .setCondition(() -> !platformManager.shouldClose())
                 .setRun(elapsed -> {
@@ -133,37 +67,5 @@ public class XEngine {
                 })
                 .createLoop()
                 .run();
-    }
-
-    private BaseRenderer glRenderer(List<Class<? extends ArtemisRenderModule<?, ?>>> modules) {
-        GLContext glContext = new GLContext();
-        BaseRenderer render = new GlRenderer(glContext);
-
-        for (Class<? extends ArtemisRenderModule<?, ?>> m : modules) {
-            ArtemisRenderModule module = Reflection.newInstance(m);
-            render.add(module);
-            module.setContext(glContext);
-        }
-
-
-        closeables.add(glContext);
-        return render;
-    }
-
-    private List<BaseSystem> createSystems(List<Class<? extends BaseSystem>> systems){
-        return systems.stream().map(Reflection::newInstance).collect(Collectors.toList());
-    }
-
-    private Position createCamera(TagManager tagManager, World world) {
-        int cameraAcnhor = world.create();
-        world.getMapper(Position.class).create(cameraAcnhor);
-        world.getMapper(Velocity.class).create(cameraAcnhor);
-        Archetype cameraArchetype = new ArchetypeBuilder().add(Camera.class).build(world);
-
-        int id = world.create(cameraArchetype);
-        Camera camera = world.getMapper(Camera.class).get(id);
-        camera.target = cameraAcnhor;
-        tagManager.register(MAIN_CAMERA, id);
-        return world.getMapper(Position.class).get(cameraAcnhor);
     }
 }

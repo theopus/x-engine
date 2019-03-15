@@ -43,6 +43,7 @@ void main(void){
     //TODO: investiagate difference
 //    vec3 toCameraVector = normalize((inverse(mtx.view) * vec4(0.0,0.0,0.0,1.0)).xyz - worldCoords.xyz);
     vec3 toCameraVector = normalize(-cameraCoords.xyz);
+
     vec3 reflectVector = reflect(-toLightVector, surfaceNormal);
 
     float toLightDot = max(dot(toLightVector, surfaceNormal), 0.0);

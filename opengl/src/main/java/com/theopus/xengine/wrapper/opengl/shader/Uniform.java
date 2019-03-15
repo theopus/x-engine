@@ -1,6 +1,7 @@
 package com.theopus.xengine.wrapper.opengl.shader;
 
 import org.joml.Matrix4f;
+import org.joml.Vector2f;
 import org.joml.Vector3f;
 import org.lwjgl.opengl.GL20;
 import org.lwjgl.system.MemoryUtil;
@@ -85,6 +86,15 @@ public class Uniform<T> {
             void close() {
                 super.close();
                 MemoryUtil.memFree(matrixBuffer);
+            }
+        };
+    }
+
+    public static Uniform<Vector2f> ofVec2(String name) {
+        return new Uniform<Vector2f>(name) {
+            @Override
+            public void load(Vector2f value) {
+                GL20.glUniform2f(location, value.x, value.y);
             }
         };
     }

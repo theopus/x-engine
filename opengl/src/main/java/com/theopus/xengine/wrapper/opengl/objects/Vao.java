@@ -6,6 +6,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.Arrays;
+import java.util.Objects;
 
 public class Vao {
 
@@ -26,12 +27,14 @@ public class Vao {
 
     private void initVao() {
         this.bind();
-        ebo.bind();
+        if (Objects.nonNull(ebo))
+            ebo.bind();
         for (Attribute attribute : attributes) {
             initAttr(attribute);
         }
         this.unbind();
-        ebo.unbind();
+        if (Objects.nonNull(ebo))
+            ebo.unbind();
     }
 
     private void initAttr(Attribute attribute) {

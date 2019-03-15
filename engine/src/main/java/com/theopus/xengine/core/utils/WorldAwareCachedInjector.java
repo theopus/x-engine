@@ -32,7 +32,7 @@ import java.util.Map;
  * @author Snorre E. Brekke
  * @see com.artemis.injection.FieldHandler
  */
-public  class CustomCachedInjector implements Injector {
+public  class WorldAwareCachedInjector implements Injector {
     private InjectionCache cache = InjectionCache.sharedCache.get();
     private FieldHandler fieldHandler;
     private Map<String, Object> injectables;

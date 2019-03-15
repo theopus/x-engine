@@ -14,7 +14,7 @@ public class OpsCounter {
     private long operationTime;
 
     private long lastPrintTime = System.currentTimeMillis();
-    private long deltaToPrint = 3000;
+    private long deltaToPrint = 5000;
 
     public OpsCounter(String name) {
         this.name = name;

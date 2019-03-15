@@ -9,6 +9,7 @@ import com.theopus.xengine.wrapper.opengl.SimpleLoader;
 import com.theopus.xengine.wrapper.opengl.commands.SimpleVaoRenderCommand;
 import com.theopus.xengine.wrapper.opengl.objects.Vao;
 import com.theopus.xengine.wrapper.opengl.shader.StaticShader;
+import sun.dc.pr.PRError;
 
 public class Ver0Module extends ArtemisRenderModule<Ver0Data, Vao> {
     private SimpleVaoRenderCommand renderCommand;
@@ -17,12 +18,14 @@ public class Ver0Module extends ArtemisRenderModule<Ver0Data, Vao> {
     @Wire
     private ComponentMapper<ModelMatrix> mMapper;
 
-    @Override
-    public void setContext(GLContext glContext) {
+    @Wire
+    private GLContext context;
+
+    public void init(){
         StaticShader staticShader = new StaticShader("v0/static.vert", "v0/static.frag");
         renderCommand = new SimpleVaoRenderCommand(staticShader);
-        loader = new SimpleLoader(glContext.getMemoryContext());
-        staticShader.bindUniformBlock(glContext.getMatricesBlock());
+        loader = new SimpleLoader(context.getMemoryContext());
+        staticShader.bindUniformBlock(context.getMatricesBlock());
     }
 
     @Override

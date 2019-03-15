@@ -1,5 +1,6 @@
 package com.theopus.xengine.core.platform;
 
+import com.artemis.annotations.Wire;
 import com.theopus.xengine.core.events.EventBus;
 import com.theopus.xengine.core.input.InputAction;
 import com.theopus.xengine.core.input.InputActionType;
@@ -13,7 +14,8 @@ import java.util.Map;
 
 public class GlfwPlatformManager implements PlatformManager {
 
-    private final EventBus eventBus;
+    @Wire
+    private EventBus eventBus;
     private GlfwWrapper wrapper;
 
     private Map<Integer, InputAction> keymap = new HashMap<Integer, InputAction>() {{
@@ -28,6 +30,10 @@ public class GlfwPlatformManager implements PlatformManager {
     }};
 
 
+    public GlfwPlatformManager(WindowConfig config) {
+        this.wrapper = new GlfwWrapper(config);
+    }
+
     public GlfwPlatformManager(WindowConfig config, EventBus eventBus) {
         this.wrapper = new GlfwWrapper(config);
         this.eventBus = eventBus;
@@ -35,6 +41,7 @@ public class GlfwPlatformManager implements PlatformManager {
 
     @Override
     public void init() {
+        createWindow();
         wrapper.setKeyCallback((window, key, scancode, action, mods) -> {
             if (action != GLFW.GLFW_REPEAT) {
                 eventBus.post(new InputEvent(keymap.getOrDefault(key, InputAction.UNIDENTIFIED), action == GLFW.GLFW_PRESS ? InputActionType.BEGIN : InputActionType.END));

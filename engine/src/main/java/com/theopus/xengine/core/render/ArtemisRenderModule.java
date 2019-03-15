@@ -88,8 +88,6 @@ public abstract class ArtemisRenderModule<T, D> implements RenderModule<T> {
 
     }
 
-    public abstract void setContext(GLContext glContext);
-
     public abstract void renderModel(int entityId, D d);
 
     public abstract D loadModel(T d);

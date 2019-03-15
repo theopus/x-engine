@@ -16,7 +16,7 @@ public class GLContext implements Closeable {
     private MemoryContext memoryContext;
     private GlState state;
 
-    public GLContext() {
+    public void init(){
         this.memoryContext = new MemoryContext();
         this.matricesBlock = MatricesUniformBlock.withCtx(0, memoryContext);
         this.lightBlock = LightUniformBlock.withCtx(1, memoryContext);
