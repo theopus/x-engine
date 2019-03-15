@@ -23,7 +23,7 @@ public class FontType {
      * @param fontFile     - the font file containing information about each character in
      *                     the texture atlas.
      */
-    public FontType(Texture textureAtlas, File fontFile, double aspectRatio) {
+    public FontType(Texture textureAtlas, String fontFile, double aspectRatio) {
         this.texture = textureAtlas;
         this.loader = new TextMeshCreator(fontFile, aspectRatio);
     }

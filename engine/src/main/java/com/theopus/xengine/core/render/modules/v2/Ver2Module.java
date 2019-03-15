@@ -1,8 +1,10 @@
 package com.theopus.xengine.core.render.modules.v2;
 
+import com.artemis.ArchetypeBuilder;
+import com.artemis.Aspect;
 import com.artemis.ComponentMapper;
 import com.artemis.annotations.Wire;
-import com.theopus.xengine.core.ecs.components.ModelMatrix;
+import com.theopus.xengine.core.ecs.components.TransformationMatrix;
 import com.theopus.xengine.core.render.ArtemisRenderModule;
 import com.theopus.xengine.core.render.GLContext;
 import com.theopus.xengine.wrapper.opengl.SimpleLoader;
@@ -15,7 +17,7 @@ public class Ver2Module extends ArtemisRenderModule<Ver2Data, TexturedVao> {
     private SimpleLoader loader;
 
     @Wire
-    private ComponentMapper<ModelMatrix> mMapper;
+    private ComponentMapper<TransformationMatrix> mMapper;
 
     @Wire
     private GLContext glContext;
@@ -26,6 +28,11 @@ public class Ver2Module extends ArtemisRenderModule<Ver2Data, TexturedVao> {
         loader = new SimpleLoader(glContext.getMemoryContext());
         staticShader.bindUniformBlock(glContext.getMatricesBlock());
         staticShader.bindUniformBlock(glContext.getLightBlock());
+    }
+
+    @Override
+    public ArchetypeBuilder components() {
+        return new ArchetypeBuilder().add(TransformationMatrix.class);
     }
 
     @Override

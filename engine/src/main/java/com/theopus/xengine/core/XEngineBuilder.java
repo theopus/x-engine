@@ -32,6 +32,9 @@ import java.lang.reflect.Method;
 import java.util.*;
 import java.util.stream.Collectors;
 
+/**
+ * Invokes all init methods before run.
+ */
 public class XEngineBuilder {
 
     private Set<Object> events = new LinkedHashSet<>();

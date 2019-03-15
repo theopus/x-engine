@@ -1,6 +1,10 @@
 package com.theopus.xengine.core.render;
 
+import com.artemis.ArchetypeBuilder;
+import com.artemis.Aspect;
 import com.artemis.Entity;
+import com.artemis.EntitySubscription;
+import com.artemis.World;
 import com.artemis.annotations.Wire;
 import com.artemis.utils.ImmutableBag;
 import com.theopus.xengine.core.ecs.managers.CustomGroupManager;
@@ -82,6 +86,8 @@ public abstract class ArtemisRenderModule<T, D> implements RenderModule<T> {
     public void prepare() {
 
     }
+
+    public abstract ArchetypeBuilder components();
 
     @Override
     public void finish() {

@@ -30,9 +30,10 @@ import java.util.Map;
  *
  * @author Arni Arent
  * @author Snorre E. Brekke
+ * @author Oleksandr Tkachov
  * @see com.artemis.injection.FieldHandler
  */
-public  class WorldAwareCachedInjector implements Injector {
+public class WorldAwareCachedInjector implements Injector {
     private InjectionCache cache = InjectionCache.sharedCache.get();
     private FieldHandler fieldHandler;
     private Map<String, Object> injectables;
@@ -56,6 +57,7 @@ public  class WorldAwareCachedInjector implements Injector {
     @Override
     public void initialize(World world, Map<String, Object> injectables) {
         this.injectables = injectables;
+        //make world to able to inject itself into systems, beans, etc.
         this.injectables.put(world.getClass().getName(), world);
 
         if (fieldHandler == null) {

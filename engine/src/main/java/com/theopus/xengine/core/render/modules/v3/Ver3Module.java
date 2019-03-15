@@ -1,15 +1,16 @@
 package com.theopus.xengine.core.render.modules.v3;
 
+import com.artemis.ArchetypeBuilder;
+import com.artemis.Aspect;
 import com.artemis.ComponentMapper;
 import com.artemis.annotations.Wire;
-import com.theopus.xengine.core.ecs.components.ModelMatrix;
+import com.theopus.xengine.core.ecs.components.TransformationMatrix;
 import com.theopus.xengine.core.render.ArtemisRenderModule;
 import com.theopus.xengine.core.render.GLContext;
 import com.theopus.xengine.wrapper.opengl.SimpleLoader;
 import com.theopus.xengine.wrapper.opengl.commands.TexturedVaoRenderCommand;
 import com.theopus.xengine.wrapper.opengl.objects.Material;
 import com.theopus.xengine.wrapper.opengl.objects.MaterialVao;
-import com.theopus.xengine.wrapper.opengl.objects.TexturedVao;
 import com.theopus.xengine.wrapper.opengl.shader.StaticShader;
 import com.theopus.xengine.wrapper.opengl.shader.ubos.MaterialUniformBlock;
 
@@ -19,7 +20,7 @@ public class Ver3Module extends ArtemisRenderModule<Ver3Data, MaterialVao> {
     private MaterialUniformBlock materialBlock;
 
     @Wire
-    private ComponentMapper<ModelMatrix> mMapper;
+    private ComponentMapper<TransformationMatrix> mMapper;
 
     @Wire
     private GLContext glContext;
@@ -32,6 +33,11 @@ public class Ver3Module extends ArtemisRenderModule<Ver3Data, MaterialVao> {
         staticShader.bindUniformBlock(glContext.getMatricesBlock());
         staticShader.bindUniformBlock(glContext.getLightBlock());
         staticShader.bindUniformBlock(glContext.getMaterialBlock());
+    }
+
+    @Override
+    public ArchetypeBuilder components() {
+        return new ArchetypeBuilder().add(TransformationMatrix.class);
     }
 
     @Override

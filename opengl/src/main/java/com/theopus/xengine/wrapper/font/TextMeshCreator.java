@@ -11,7 +11,7 @@ public class TextMeshCreator {
 
 	private MetaFile metaData;
 
-	protected TextMeshCreator(File metaFile, double aspectRatio) {
+	protected TextMeshCreator(String metaFile, double aspectRatio) {
 		metaData = new MetaFile(metaFile, aspectRatio);
 	}
 

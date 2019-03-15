@@ -25,6 +25,13 @@ public class Vao {
         initVao();
     }
 
+    public Vao(int length, Attribute... attributes) {
+        this.id = genVertexArrayBuffer();
+        this.length = length;
+        this.attributes = attributes;
+        initVao();
+    }
+
     private void initVao() {
         this.bind();
         if (Objects.nonNull(ebo))

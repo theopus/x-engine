@@ -7,21 +7,20 @@ import com.artemis.managers.TagManager;
 import com.artemis.systems.IntervalIteratingSystem;
 import com.theopus.xengine.core.XEngine;
 import com.theopus.xengine.core.ecs.components.Camera;
-import com.theopus.xengine.core.ecs.components.Position;
+import com.theopus.xengine.core.ecs.components.Transformation;
 import com.theopus.xengine.core.ecs.components.Velocity;
 import com.theopus.xengine.core.events.Subscriber;
 import com.theopus.xengine.core.input.InputAction;
 import com.theopus.xengine.core.input.InputActionType;
 import com.theopus.xengine.core.input.InputEvent;
 import com.theopus.xengine.core.render.BaseRenderer;
-import com.theopus.xengine.core.render.GlRenderer;
 import com.theopus.xengine.core.utils.Maths;
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
 
 public class CameraSystem extends IntervalIteratingSystem implements Subscriber<InputEvent> {
 
-    private ComponentMapper<Position> pMapper;
+    private ComponentMapper<Transformation> pMapper;
     private ComponentMapper<Velocity> vMapper;
     private ComponentMapper<Camera> cMapper;
     private TagManager tagManager;
@@ -34,15 +33,15 @@ public class CameraSystem extends IntervalIteratingSystem implements Subscriber<
 
     @Override
     protected void process(int entityId) {
-        Position position = getCameraPosition(entityId);
+        Transformation transformation = getCameraPosition(entityId);
         Vector3f cameraposition = new Vector3f();
-        position.position.negate(cameraposition);
-        Matrix4f transformationMatrix = Maths.createTransformationMatrix(cameraposition, position.rotation, position.scale);
+        transformation.position.negate(cameraposition);
+        Matrix4f transformationMatrix = Maths.createTransformationMatrix(cameraposition, transformation.rotation, transformation.scale);
 
         renderer.loadViewMatrix(transformationMatrix);
     }
 
-    private Position getCameraPosition(int cameraId) {
+    private Transformation getCameraPosition(int cameraId) {
         Camera camera = cMapper.get(cameraId);
         return pMapper.get(camera.target);
     }

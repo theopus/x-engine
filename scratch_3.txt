@@ -16,7 +16,7 @@ Render:
     - bind(id, type, ... type properties)
 
 RenderTrait:
-    +mat4 position;
+    +mat4 transformation;
     +int renderId;
 
 RenderTargets:

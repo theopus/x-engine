@@ -1,14 +1,29 @@
 package com.theopus.xengine.wrapper.opengl;
 
-import com.theopus.xengine.wrapper.font.TextMeshData;
-import com.theopus.xengine.wrapper.opengl.objects.*;
-import com.theopus.xengine.wrapper.opengl.utils.GlDataType;
-import com.theopus.xengine.wrapper.utils.ObjParser;
-import org.lwjgl.opengl.GL15;
-
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
 import java.util.Arrays;
 import java.util.List;
+
+import org.apache.logging.log4j.core.util.IOUtils;
+import org.lwjgl.opengl.GL15;
+
+import com.theopus.xengine.wrapper.font.FontType;
+import com.theopus.xengine.wrapper.opengl.objects.Attribute;
+import com.theopus.xengine.wrapper.opengl.objects.Ebo;
+import com.theopus.xengine.wrapper.opengl.objects.Material;
+import com.theopus.xengine.wrapper.opengl.objects.MaterialVao;
+import com.theopus.xengine.wrapper.opengl.objects.Texture;
+import com.theopus.xengine.wrapper.opengl.objects.TexturedVao;
+import com.theopus.xengine.wrapper.opengl.objects.Vao;
+import com.theopus.xengine.wrapper.opengl.objects.Vbo;
+import com.theopus.xengine.wrapper.opengl.utils.GlDataType;
+import com.theopus.xengine.wrapper.utils.ObjParser;
 
 public class SimpleLoader extends Loader {
 
@@ -94,15 +109,21 @@ public class SimpleLoader extends Loader {
         return new MaterialVao(load(obj), material);
     }
 
-    public TexturedVao loadText(float[] positions, float[] uvs, Texture texture){
+    public TexturedVao loadText(float[] positions, float[] uvs, Texture texture) {
+        System.out.println(Arrays.toString(positions));
+        System.out.println(Arrays.toString(uvs));
         Vbo posVbo = new Vbo(positions, GL15.GL_STATIC_DRAW);
         Vbo uvVbo = new Vbo(uvs, GL15.GL_STATIC_DRAW);
 
-        Attribute posAttr = Attribute.singleVboAttribute(0, GlDataType.VEC3_FLOAT, posVbo);
+        Attribute posAttr = Attribute.singleVboAttribute(0, GlDataType.VEC2_FLOAT, posVbo);
         Attribute uvAttr = Attribute.singleVboAttribute(1, GlDataType.VEC2_FLOAT, uvVbo);
 
-        Vao vao = new Vao(null, posAttr, uvAttr);
+        Vao vao = new Vao(positions.length / 2, posAttr, uvAttr);
         return new TexturedVao(vao, texture);
+    }
+
+    public FontType loadFont(String fontAtlas, String fontFile) {
+        return new FontType(Texture.loadTexture(fontAtlas), fontFile, 6.0d / 4.0d);
     }
 
 }
