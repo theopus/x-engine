@@ -5,13 +5,13 @@ import com.artemis.ComponentMapper;
 import com.artemis.annotations.Wire;
 import com.theopus.xengine.core.ecs.components.GLVaoComponent;
 import com.theopus.xengine.core.render.GLContext;
-import com.theopus.xengine.wrapper.font.TextMeshData;
 import com.theopus.xengine.wrapper.opengl.SimpleLoader;
 import com.theopus.xengine.wrapper.opengl.commands.FontRenderCommand;
 import com.theopus.xengine.wrapper.opengl.objects.Texture;
 import com.theopus.xengine.wrapper.opengl.objects.TexturedVao;
 import com.theopus.xengine.wrapper.opengl.shader.StaticShader;
 import com.theopus.xengine.wrapper.text.Font;
+import com.theopus.xengine.wrapper.text.TextMeshData;
 
 public class GlFontModule extends FontModule<Font> {
     private SimpleLoader loader;
@@ -35,7 +35,7 @@ public class GlFontModule extends FontModule<Font> {
     public TexturedVao createText(String text, String font, float size) {
         Font fnt = get(font);
         TextMeshData string = fnt.createString(text, size);
-        TexturedVao texturedVao = loader.loadText(string.getVertexPositions(), string.getTextureCoords(), fnt.getTexture());
+        TexturedVao texturedVao = loader.loadText(string.vertexes, string.uvs, fnt.getTexture());
         return texturedVao;
     }
 

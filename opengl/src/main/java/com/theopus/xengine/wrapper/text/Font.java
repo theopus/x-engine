@@ -3,8 +3,6 @@ package com.theopus.xengine.wrapper.text;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.sun.deploy.util.ArrayUtil;
-import com.theopus.xengine.wrapper.font.TextMeshData;
 import com.theopus.xengine.wrapper.opengl.objects.Texture;
 
 public class Font {

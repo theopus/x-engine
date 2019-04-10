@@ -22,8 +22,8 @@ public class GLTextManager extends TextManager {
     }
 
     @Override
-    public void createText(String text, String font){
-        TexturedVao textVao = module.createText(text, font, 10);
+    public void createText(String text, String font, int size){
+        TexturedVao textVao = module.createText(text, font, size);
         int i = world.create();
         Text textc = tc.create(i);
         textc.body = text;

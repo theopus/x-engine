@@ -5,5 +5,5 @@ import com.artemis.Manager;
 public abstract class TextManager extends Manager {
    public abstract void loadFont(String fontTitle, String texutreAtlas, String fontFile);
 
-   public abstract void createText(String text, String font);
+   public abstract void createText(String text, String font, int size);
 }

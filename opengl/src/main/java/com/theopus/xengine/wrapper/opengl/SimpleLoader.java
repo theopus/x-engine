@@ -1,21 +1,11 @@
 package com.theopus.xengine.wrapper.opengl;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
 import java.util.Arrays;
 import java.util.List;
 
-import org.apache.logging.log4j.core.util.IOUtils;
 import org.lwjgl.opengl.GL15;
-import org.lwjgl.stb.STBEasyFont;
-import org.lwjgl.stb.STBTruetype;
 
-import com.theopus.xengine.wrapper.font.FontType;
 import com.theopus.xengine.wrapper.opengl.objects.Attribute;
 import com.theopus.xengine.wrapper.opengl.objects.Ebo;
 import com.theopus.xengine.wrapper.opengl.objects.Material;
@@ -123,9 +113,4 @@ public class SimpleLoader extends Loader {
         Vao vao = new Vao(positions.length / 2, posAttr, uvAttr);
         return new TexturedVao(vao, texture);
     }
-
-    public FontType loadFont(String fontAtlas, String fontFile) {
-        return new FontType(Texture.loadTexture(fontAtlas), fontFile, 16.0d / 9.0d);
-    }
-
 }
