@@ -42,14 +42,16 @@ public class EntityFactory {
     }
 
     public void init(){
-        for (RenderModule<?> module : renderer.modules()) {
+        for (Map.Entry<Class<RenderModule<?>>, RenderModule<?>> classRenderModuleEntry : renderer.moduleMap().entrySet()) {
+            RenderModule<?> module = classRenderModuleEntry.getValue();
+            Class<RenderModule<?>> key = classRenderModuleEntry.getKey();
             if (module instanceof ArtemisRenderModule){
                 ArchetypeBuilder components = ((ArtemisRenderModule) module).components();
                 components.add(Transformation.class);
                 components.add(Render.class);
                 components.add(Velocity.class);
                 Archetype ar = components.build(world);
-                archetypes.put(module.getClass(), ar);
+                archetypes.put(key, ar);
             }
         }
     }

@@ -1,0 +1,57 @@
+package com.theopus.xengine.core.render.modules.v1;
+
+import com.artemis.ArchetypeBuilder;
+import com.artemis.Aspect;
+import com.artemis.ComponentMapper;
+import com.artemis.annotations.Wire;
+import com.theopus.xengine.core.ecs.components.TransformationMatrix;
+import com.theopus.xengine.core.render.ArtemisRenderModule;
+import com.theopus.xengine.core.render.GLArtemisRenderModule;
+import com.theopus.xengine.core.render.GLContext;
+import com.theopus.xengine.wrapper.opengl.SimpleLoader;
+import com.theopus.xengine.wrapper.opengl.commands.TexturedVaoRenderCommand;
+import com.theopus.xengine.wrapper.opengl.objects.TexturedVao;
+import com.theopus.xengine.wrapper.opengl.shader.StaticShader;
+
+public class GLVer1Module extends Ver1Module<TexturedVao> {
+    private TexturedVaoRenderCommand renderCommand;
+    private SimpleLoader loader;
+
+    @Wire
+    private ComponentMapper<TransformationMatrix> mMapper;
+
+    @Wire
+    private GLContext glContext;
+
+    public void init() {
+        StaticShader staticShader = new StaticShader("v1/static.vert", "v1/static.frag");
+        renderCommand = new TexturedVaoRenderCommand(staticShader, glContext.getState());
+        loader = new SimpleLoader(glContext.getMemoryContext());
+        staticShader.bindUniformBlock(glContext.getMatricesBlock());
+    }
+
+    @Override
+    public ArchetypeBuilder components() {
+        return new ArchetypeBuilder().add(TransformationMatrix.class);
+    }
+
+    @Override
+    public void render(int entityId, TexturedVao texturedVao) {
+        renderCommand.render(texturedVao, mMapper.get(entityId).model);
+    }
+
+    @Override
+    public TexturedVao load(Ver1Data d) {
+        return loader.load(d.position, d.uv, d.indexes, d.texturePath);
+    }
+
+    @Override
+    public void prepare(TexturedVao texturedVao) {
+        renderCommand.prepare(texturedVao);
+    }
+
+    @Override
+    public void finish(TexturedVao texturedVao) {
+        renderCommand.finish();
+    }
+}

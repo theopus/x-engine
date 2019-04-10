@@ -1,10 +1,7 @@
 package com.theopus.xengine.core.render;
 
 import com.artemis.ArchetypeBuilder;
-import com.artemis.Aspect;
 import com.artemis.Entity;
-import com.artemis.EntitySubscription;
-import com.artemis.World;
 import com.artemis.annotations.Wire;
 import com.artemis.utils.ImmutableBag;
 import com.theopus.xengine.core.ecs.managers.CustomGroupManager;
@@ -35,10 +32,15 @@ public abstract class ArtemisRenderModule<T, D> implements RenderModule<T> {
     }
 
     @Override
-    public String load(T t) {
+    public String loadToModule(T t) {
         String group = prefix + count++;
-        groupMap.put(group, loadModel(t));
-        return group;
+        return loadToModule(group, t);
+    }
+
+    @Override
+    public String loadToModule(String title, T t) {
+        groupMap.put(title, load(t));
+        return title;
     }
 
     @Override
@@ -51,17 +53,17 @@ public abstract class ArtemisRenderModule<T, D> implements RenderModule<T> {
     }
 
     @Override
-    public void render() {
+    public void renderModule() {
         for (Map.Entry<String, D> stringD : groupMap.entrySet()) {
             String group = stringD.getKey();
             D D = stringD.getValue();
             ImmutableBag<Entity> entities = groupManager.getEntities(group);
-            prepareModel(D);
+            prepare(D);
             for (int i = 0; i < entities.size(); i++) {
                 int id = entities.get(i).getId();
-                renderModel(id, D);
+                render(id, D);
             }
-            finishModel(D);
+            finish(D);
         }
 
 
@@ -82,24 +84,28 @@ public abstract class ArtemisRenderModule<T, D> implements RenderModule<T> {
         return prefix;
     }
 
+    public D get(String prefix){
+        return groupMap.get(prefix);
+    }
+
     @Override
-    public void prepare() {
+    public void prepareModule() {
 
     }
 
     public abstract ArchetypeBuilder components();
 
     @Override
-    public void finish() {
+    public void finishModule() {
 
     }
 
-    public abstract void renderModel(int entityId, D d);
+    public abstract void render(int entityId, D d);
 
-    public abstract D loadModel(T d);
+    public abstract D load(T d);
 
-    public abstract void prepareModel(D d);
+    public abstract void prepare(D d);
 
-    public abstract void finishModel(D d);
+    public abstract void finish(D d);
 
 }

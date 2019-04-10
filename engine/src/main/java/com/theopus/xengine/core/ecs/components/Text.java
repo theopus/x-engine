@@ -4,4 +4,5 @@ import com.artemis.Component;
 
 public class Text extends Component {
     public String body = "";
+    public String font = "";
 }

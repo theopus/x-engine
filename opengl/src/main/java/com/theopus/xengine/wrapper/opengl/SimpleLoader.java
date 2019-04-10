@@ -12,6 +12,8 @@ import java.util.List;
 
 import org.apache.logging.log4j.core.util.IOUtils;
 import org.lwjgl.opengl.GL15;
+import org.lwjgl.stb.STBEasyFont;
+import org.lwjgl.stb.STBTruetype;
 
 import com.theopus.xengine.wrapper.font.FontType;
 import com.theopus.xengine.wrapper.opengl.objects.Attribute;
@@ -123,7 +125,7 @@ public class SimpleLoader extends Loader {
     }
 
     public FontType loadFont(String fontAtlas, String fontFile) {
-        return new FontType(Texture.loadTexture(fontAtlas), fontFile, 6.0d / 4.0d);
+        return new FontType(Texture.loadTexture(fontAtlas), fontFile, 16.0d / 9.0d);
     }
 
 }

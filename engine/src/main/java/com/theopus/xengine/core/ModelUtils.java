@@ -6,7 +6,7 @@ import com.theopus.xengine.core.render.modules.v1.Ver1Data;
 
 public class ModelUtils {
     public static String simpleQuad(RenderModule<Ver0Data> module0) {
-        return module0.load(new Ver0Data(
+        return module0.loadToModule(new Ver0Data(
                 new float[]{
                         -0.5f, 0.5f, 0,
                         -0.5f, -0.5f, 0,
@@ -20,7 +20,7 @@ public class ModelUtils {
     }
 
     public static String texturedQuad(RenderModule<Ver1Data> module1) {
-        return module1.load(new Ver1Data(
+        return module1.loadToModule(new Ver1Data(
                 new float[]{
                         -0.5f, 0.5f, 0,
                         -0.5f, -0.5f, 0,

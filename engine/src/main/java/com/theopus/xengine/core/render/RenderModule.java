@@ -10,19 +10,23 @@ import java.util.Set;
  * @param <T> is data-type for uploading
  */
 public interface RenderModule<T> {
-    String load(T t);
+
+    public void  init();
+
+    String loadToModule(T t);
+    String loadToModule(String title, T t);
 
     void bind(String model, int entityId);
 
-    void render();
+    void renderModule();
 
     Set<String> models();
 
     String getPrefix();
 
-    void prepare();
+    void prepareModule();
 
-    void finish();
+    void finishModule();
 
     Map<String, ImmutableBag<Entity>> bindings();
 

@@ -9,21 +9,14 @@ import com.theopus.xengine.core.ecs.managers.CustomGroupManager;
 import com.theopus.xengine.core.ecs.systems.*;
 import com.theopus.xengine.core.ecs.systems.scipting.ExecutingEngineContext;
 import com.theopus.xengine.core.ecs.systems.scipting.JavaExecutingSystem;
-import com.theopus.xengine.core.ecs.systems.scipting.JavaExecutionEvent;
 import com.theopus.xengine.core.events.EventBus;
 import com.theopus.xengine.core.platform.GlfwPlatformManager;
 import com.theopus.xengine.core.platform.PlatformManager;
 import com.theopus.xengine.core.render.*;
-import com.theopus.xengine.core.render.modules.v0.Ver0Module;
-import com.theopus.xengine.core.render.modules.v1.Ver1Module;
-import com.theopus.xengine.core.render.modules.v2.Ver2Data;
-import com.theopus.xengine.core.render.modules.v2.Ver2Module;
-import com.theopus.xengine.core.render.modules.v3.Ver3Data;
-import com.theopus.xengine.core.render.modules.v3.Ver3Module;
 import com.theopus.xengine.core.utils.Reflection;
 import com.theopus.xengine.core.utils.WorldAwareCachedInjector;
 import com.theopus.xengine.wrapper.glfw.WindowConfig;
-import org.joml.Vector3f;
+
 import org.joml.Vector4f;
 
 import java.io.Closeable;
@@ -118,7 +111,8 @@ public class XEngineBuilder {
 
         for (Class<? extends RenderModule<?>> m : modules) {
             ArtemisRenderModule module = (ArtemisRenderModule) Reflection.newInstance(m);
-            render.add(module);
+            Class<?> superclass = module.getClass().getSuperclass();
+            render.add((Class<RenderModule<?>>) superclass,module);
             contextObjects.add(module);
         }
 
