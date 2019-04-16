@@ -1,12 +1,13 @@
 package com.theopus.xengine.wrapper.opengl.objects;
 
-import com.theopus.xengine.wrapper.opengl.utils.GlToString;
+import java.nio.FloatBuffer;
+import java.nio.IntBuffer;
+
 import org.lwjgl.opengl.GL15;
 import org.lwjgl.opengl.GL30;
 import org.lwjgl.system.MemoryUtil;
 
-import java.nio.FloatBuffer;
-import java.nio.IntBuffer;
+import com.theopus.xengine.wrapper.opengl.utils.GlToString;
 
 public class GlBuffer {
     protected final int id;

@@ -1,10 +1,12 @@
 package com.theopus.xengine.core.events;
 
-import com.artemis.BaseSystem;
-
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 
 public class EventBus {
 
@@ -14,6 +16,7 @@ public class EventBus {
     public void subscribe(Class eventClass, Subscriber subscriber) {
         getSubscribersList(eventClass).add(subscriber);
     }
+
     public void subscribe(Object subscriber) {
 
         Type[] genericInterfaces = subscriber.getClass().getGenericInterfaces();

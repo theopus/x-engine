@@ -1,35 +1,51 @@
 package com.theopus.xengine.core;
 
+import java.io.Closeable;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
+
+import org.joml.Vector4f;
+
 import com.artemis.BaseSystem;
 import com.artemis.World;
 import com.artemis.WorldConfiguration;
 import com.artemis.WorldConfigurationBuilder;
 import com.artemis.managers.TagManager;
 import com.theopus.xengine.core.ecs.managers.CustomGroupManager;
-import com.theopus.xengine.core.ecs.systems.*;
+import com.theopus.xengine.core.ecs.systems.CameraSystem;
+import com.theopus.xengine.core.ecs.systems.EventSystem;
+import com.theopus.xengine.core.ecs.systems.LightSystem;
+import com.theopus.xengine.core.ecs.systems.ModelMatrixSystem;
+import com.theopus.xengine.core.ecs.systems.MoveSystem;
+import com.theopus.xengine.core.ecs.systems.ProjectionSystem;
+import com.theopus.xengine.core.ecs.systems.RenderSystem;
 import com.theopus.xengine.core.ecs.systems.scipting.ExecutingEngineContext;
 import com.theopus.xengine.core.ecs.systems.scipting.JavaExecutingSystem;
 import com.theopus.xengine.core.events.EventBus;
 import com.theopus.xengine.core.platform.GlfwPlatformManager;
 import com.theopus.xengine.core.platform.PlatformManager;
-import com.theopus.xengine.core.render.*;
+import com.theopus.xengine.core.render.ArtemisRenderModule;
+import com.theopus.xengine.core.render.BaseRenderer;
+import com.theopus.xengine.core.render.GLContext;
+import com.theopus.xengine.core.render.GlRenderer;
+import com.theopus.xengine.core.render.RenderModule;
 import com.theopus.xengine.core.utils.Reflection;
 import com.theopus.xengine.core.utils.WorldAwareCachedInjector;
 import com.theopus.xengine.wrapper.glfw.WindowConfig;
-
-import org.joml.Vector4f;
-
-import java.io.Closeable;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.util.*;
-import java.util.stream.Collectors;
 
 /**
  * Invokes all init methods before run.
  */
 public class XEngineBuilder {
 
+    List<Closeable> closeables = new ArrayList<>();
     private Set<Object> events = new LinkedHashSet<>();
     private Set<Class<? extends RenderModule<?>>> modules = new LinkedHashSet<>();
     private Set<Class<? extends BaseSystem>> systems = new LinkedHashSet<>(Arrays.asList(
@@ -44,8 +60,6 @@ public class XEngineBuilder {
             ModelMatrixSystem.class,
             LightSystem.class
     ));
-
-    List<Closeable> closeables = new ArrayList<>();
 
     public XEngine build() {
         List<Object> contextObjects = new ArrayList<>();
@@ -112,7 +126,7 @@ public class XEngineBuilder {
         for (Class<? extends RenderModule<?>> m : modules) {
             ArtemisRenderModule module = (ArtemisRenderModule) Reflection.newInstance(m);
             Class<?> superclass = module.getClass().getSuperclass();
-            render.add((Class<RenderModule<?>>) superclass,module);
+            render.add((Class<RenderModule<?>>) superclass, module);
             contextObjects.add(module);
         }
 

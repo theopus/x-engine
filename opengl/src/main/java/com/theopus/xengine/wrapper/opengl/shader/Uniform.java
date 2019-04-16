@@ -1,5 +1,7 @@
 package com.theopus.xengine.wrapper.opengl.shader;
 
+import java.nio.FloatBuffer;
+
 import org.joml.Matrix4f;
 import org.joml.Vector2f;
 import org.joml.Vector3f;
@@ -7,8 +9,6 @@ import org.lwjgl.opengl.GL20;
 import org.lwjgl.system.MemoryUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.nio.FloatBuffer;
 
 public class Uniform<T> {
 

@@ -1,8 +1,8 @@
 package com.theopus.xengine.wrapper.opengl.shader.ubos;
 
-import com.theopus.xengine.wrapper.opengl.objects.Ubo;
-
 import java.io.Closeable;
+
+import com.theopus.xengine.wrapper.opengl.objects.Ubo;
 
 public abstract class UniformBlock implements Closeable {
     protected final Ubo ubo;

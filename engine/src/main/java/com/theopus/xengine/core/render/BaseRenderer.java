@@ -1,25 +1,25 @@
 package com.theopus.xengine.core.render;
 
-import org.joml.Matrix4f;
-import org.joml.Vector3f;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import org.joml.Matrix4f;
+import org.joml.Vector3f;
 
 public abstract class BaseRenderer {
 
     protected List<RenderModule<?>> modules;
     protected Map<Class<RenderModule<?>>, RenderModule<?>> renderModuleMap;
 
-    public Map<Class<RenderModule<?>>, RenderModule<?>> moduleMap() {
-        return renderModuleMap;
-    }
-
     public BaseRenderer() {
         this.modules = new ArrayList<>();
         this.renderModuleMap = new HashMap<>();
+    }
+
+    public Map<Class<RenderModule<?>>, RenderModule<?>> moduleMap() {
+        return renderModuleMap;
     }
 
     public void render() {
@@ -40,6 +40,7 @@ public abstract class BaseRenderer {
     public <T extends RenderModule<?>> T get(Class<T> moduleClass) {
         return (T) renderModuleMap.get(moduleClass);
     }
+
     /*
     slow temporary shit
      */
@@ -63,7 +64,6 @@ public abstract class BaseRenderer {
     public List<RenderModule<?>> modules() {
         return modules;
     }
-
 
 
     public abstract void loadLight(Vector3f diffuse, Vector3f position);

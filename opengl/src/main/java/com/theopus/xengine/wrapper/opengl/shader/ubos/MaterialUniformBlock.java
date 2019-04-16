@@ -1,19 +1,18 @@
 package com.theopus.xengine.wrapper.opengl.shader.ubos;
 
-import com.google.common.base.Preconditions;
-import com.theopus.xengine.wrapper.opengl.MemoryContext;
-import com.theopus.xengine.wrapper.opengl.objects.Material;
-import com.theopus.xengine.wrapper.opengl.objects.Ubo;
-import com.theopus.xengine.wrapper.opengl.shader.Uniforms;
-import com.theopus.xengine.wrapper.opengl.utils.Buffers;
-import com.theopus.xengine.wrapper.opengl.utils.GlDataType;
-import org.joml.Vector3f;
+import java.io.IOException;
+import java.nio.FloatBuffer;
+
 import org.joml.Vector4f;
 import org.lwjgl.opengl.GL15;
 import org.lwjgl.system.MemoryUtil;
 
-import java.io.IOException;
-import java.nio.FloatBuffer;
+import com.google.common.base.Preconditions;
+import com.theopus.xengine.wrapper.opengl.MemoryContext;
+import com.theopus.xengine.wrapper.opengl.objects.Material;
+import com.theopus.xengine.wrapper.opengl.objects.Ubo;
+import com.theopus.xengine.wrapper.opengl.utils.Buffers;
+import com.theopus.xengine.wrapper.opengl.utils.GlDataType;
 
 /**
  * expected to be:
@@ -21,10 +20,10 @@ import java.nio.FloatBuffer;
  * <p>
  * layout (std140) uniform Material
  * {
- *      float ambientReflectivity;
- *      float diffuseReflectivity;
- *      float specularReflectivity;
- *      float shininess;
+ * float ambientReflectivity;
+ * float diffuseReflectivity;
+ * float specularReflectivity;
+ * float shininess;
  * } material;
  */
 public class MaterialUniformBlock extends UniformBlock {
@@ -52,23 +51,23 @@ public class MaterialUniformBlock extends UniformBlock {
         init();
     }
 
-    public void init(){
-        loadMaterial(new Material(0.1f,1f,0.3f,0.03f));
+    public static MaterialUniformBlock withCtx(int bindingPoint, MemoryContext memoryContext) {
+        Ubo ubo = new Ubo(SIZE, GL15.GL_STATIC_DRAW);
+        memoryContext.put(ubo);
+        return new MaterialUniformBlock(bindingPoint, ubo);
     }
 
-    public void loadMaterial(Material material){
+    public void init() {
+        loadMaterial(new Material(0.1f, 1f, 0.3f, 0.03f));
+    }
+
+    public void loadMaterial(Material material) {
         v4.x = material.ambientReflectivity;
         v4.y = material.diffuseReflectivity;
         v4.z = material.specularReflectivity;
         v4.w = material.shininess;
         Buffers.put(v4, vector4fBuffer);
         ubo.bufferSubData(0, vector4fBuffer);
-    }
-
-    public static MaterialUniformBlock withCtx(int bindingPoint, MemoryContext memoryContext) {
-        Ubo ubo = new Ubo(SIZE, GL15.GL_STATIC_DRAW);
-        memoryContext.put(ubo);
-        return new MaterialUniformBlock(bindingPoint, ubo);
     }
 
     @Override

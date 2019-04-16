@@ -13,18 +13,6 @@ public class Loop {
         this.onClose = onClose;
     }
 
-    interface RunFunction {
-        void run(long elapsed);
-    }
-
-    interface BoolFunction {
-        boolean test();
-    }
-
-    interface VoidFunction {
-        void execute() throws IOException;
-    }
-
     public void run() throws IOException {
         long before = System.currentTimeMillis();
         long now;
@@ -37,6 +25,18 @@ public class Loop {
             run.run(elapsed);
         }
         onClose.execute();
+    }
+
+    interface RunFunction {
+        void run(long elapsed);
+    }
+
+    interface BoolFunction {
+        boolean test();
+    }
+
+    interface VoidFunction {
+        void execute() throws IOException;
     }
 
     public static class Builder {

@@ -27,13 +27,16 @@ public class TestClient {
                 .withModule(GLVer2Module.class)
                 .withModule(GLVer3Module.class)
                 .withModule(GlFontModule.class)
+                .withModule(GlTerrainModule.class)
                 .withSystem(GLTextManager.class)
                 .withEvent(new JavaExecutionEvent(eec -> {
                     Ver2Module module2 = eec.renderer.get(Ver2Module.class);
                     Ver3Module module3 = eec.renderer.get(Ver3Module.class);
+                    TerrainModule terrainModule = eec.renderer.get(TerrainModule.class);
 
                     module2.loadToModule(new Ver2Data("objects/dragon.obj"));
-                    module3.loadToModule(new Ver3Data("objects/dragon.obj", 0, 1f, 1f, 10f));
+                    String s = module3.loadToModule(new Ver3Data("objects/dragon.obj", 0, 1f, 1f, 10f));
+                    terrainModule.loadToModule(new TerrainCreator().loadTerrain());
                     GLTextManager textManager = eec.world.getSystem(GLTextManager.class);
 
 
@@ -43,12 +46,19 @@ public class TestClient {
                     textManager.loadFont(fontTitle, texutreAtlas, fontFile);
                     textManager.createText("Hi this is test", "arial", 4);
 
-                    eec.factory.createCamera();
+                    int i = eec.factory.createCamera();
+
                     eec.factory.createFor(Ver3Module.class, new Vector3f(0, 0, -5));
                     eec.factory.createLight(new Vector3f(1, 1, 1), new Vector3f(0, 200, -5));
 
-                    eec.eventBus.post(new FramebufferEvent(600, 400));
+                    module3.bind(s, i);
 
+                    int terrain0 = eec.factory.createFor(TerrainModule.class, new Vector3f(0,0,0));
+                    int terrain1 = eec.factory.createFor(TerrainModule.class, new Vector3f(0,0,-100));
+                    int terrain2 = eec.factory.createFor(TerrainModule.class, new Vector3f(-100,0,-100));
+                    int terrain3 = eec.factory.createFor(TerrainModule.class, new Vector3f(-100,0,0));
+
+                    eec.eventBus.post(new FramebufferEvent(600, 400));
                 }));
 
         engineBuilder.build().run();

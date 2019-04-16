@@ -1,13 +1,14 @@
 package com.theopus.xengine.core.ecs.systems;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.artemis.Aspect;
 import com.artemis.ComponentMapper;
 import com.artemis.systems.IntervalIteratingSystem;
-import com.theopus.xengine.core.ecs.components.TransformationMatrix;
 import com.theopus.xengine.core.ecs.components.Transformation;
+import com.theopus.xengine.core.ecs.components.TransformationMatrix;
 import com.theopus.xengine.core.utils.Maths;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class ModelMatrixSystem extends IntervalIteratingSystem {
     private static final Logger LOGGER = LoggerFactory.getLogger(ModelMatrixSystem.class);

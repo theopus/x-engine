@@ -1,14 +1,15 @@
 package com.theopus.xengine.wrapper.opengl;
 
-import com.theopus.xengine.wrapper.opengl.objects.GlBuffer;
-import com.theopus.xengine.wrapper.opengl.objects.Texture;
-import com.theopus.xengine.wrapper.opengl.objects.Vao;
-import org.lwjgl.opengl.GL15;
-import org.lwjgl.opengl.GL30;
-
 import java.io.Closeable;
 import java.util.HashMap;
 import java.util.Map;
+
+import org.lwjgl.opengl.GL15;
+import org.lwjgl.opengl.GL30;
+
+import com.theopus.xengine.wrapper.opengl.objects.GlBuffer;
+import com.theopus.xengine.wrapper.opengl.objects.Texture;
+import com.theopus.xengine.wrapper.opengl.objects.Vao;
 
 public class MemoryContext implements Closeable {
 

@@ -1,10 +1,11 @@
 package com.theopus.xengine.wrapper.opengl.commands;
 
-import com.theopus.xengine.wrapper.opengl.objects.Vao;
-import com.theopus.xengine.wrapper.opengl.shader.StaticShader;
 import org.joml.Matrix4f;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL30;
+
+import com.theopus.xengine.wrapper.opengl.objects.Vao;
+import com.theopus.xengine.wrapper.opengl.shader.StaticShader;
 
 public class SimpleVaoRenderCommand {
 

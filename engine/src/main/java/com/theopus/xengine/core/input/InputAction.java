@@ -10,4 +10,6 @@ public enum InputAction {
     UNIDENTIFIED,
     ROTATE_CW,
     ROTATE_CCW,
+    ACTION0,
+    ACTION1
 }

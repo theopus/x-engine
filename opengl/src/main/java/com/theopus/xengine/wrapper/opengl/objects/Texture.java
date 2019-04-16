@@ -1,15 +1,17 @@
 package com.theopus.xengine.wrapper.opengl.objects;
 
-import com.theopus.xengine.wrapper.opengl.Loader;
-import de.matthiasmann.twl.utils.PNGDecoder;
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.ByteBuffer;
+
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL14;
 import org.lwjgl.opengl.GL30;
 import org.lwjgl.system.MemoryUtil;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.nio.ByteBuffer;
+import com.theopus.xengine.wrapper.opengl.Loader;
+
+import de.matthiasmann.twl.utils.PNGDecoder;
 
 public class Texture {
     private final int id;
@@ -59,11 +61,11 @@ public class Texture {
         mipmap = true;
     }
 
-    public void bind(){
+    public void bind() {
         GL11.glBindTexture(GL11.GL_TEXTURE_2D, id);
     }
 
-    public void unbind(){
+    public void unbind() {
         GL11.glBindTexture(GL11.GL_TEXTURE_2D, 0);
     }
 

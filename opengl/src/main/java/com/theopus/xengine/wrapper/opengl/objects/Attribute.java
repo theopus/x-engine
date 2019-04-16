@@ -1,11 +1,11 @@
 package com.theopus.xengine.wrapper.opengl.objects;
 
-import com.theopus.xengine.wrapper.opengl.utils.GlDataType;
-import com.theopus.xengine.wrapper.opengl.utils.GlToString;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
+
+import com.theopus.xengine.wrapper.opengl.utils.GlDataType;
+import com.theopus.xengine.wrapper.opengl.utils.GlToString;
 
 public class Attribute {
 
@@ -71,6 +71,18 @@ public class Attribute {
         return new Attribute(index, size, type, stride, pointer, vbo, false);
     }
 
+    @Override
+    public String toString() {
+        return "Attribute{" +
+                "index=" + index +
+                ", size=" + size +
+                ", type=" + GlToString.dataType(type) +
+                ", stride=" + stride +
+                ", pointer=" + pointer +
+                ", vbo=" + vbo +
+                ", instanced=" + instanced +
+                '}';
+    }
 
     public static class SharedAttributeBuilder {
 
@@ -95,15 +107,15 @@ public class Attribute {
             attributeEntry.add(new Entry(indexPointer, type, type.size, currentPointer));
             currentPointer += packBytesSize;
 
-            if (packBytesSize <= GlDataType.VEC4_FLOAT.byteSize){
+            if (packBytesSize <= GlDataType.VEC4_FLOAT.byteSize) {
                 indexPointer++;
             } else {
                 int div = packBytesSize / GlDataType.VEC4_FLOAT.bytes;
                 int mod = packBytesSize % GlDataType.VEC4_FLOAT.bytes;
-                if (mod != 0){
-                   indexPointer+=div + 1;
+                if (mod != 0) {
+                    indexPointer += div + 1;
                 } else {
-                    indexPointer+=div;
+                    indexPointer += div;
                 }
             }
             return this;
@@ -128,19 +140,5 @@ public class Attribute {
                 this.pointer = pointer;
             }
         }
-    }
-
-
-    @Override
-    public String toString() {
-        return "Attribute{" +
-                "index=" + index +
-                ", size=" + size +
-                ", type=" + GlToString.dataType(type) +
-                ", stride=" + stride +
-                ", pointer=" + pointer +
-                ", vbo=" + vbo +
-                ", instanced=" + instanced +
-                '}';
     }
 }

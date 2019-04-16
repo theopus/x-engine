@@ -1,13 +1,12 @@
 package com.theopus.xengine.core.render;
 
+import java.io.Closeable;
+
 import com.theopus.xengine.wrapper.opengl.GlState;
 import com.theopus.xengine.wrapper.opengl.MemoryContext;
 import com.theopus.xengine.wrapper.opengl.shader.ubos.LightUniformBlock;
 import com.theopus.xengine.wrapper.opengl.shader.ubos.MaterialUniformBlock;
 import com.theopus.xengine.wrapper.opengl.shader.ubos.MatricesUniformBlock;
-import com.theopus.xengine.wrapper.opengl.shader.ubos.UniformBlock;
-
-import java.io.Closeable;
 
 public class GLContext implements Closeable {
     private LightUniformBlock lightBlock;
@@ -16,7 +15,7 @@ public class GLContext implements Closeable {
     private MemoryContext memoryContext;
     private GlState state;
 
-    public void init(){
+    public void init() {
         this.memoryContext = new MemoryContext();
         this.matricesBlock = MatricesUniformBlock.withCtx(0, memoryContext);
         this.lightBlock = LightUniformBlock.withCtx(1, memoryContext);

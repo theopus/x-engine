@@ -1,11 +1,11 @@
 package com.theopus.xengine.core;
 
-import com.artemis.*;
-import com.theopus.xengine.core.platform.PlatformManager;
-
 import java.io.Closeable;
 import java.io.IOException;
 import java.util.List;
+
+import com.artemis.World;
+import com.theopus.xengine.core.platform.PlatformManager;
 
 public class XEngine {
 

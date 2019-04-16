@@ -1,13 +1,13 @@
 package com.theopus.xengine.wrapper.opengl.commands;
 
-import com.theopus.xengine.wrapper.opengl.GlState;
-import com.theopus.xengine.wrapper.opengl.objects.TexturedVao;
-import com.theopus.xengine.wrapper.opengl.shader.StaticShader;
 import org.joml.Matrix4f;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL13;
-import org.lwjgl.opengl.GL15;
 import org.lwjgl.opengl.GL30;
+
+import com.theopus.xengine.wrapper.opengl.GlState;
+import com.theopus.xengine.wrapper.opengl.objects.TexturedVao;
+import com.theopus.xengine.wrapper.opengl.shader.StaticShader;
 
 public class TexturedVaoRenderCommand {
 

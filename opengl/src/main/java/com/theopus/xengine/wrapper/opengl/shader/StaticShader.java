@@ -1,9 +1,9 @@
 package com.theopus.xengine.wrapper.opengl.shader;
 
-import org.joml.Matrix4f;
-
 import java.util.Arrays;
 import java.util.List;
+
+import org.joml.Matrix4f;
 
 public class StaticShader extends ShaderProgram {
     private Uniform<Matrix4f> transformation;

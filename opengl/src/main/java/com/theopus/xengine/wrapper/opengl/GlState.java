@@ -1,8 +1,9 @@
 package com.theopus.xengine.wrapper.opengl;
 
-import com.theopus.xengine.wrapper.utils.State;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL15;
+
+import com.theopus.xengine.wrapper.utils.State;
 
 public class GlState {
 

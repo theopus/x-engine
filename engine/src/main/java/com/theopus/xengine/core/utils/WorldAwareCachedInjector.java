@@ -1,6 +1,15 @@
 package com.theopus.xengine.core.utils;
 
-import com.artemis.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+
+import com.artemis.BaseSystem;
+import com.artemis.ComponentMapper;
+import com.artemis.Manager;
+import com.artemis.MundaneWireException;
+import com.artemis.World;
+import com.artemis.WorldConfiguration;
 import com.artemis.injection.CachedClass;
 import com.artemis.injection.CachedField;
 import com.artemis.injection.ClassType;
@@ -12,15 +21,10 @@ import com.artemis.utils.reflect.ClassReflection;
 import com.artemis.utils.reflect.Field;
 import com.artemis.utils.reflect.ReflectionException;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 /**
  * By default, injects {@link ComponentMapper}, {@link BaseSystem} and {@link Manager} types into systems and
  * managers. Can also inject arbitrary types if registered through {@link WorldConfiguration#register}.
- *
+ * <p>
  * Caches all type-information.
  *
  * <p>
@@ -88,7 +92,7 @@ public class WorldAwareCachedInjector implements Injector {
             } else {
                 injectAnnotatedFields(target, cachedClass);
             }
-        } catch (RuntimeException e ) {
+        } catch (RuntimeException e) {
             throw new MundaneWireException("Error while wiring " + target.getClass().getName(), e);
         } catch (ReflectionException e) {
             throw new MundaneWireException("Error while wiring " + target.getClass().getName(), e);

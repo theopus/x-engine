@@ -1,17 +1,18 @@
 package com.theopus.xengine.wrapper.opengl.shader;
 
-import com.theopus.xengine.wrapper.opengl.shader.ubos.UniformBlock;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.util.ArrayList;
+import java.util.List;
+
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL20;
 import org.lwjgl.opengl.GL33;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.util.ArrayList;
-import java.util.List;
+import com.theopus.xengine.wrapper.opengl.shader.ubos.UniformBlock;
 
 public abstract class ShaderProgram {
 

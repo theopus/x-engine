@@ -1,19 +1,20 @@
 package com.theopus.xengine.core.render;
 
-import com.artemis.Entity;
-import com.artemis.utils.ImmutableBag;
-
 import java.util.Map;
 import java.util.Set;
+
+import com.artemis.Entity;
+import com.artemis.utils.ImmutableBag;
 
 /**
  * @param <T> is data-type for uploading
  */
 public interface RenderModule<T> {
 
-    public void  init();
+    void init();
 
     String loadToModule(T t);
+
     String loadToModule(String title, T t);
 
     void bind(String model, int entityId);

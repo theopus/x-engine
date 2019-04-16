@@ -1,7 +1,24 @@
 package com.theopus.xengine.wrapper.glfw;
 
+import static org.lwjgl.opengl.GL11.GL_FALSE;
+import static org.lwjgl.opengl.GL11.GL_TRUE;
+import static org.lwjgl.system.MemoryUtil.NULL;
+
+import java.nio.IntBuffer;
+
 import org.joml.Vector4f;
-import org.lwjgl.glfw.*;
+import org.lwjgl.glfw.Callbacks;
+import org.lwjgl.glfw.GLFW;
+import org.lwjgl.glfw.GLFWCursorPosCallback;
+import org.lwjgl.glfw.GLFWCursorPosCallbackI;
+import org.lwjgl.glfw.GLFWErrorCallback;
+import org.lwjgl.glfw.GLFWFramebufferSizeCallback;
+import org.lwjgl.glfw.GLFWFramebufferSizeCallbackI;
+import org.lwjgl.glfw.GLFWKeyCallback;
+import org.lwjgl.glfw.GLFWKeyCallbackI;
+import org.lwjgl.glfw.GLFWMouseButtonCallback;
+import org.lwjgl.glfw.GLFWMouseButtonCallbackI;
+import org.lwjgl.glfw.GLFWVidMode;
 import org.lwjgl.opengl.GL;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL30;
@@ -9,12 +26,6 @@ import org.lwjgl.opengl.GLCapabilities;
 import org.lwjgl.system.MemoryStack;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.nio.IntBuffer;
-
-import static org.lwjgl.opengl.GL11.GL_FALSE;
-import static org.lwjgl.opengl.GL11.GL_TRUE;
-import static org.lwjgl.system.MemoryUtil.NULL;
 
 public class GlfwWrapper {
 
@@ -154,10 +165,18 @@ public class GlfwWrapper {
             was.free();
         }
     }
+    public void setCursorPosCallback(GLFWCursorPosCallbackI glfwCursorPosCallback) {
+        GLFWCursorPosCallback was = GLFW.glfwSetCursorPosCallback(mainContext, glfwCursorPosCallback);
+        if (was != null) {
+            was.free();
+        }
+    }
 
     public void setMouseButtonCallback(GLFWMouseButtonCallbackI glfwKeyCallback) {
         GLFWMouseButtonCallback was = GLFW.glfwSetMouseButtonCallback(mainContext, glfwKeyCallback);
-        was.free();
+        if (was != null) {
+            was.free();
+        }
     }
 
     public void close() {

@@ -1,17 +1,17 @@
 package com.theopus.xengine.wrapper.utils;
 
-import org.joml.Matrix4f;
-import org.joml.Vector3f;
-
 import java.util.function.BiFunction;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 
+import org.joml.Matrix4f;
+import org.joml.Vector3f;
+
 public class State<T> {
-    T t;
     final Consumer<T> onChange;
     final Predicate<T> predicate;
     final BiFunction<T, T, T> update;
+    T t;
 
     public State(T value, Consumer<T> onChange, boolean init) {
         t = value;
@@ -43,17 +43,6 @@ public class State<T> {
         }
     }
 
-    public void update(T update) {
-        if (!predicate.test(update)) {
-            onChange.accept(update);
-            t = this.update.apply(t, update);
-        }
-    }
-
-    public T get() {
-        return t;
-    }
-
     public static <C> State<C> of(C value, Consumer<C> consumer, Predicate<C> predicate) {
         return new State<>(value, consumer, predicate, true);
     }
@@ -61,7 +50,6 @@ public class State<T> {
     public static <C> State<C> of(C value, Consumer<C> consumer) {
         return new State<>(value, consumer, true);
     }
-
 
     public static State<Boolean> bool(Boolean value, Consumer<Boolean> onTrue, Consumer<Boolean> onFalse) {
         Consumer<Boolean> tConsumer = b -> {
@@ -87,8 +75,14 @@ public class State<T> {
         }, true);
     }
 
-    public static void main(String[] args) {
-        State<Boolean> bool = State.bool(false, b -> System.out.println("true activated"), b -> System.out.println("false activated"));
+    public void update(T update) {
+        if (!predicate.test(update)) {
+            onChange.accept(update);
+            t = this.update.apply(t, update);
+        }
+    }
 
+    public T get() {
+        return t;
     }
 }

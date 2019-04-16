@@ -1,15 +1,19 @@
 package com.theopus.xengine.core.render.modules.font;
 
+import org.joml.Vector2f;
+
 import com.artemis.ArchetypeBuilder;
 import com.artemis.ComponentMapper;
 import com.artemis.annotations.Wire;
+import com.theopus.xengine.core.ecs.components.Color;
 import com.theopus.xengine.core.ecs.components.GLVaoComponent;
+import com.theopus.xengine.core.ecs.components.Transformation2D;
 import com.theopus.xengine.core.render.GLContext;
 import com.theopus.xengine.wrapper.opengl.SimpleLoader;
 import com.theopus.xengine.wrapper.opengl.commands.FontRenderCommand;
 import com.theopus.xengine.wrapper.opengl.objects.Texture;
 import com.theopus.xengine.wrapper.opengl.objects.TexturedVao;
-import com.theopus.xengine.wrapper.opengl.shader.StaticShader;
+import com.theopus.xengine.wrapper.opengl.shader.FontShader;
 import com.theopus.xengine.wrapper.text.Font;
 import com.theopus.xengine.wrapper.text.TextMeshData;
 
@@ -20,7 +24,8 @@ public class GlFontModule extends FontModule<Font> {
     private GLContext glContext;
     private FontRenderCommand renderCommand;
     @Wire
-    ComponentMapper<GLVaoComponent> componentMapper;
+    private ComponentMapper<GLVaoComponent> componentMapper;
+    private Transformation2D defaultv = new Transformation2D();
 
     @Override
     public ArchetypeBuilder components() {
@@ -28,7 +33,9 @@ public class GlFontModule extends FontModule<Font> {
     }
 
     public void init() {
-        renderCommand = new FontRenderCommand(new StaticShader("text/shader.vert", "text/shader.frag"), glContext.getState());
+        super.init();
+        defaultv.position = new Vector2f(0.5f, 0.5f);
+        renderCommand = new FontRenderCommand(new FontShader("text/shader.vert", "text/shader.frag"), glContext.getState());
         loader = new SimpleLoader(glContext.getMemoryContext());
     }
 
@@ -42,7 +49,9 @@ public class GlFontModule extends FontModule<Font> {
     @Override
     public void render(int entityId, Font font) {
         GLVaoComponent glVaoComponent = componentMapper.get(entityId);
-        renderCommand.render(glVaoComponent.vaoId, glVaoComponent.length);
+        Transformation2D transformation2D = mTransformation.getSafe(entityId, defaultv);
+        Color color = mColor.getSafe(entityId, dColor);
+        renderCommand.render(glVaoComponent.vaoId, glVaoComponent.length, transformation2D.position, color.rgb);
     }
 
     @Override
@@ -60,5 +69,15 @@ public class GlFontModule extends FontModule<Font> {
     @Override
     public void finish(Font font) {
         renderCommand.finish();
+    }
+
+    @Override
+    public void prepareModule() {
+        renderCommand.prepareCommand();
+    }
+
+    @Override
+    public void finishModule() {
+        renderCommand.finishCommand();
     }
 }

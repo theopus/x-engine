@@ -1,16 +1,21 @@
 package com.theopus.xengine.core.platform;
 
+import java.util.HashMap;
+import java.util.Map;
+import java.util.function.Function;
+import java.util.stream.Collectors;
+
+import org.lwjgl.glfw.GLFW;
+import org.lwjgl.glfw.GLFWCursorPosCallback;
+
 import com.artemis.annotations.Wire;
 import com.theopus.xengine.core.events.EventBus;
 import com.theopus.xengine.core.input.InputAction;
 import com.theopus.xengine.core.input.InputActionType;
+import com.theopus.xengine.core.input.InputCursorEvent;
 import com.theopus.xengine.core.input.InputEvent;
 import com.theopus.xengine.wrapper.glfw.GlfwWrapper;
 import com.theopus.xengine.wrapper.glfw.WindowConfig;
-import org.lwjgl.glfw.GLFW;
-
-import java.util.HashMap;
-import java.util.Map;
 
 public class GlfwPlatformManager implements PlatformManager {
 
@@ -27,7 +32,14 @@ public class GlfwPlatformManager implements PlatformManager {
         put(GLFW.GLFW_KEY_S, InputAction.BACK);
         put(GLFW.GLFW_KEY_E, InputAction.ROTATE_CW);
         put(GLFW.GLFW_KEY_Q, InputAction.ROTATE_CCW);
+        put(GLFW.GLFW_MOUSE_BUTTON_LEFT, InputAction.ACTION0);
+        put(GLFW.GLFW_MOUSE_BUTTON_RIGHT, InputAction.ACTION1);
     }};
+
+    private Map<InputAction, InputActionType> state = new HashMap<>(keymap.values()
+            .stream()
+            .collect(Collectors.toMap(Function.identity(),
+                    o -> InputActionType.END)));
 
 
     public GlfwPlatformManager(WindowConfig config) {
@@ -44,13 +56,43 @@ public class GlfwPlatformManager implements PlatformManager {
         createWindow();
         wrapper.setKeyCallback((window, key, scancode, action, mods) -> {
             if (action != GLFW.GLFW_REPEAT) {
-                eventBus.post(new InputEvent(keymap.getOrDefault(key, InputAction.UNIDENTIFIED), action == GLFW.GLFW_PRESS ? InputActionType.BEGIN : InputActionType.END));
+                handleKeyPress(key, action);
+            }
+        });
+        wrapper.setMouseButtonCallback((window, key, action, mods) -> {
+            if (action != GLFW.GLFW_REPEAT) {
+                handleKeyPress(key, action);
+            }
+        });
+
+        wrapper.setCursorPosCallback(new GLFWCursorPosCallback() {
+            private double x = 0.0;
+            private double y = 0.0;
+
+            private double dx = 0.0;
+            private double dy = 0.0;
+
+            @Override
+            public void invoke(long window, double xpos, double ypos) {
+                dx = xpos - x;
+                dy = ypos - y;
+
+                x = xpos;
+                y = ypos;
+                eventBus.post(new InputCursorEvent(dx, dy, state));
             }
         });
         wrapper.setFramebufferChangedCallback((window, width, height) -> eventBus.post(new FramebufferEvent(width, height)));
         eventBus.post(new FramebufferEvent(wrapper.getWidth(), wrapper.getHeight()));
         eventBus.post(new FramebufferEvent(wrapper.getWidth(), wrapper.getHeight()));
         eventBus.post(new FramebufferEvent(wrapper.getWidth(), wrapper.getHeight()));
+    }
+
+    private void handleKeyPress(int key, int action) {
+        InputAction a = keymap.getOrDefault(key, InputAction.UNIDENTIFIED);
+        InputActionType t = action == GLFW.GLFW_PRESS ? InputActionType.BEGIN : InputActionType.END;
+        eventBus.post(new InputEvent(a, t));
+        state.put(a, t);
     }
 
     @Override

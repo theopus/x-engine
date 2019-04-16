@@ -1,20 +1,20 @@
 package com.theopus.xengine.core.render;
 
-import com.artemis.ArchetypeBuilder;
-import com.artemis.Entity;
-import com.artemis.annotations.Wire;
-import com.artemis.utils.ImmutableBag;
-import com.theopus.xengine.core.ecs.managers.CustomGroupManager;
-
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-public abstract class ArtemisRenderModule<T, D> implements RenderModule<T> {
+import com.artemis.ArchetypeBuilder;
+import com.artemis.Entity;
+import com.artemis.annotations.Wire;
+import com.artemis.utils.ImmutableBag;
+import com.theopus.xengine.core.ecs.managers.CustomGroupManager;
 
-    private final Map<String, D> groupMap;
+public abstract class ArtemisRenderModule<Load, Instance> implements RenderModule<Load> {
+
+    private final Map<String, Instance> groupMap;
     private final String prefix;
 
     @Wire(injectInherited = true)
@@ -32,14 +32,14 @@ public abstract class ArtemisRenderModule<T, D> implements RenderModule<T> {
     }
 
     @Override
-    public String loadToModule(T t) {
+    public String loadToModule(Load load) {
         String group = prefix + count++;
-        return loadToModule(group, t);
+        return loadToModule(group, load);
     }
 
     @Override
-    public String loadToModule(String title, T t) {
-        groupMap.put(title, load(t));
+    public String loadToModule(String title, Load load) {
+        groupMap.put(title, load(load));
         return title;
     }
 
@@ -54,28 +54,28 @@ public abstract class ArtemisRenderModule<T, D> implements RenderModule<T> {
 
     @Override
     public void renderModule() {
-        for (Map.Entry<String, D> stringD : groupMap.entrySet()) {
+        for (Map.Entry<String, Instance> stringD : groupMap.entrySet()) {
             String group = stringD.getKey();
-            D D = stringD.getValue();
+            Instance Instance = stringD.getValue();
             ImmutableBag<Entity> entities = groupManager.getEntities(group);
-            prepare(D);
+            prepare(Instance);
             for (int i = 0; i < entities.size(); i++) {
                 int id = entities.get(i).getId();
-                render(id, D);
+                render(id, Instance);
             }
-            finish(D);
+            finish(Instance);
         }
 
 
     }
 
     @Override
-    public Map<String, ImmutableBag<Entity>> bindings(){
+    public Map<String, ImmutableBag<Entity>> bindings() {
         return models().stream().collect(Collectors.toMap(Function.identity(), m -> groupManager.getEntities(m)));
     }
 
     @Override
-    public Set<String> models(){
+    public Set<String> models() {
         return groupMap.keySet();
     }
 
@@ -84,7 +84,7 @@ public abstract class ArtemisRenderModule<T, D> implements RenderModule<T> {
         return prefix;
     }
 
-    public D get(String prefix){
+    public Instance get(String prefix) {
         return groupMap.get(prefix);
     }
 
@@ -100,12 +100,17 @@ public abstract class ArtemisRenderModule<T, D> implements RenderModule<T> {
 
     }
 
-    public abstract void render(int entityId, D d);
+    @Override
+    public void init() {
 
-    public abstract D load(T d);
+    }
 
-    public abstract void prepare(D d);
+    public abstract void render(int entityId, Instance instance);
 
-    public abstract void finish(D d);
+    public abstract Instance load(Load d);
+
+    public abstract void prepare(Instance instance);
+
+    public abstract void finish(Instance instance);
 
 }

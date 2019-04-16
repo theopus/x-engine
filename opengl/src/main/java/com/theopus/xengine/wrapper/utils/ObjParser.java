@@ -1,46 +1,15 @@
 package com.theopus.xengine.wrapper.utils;
 
-import org.joml.Vector2f;
-import org.joml.Vector3f;
-
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.joml.Vector2f;
+import org.joml.Vector3f;
+
 public class ObjParser {
-
-    public static class Result {
-
-        private final float[] posArr;
-        private final float[] textCoordArr;
-        private final float[] normArr;
-        private final int[] indicesArr;
-
-        public Result(float[] posArr, float[] textCoordArr, float[] normArr, int[] indicesArr) {
-            this.posArr = posArr;
-            this.textCoordArr = textCoordArr;
-            this.normArr = normArr;
-            this.indicesArr = indicesArr;
-        }
-
-        public float[] getPosArr() {
-            return posArr;
-        }
-
-        public float[] getTextCoordArr() {
-            return textCoordArr;
-        }
-
-        public float[] getNormArr() {
-            return normArr;
-        }
-
-        public int[] getIndicesArr() {
-            return indicesArr;
-        }
-    }
 
     public static Result parse(String fileName) throws IOException {
 
@@ -144,6 +113,37 @@ public class ObjParser {
             normArr[posIndex * 3] = vecNorm.x;
             normArr[posIndex * 3 + 1] = vecNorm.y;
             normArr[posIndex * 3 + 2] = vecNorm.z;
+        }
+    }
+
+    public static class Result {
+
+        private final float[] posArr;
+        private final float[] textCoordArr;
+        private final float[] normArr;
+        private final int[] indicesArr;
+
+        public Result(float[] posArr, float[] textCoordArr, float[] normArr, int[] indicesArr) {
+            this.posArr = posArr;
+            this.textCoordArr = textCoordArr;
+            this.normArr = normArr;
+            this.indicesArr = indicesArr;
+        }
+
+        public float[] getPosArr() {
+            return posArr;
+        }
+
+        public float[] getTextCoordArr() {
+            return textCoordArr;
+        }
+
+        public float[] getNormArr() {
+            return normArr;
+        }
+
+        public int[] getIndicesArr() {
+            return indicesArr;
         }
     }
 

@@ -1,10 +1,5 @@
 package com.theopus.xengine.core.ecs.systems.scipting;
 
-import javax.script.Bindings;
-import javax.script.ScriptEngine;
-import javax.script.ScriptEngineManager;
-import javax.script.ScriptException;
-
 import com.artemis.BaseSystem;
 
 public abstract class ExecutingEngineSystem extends BaseSystem {

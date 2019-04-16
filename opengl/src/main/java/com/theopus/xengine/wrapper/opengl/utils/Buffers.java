@@ -1,10 +1,10 @@
 package com.theopus.xengine.wrapper.opengl.utils;
 
+import java.nio.FloatBuffer;
+
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
 import org.joml.Vector4f;
-
-import java.nio.FloatBuffer;
 
 public class Buffers {
     /**

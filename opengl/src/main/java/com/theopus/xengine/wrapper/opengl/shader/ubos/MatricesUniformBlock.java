@@ -1,16 +1,17 @@
 package com.theopus.xengine.wrapper.opengl.shader.ubos;
 
+import java.nio.FloatBuffer;
+
+import org.joml.Matrix4f;
+import org.lwjgl.opengl.GL15;
+import org.lwjgl.system.MemoryUtil;
+
 import com.google.common.base.Preconditions;
 import com.theopus.xengine.wrapper.opengl.MemoryContext;
 import com.theopus.xengine.wrapper.opengl.objects.Ubo;
 import com.theopus.xengine.wrapper.opengl.utils.Buffers;
 import com.theopus.xengine.wrapper.opengl.utils.GlDataType;
 import com.theopus.xengine.wrapper.utils.State;
-import org.joml.Matrix4f;
-import org.lwjgl.opengl.GL15;
-import org.lwjgl.system.MemoryUtil;
-
-import java.nio.FloatBuffer;
 
 /**
  * expected to be:
@@ -52,23 +53,23 @@ public class MatricesUniformBlock extends UniformBlock {
         init();
     }
 
-    private void init() {
-        viewMatrix = State.mat4(new Matrix4f(), upd ->{
-            Buffers.put(upd, viewMtxBuffer);
-            ubo.bufferSubData(0, viewMtxBuffer);
-            viewMtxBuffer.clear();
-        });
-        projMatrix = State.mat4(new Matrix4f(), upd ->{
-            Buffers.put(upd, projMtxBuffer);
-            ubo.bufferSubData(GlDataType.MAT4_FLOAT.byteSize, projMtxBuffer);
-            projMtxBuffer.clear();
-        });
-    }
-
     public static MatricesUniformBlock withCtx(int bindingPoint, MemoryContext ctx) {
         Ubo ubo = new Ubo(SIZE, GL15.GL_STATIC_DRAW);
         ctx.put(ubo);
         return new MatricesUniformBlock(bindingPoint, ubo);
+    }
+
+    private void init() {
+        viewMatrix = State.mat4(new Matrix4f(), upd -> {
+            Buffers.put(upd, viewMtxBuffer);
+            ubo.bufferSubData(0, viewMtxBuffer);
+            viewMtxBuffer.clear();
+        });
+        projMatrix = State.mat4(new Matrix4f(), upd -> {
+            Buffers.put(upd, projMtxBuffer);
+            ubo.bufferSubData(GlDataType.MAT4_FLOAT.byteSize, projMtxBuffer);
+            projMtxBuffer.clear();
+        });
     }
 
     public void loadViewMatrix(Matrix4f view) {

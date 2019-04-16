@@ -1,12 +1,12 @@
 package com.theopus.xengine.wrapper.opengl.objects;
 
+import java.util.Arrays;
+import java.util.Objects;
+
 import org.lwjgl.opengl.GL30;
 import org.lwjgl.opengl.GL33;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.util.Arrays;
-import java.util.Objects;
 
 public class Vao {
 

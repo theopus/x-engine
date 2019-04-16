@@ -1,22 +1,27 @@
 package com.theopus.xengine.core;
 
+import static com.theopus.xengine.core.XEngine.MAIN_CAMERA;
+
+import java.util.HashMap;
+import java.util.Map;
+
+import org.joml.Vector3f;
+
 import com.artemis.Archetype;
 import com.artemis.ArchetypeBuilder;
 import com.artemis.ComponentMapper;
 import com.artemis.World;
 import com.artemis.annotations.Wire;
 import com.artemis.managers.TagManager;
-import com.theopus.xengine.core.ecs.components.*;
+import com.theopus.xengine.core.ecs.components.Camera;
+import com.theopus.xengine.core.ecs.components.Light;
+import com.theopus.xengine.core.ecs.components.Render;
+import com.theopus.xengine.core.ecs.components.Transformation;
+import com.theopus.xengine.core.ecs.components.TransformationMatrix;
+import com.theopus.xengine.core.ecs.components.Velocity;
 import com.theopus.xengine.core.render.ArtemisRenderModule;
 import com.theopus.xengine.core.render.BaseRenderer;
 import com.theopus.xengine.core.render.RenderModule;
-
-import org.joml.Vector3f;
-
-import static com.theopus.xengine.core.XEngine.MAIN_CAMERA;
-
-import java.util.HashMap;
-import java.util.Map;
 
 public class EntityFactory {
     private static final ArchetypeBuilder lightArchetype = new ArchetypeBuilder().add(Light.class, Transformation.class);
@@ -41,11 +46,11 @@ public class EntityFactory {
         archetypes = new HashMap<>();
     }
 
-    public void init(){
+    public void init() {
         for (Map.Entry<Class<RenderModule<?>>, RenderModule<?>> classRenderModuleEntry : renderer.moduleMap().entrySet()) {
             RenderModule<?> module = classRenderModuleEntry.getValue();
             Class<RenderModule<?>> key = classRenderModuleEntry.getKey();
-            if (module instanceof ArtemisRenderModule){
+            if (module instanceof ArtemisRenderModule) {
                 ArchetypeBuilder components = ((ArtemisRenderModule) module).components();
                 components.add(Transformation.class);
                 components.add(Render.class);
@@ -56,7 +61,12 @@ public class EntityFactory {
         }
     }
 
-    public int createFor(Class<? extends RenderModule> module, Vector3f position){
+    public int createFor(Class<? extends RenderModule> module){
+        int entity =  world.create(archetypes.get(module));
+        return entity;
+    }
+
+    public int createFor(Class<? extends RenderModule> module, Vector3f position) {
         RenderModule renderModule = renderer.get(module);
 
         int entity = world.create(archetypes.get(module));
@@ -84,21 +94,22 @@ public class EntityFactory {
         return i;
     }
 
-    public Transformation createCamera() {
+    public int createCamera() {
         int cameraAcnhor = world.create();
         world.getMapper(Transformation.class).create(cameraAcnhor);
+        world.getMapper(TransformationMatrix.class).create(cameraAcnhor);
         world.getMapper(Velocity.class).create(cameraAcnhor);
-        Archetype cameraArchetype = new ArchetypeBuilder().add(Camera.class).build(world);
+        Archetype cameraArchetype = new ArchetypeBuilder().add(Camera.class, Transformation.class).build(world);
 
         int id = world.create(cameraArchetype);
         Camera camera = world.getMapper(Camera.class).get(id);
         camera.target = cameraAcnhor;
         tagManager.register(MAIN_CAMERA, id);
 
-        return world.getMapper(Transformation.class).get(cameraAcnhor);
+        return cameraAcnhor;
     }
 
-    public void placeAt(int entity, Vector3f position){
+    public void placeAt(int entity, Vector3f position) {
         Transformation p = transformation.get(entity);
         p.position.x = position.x;
         p.position.y = position.y;

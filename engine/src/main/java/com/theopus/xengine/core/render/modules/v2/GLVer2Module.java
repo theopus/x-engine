@@ -1,14 +1,10 @@
 package com.theopus.xengine.core.render.modules.v2;
 
 import com.artemis.ArchetypeBuilder;
-import com.artemis.Aspect;
 import com.artemis.ComponentMapper;
 import com.artemis.annotations.Wire;
 import com.theopus.xengine.core.ecs.components.TransformationMatrix;
-import com.theopus.xengine.core.render.ArtemisRenderModule;
-import com.theopus.xengine.core.render.GLArtemisRenderModule;
 import com.theopus.xengine.core.render.GLContext;
-import com.theopus.xengine.core.render.modules.v3.Ver3Module;
 import com.theopus.xengine.wrapper.opengl.SimpleLoader;
 import com.theopus.xengine.wrapper.opengl.commands.TexturedVaoRenderCommand;
 import com.theopus.xengine.wrapper.opengl.objects.TexturedVao;

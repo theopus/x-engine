@@ -13,7 +13,7 @@ public class GLString {
         this.string = string.toCharArray();
     }
 
-    public int length(){
+    public int length() {
         return string.length;
     }
 
