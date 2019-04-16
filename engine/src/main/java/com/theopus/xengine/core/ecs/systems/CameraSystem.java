@@ -19,56 +19,47 @@ import com.theopus.xengine.core.input.InputCursorEvent;
 import com.theopus.xengine.core.render.BaseRenderer;
 import com.theopus.xengine.core.utils.Maths;
 
-public class CameraSystem extends IntervalIteratingSystem implements Subscriber<InputCursorEvent>{
+public class CameraSystem extends IntervalIteratingSystem implements Subscriber<InputCursorEvent> {
 
+    @Wire(name = "renderer")
+    private BaseRenderer renderer;
     private ComponentMapper<Transformation> mTransformation;
     private ComponentMapper<Velocity> mVelocity;
     private ComponentMapper<Camera> mCamera;
     private TagManager tagManager;
-    @Wire(name = "renderer")
-    private BaseRenderer renderer;
 
     public CameraSystem() {
         super(Aspect.all(Camera.class), 10);
     }
 
+    public void move(Vector3f tpos, Vector3f trot) {
+        Transformation transformation = getCameraTransformation();
+        Camera camera = getCamera();
 
-    private float calculateHorizontal(Vector3f rot) {
-        return (float) (getCamera().distance * Math.cos(Math.toRadians(rot.x)));
-    }
+        float horiz = (float) (camera.distance * Math.cos(Math.toRadians(transformation.rotation.x)));
+        float vert = (float) (camera.distance * Math.sin(Math.toRadians(transformation.rotation.x)));
 
-    private float calculateVertical(Vector3f rot) {
-        return (float) (getCamera().distance * Math.sin(Math.toRadians(rot.x)));
-    }
-
-    public void move(Vector3f tpos, Vector3f trot, Transformation cameraPosition) {
-        calculateCameraPos(tpos, trot, calculateHorizontal(cameraPosition.rotation), calculateVertical(cameraPosition.rotation), cameraPosition);
-        cameraPosition.rotation.y = 180 - (trot.y + getCamera().angleAround);
-    }
-
-    private void calculateCameraPos(Vector3f pos, Vector3f rot, float horiz, float vert, Transformation cameraPosition) {
-        Vector3f position = pos;
-        float theta = rot.y + getCamera().angleAround;
+        float theta = trot.y + camera.angleAround;
         float offsetX = (float) (horiz * Math.sin(Math.toRadians(theta)));
         float offsetZ = (float) (horiz * Math.cos(Math.toRadians(theta)));
 
+        transformation.position.x = tpos.x - offsetX;
+        transformation.position.y = tpos.y + vert + camera.yOffset;
+        transformation.position.z = tpos.z - offsetZ;
 
-        cameraPosition.position.x = position.x - offsetX;
-        cameraPosition.position.y = position.y + vert + getCamera().yOffset;
-        cameraPosition.position.z = position.z - offsetZ;
-
+        transformation.rotation.y = 180 - (trot.y + camera.angleAround);
     }
 
     @Override
     protected void process(int entityId) {
         Transformation targetTransformation = getCameraTargetPosition(entityId);
-        Transformation cameraPosition = getCameraTransformation();
+        Transformation cTransformation = getCameraTransformation();
 
-        move(targetTransformation.position, targetTransformation.rotation, cameraPosition);
+        move(targetTransformation.position, targetTransformation.rotation);
 
-        Vector3f cameraposition = cameraPosition.position.negate();
-        Matrix4f transformationMatrix = Maths.createTransformationMatrix(cameraposition, cameraPosition.rotation, cameraPosition.scale);
-        transformationMatrix
+        Vector3f cameraposition = cTransformation.position.negate();
+        Matrix4f transformationMatrix = Maths
+                .createTransformationMatrix(cameraposition, cTransformation.rotation, cTransformation.scale)
                 .m30(0f)
                 .m31(0f)
                 .m32(0f)
@@ -77,35 +68,28 @@ public class CameraSystem extends IntervalIteratingSystem implements Subscriber<
         renderer.loadViewMatrix(transformationMatrix);
     }
 
-
     private Transformation getCameraTargetPosition(int cameraId) {
         Camera camera = mCamera.get(cameraId);
         return mTransformation.get(camera.target);
     }
 
-    private Velocity getCameraTargetVelocity(int cameraId) {
-        Camera camera = mCamera.get(cameraId);
-        return mVelocity.get(camera.target);
-    }
-
-
     @Override
     public void onEvent(InputCursorEvent inputCursorEvent) {
-        if (inputCursorEvent.stateOf(InputAction.ACTION0) == InputActionType.BEGIN){
+        if (inputCursorEvent.stateOf(InputAction.ACTION0) == InputActionType.BEGIN) {
             getCameraTransformation().rotation.x += inputCursorEvent.dy * 0.4f;
             getCamera().angleAround -= inputCursorEvent.dx * 0.4f;
         }
 
-        if (inputCursorEvent.stateOf(InputAction.ACTION1) == InputActionType.BEGIN){
+        if (inputCursorEvent.stateOf(InputAction.ACTION1) == InputActionType.BEGIN) {
             getCamera().distance += inputCursorEvent.dy * 0.2f;
         }
     }
 
-    private Transformation getCameraTransformation(){
+    private Transformation getCameraTransformation() {
         return mTransformation.get(getCameraId());
     }
 
-    private Camera getCamera(){
+    private Camera getCamera() {
         return mCamera.get(getCameraId());
     }
 
