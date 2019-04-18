@@ -54,7 +54,7 @@ public abstract class ShaderProgram {
             throw new RuntimeException(e);
         }
 
-        LOGGER.info("SHADER = \n{}", shaderSource);
+        LOGGER.debug("SHADER = \n{}", shaderSource);
         int shaderID = GL20.glCreateShader(type.binding());
         GL20.glShaderSource(shaderID, shaderSource);
         GL20.glCompileShader(shaderID);

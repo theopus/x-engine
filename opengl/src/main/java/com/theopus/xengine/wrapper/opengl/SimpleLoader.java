@@ -45,7 +45,7 @@ public class SimpleLoader extends Loader {
                 .build();
 
         Vao vao = new Vao(ebo, build.toArray(new Attribute[0]));
-        Texture texture = Texture.loadTexture(path);
+        Texture texture = Texture.loadTexture(path, context);
 
         context.put(ebo, posUv);
         context.put(texture);
@@ -64,7 +64,7 @@ public class SimpleLoader extends Loader {
         Attribute normalAttr = Attribute.singleVboAttribute(2, GlDataType.VEC3_FLOAT, normalVbo);
 
         Vao vao = new Vao(ebo, posAttr, uvAttr, normalAttr);
-        Texture t = Texture.loadTexture(texture);
+        Texture t = Texture.loadTexture(texture, context);
         return new TexturedVao(vao, t);
     }
 
@@ -111,6 +111,7 @@ public class SimpleLoader extends Loader {
         Attribute uvAttr = Attribute.singleVboAttribute(1, GlDataType.VEC2_FLOAT, uvVbo);
 
         Vao vao = new Vao(positions.length / 2, posAttr, uvAttr);
+        texture.generateMipmap();
         return new TexturedVao(vao, texture);
     }
 }

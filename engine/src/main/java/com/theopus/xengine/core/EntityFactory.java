@@ -55,14 +55,15 @@ public class EntityFactory {
                 components.add(Transformation.class);
                 components.add(Render.class);
                 components.add(Velocity.class);
+                System.out.println(key);
                 Archetype ar = components.build(world);
                 archetypes.put(key, ar);
             }
         }
     }
 
-    public int createFor(Class<? extends RenderModule> module){
-        int entity =  world.create(archetypes.get(module));
+    public int createFor(Class<? extends RenderModule> module) {
+        int entity = world.create(archetypes.get(module));
         return entity;
     }
 
@@ -107,6 +108,10 @@ public class EntityFactory {
         tagManager.register(MAIN_CAMERA, id);
 
         return cameraAcnhor;
+    }
+
+    public void placeAt(int entity, float x, float y, float z) {
+        placeAt(entity, new Vector3f(x, y, z));
     }
 
     public void placeAt(int entity, Vector3f position) {

@@ -1,4 +1,4 @@
-package com.theopus.xengine.wrapper.opengl.commands;
+package com.theopus.xengine.core.render.gl;
 
 import org.joml.Vector2f;
 import org.joml.Vector3f;
@@ -8,7 +8,6 @@ import org.lwjgl.opengl.GL30;
 
 import com.theopus.xengine.wrapper.opengl.GlState;
 import com.theopus.xengine.wrapper.opengl.objects.Texture;
-import com.theopus.xengine.wrapper.opengl.shader.FontShader;
 
 public class FontRenderCommand {
 

@@ -32,7 +32,7 @@ public class MoveSystem extends IntervalIteratingSystem implements Subscriber<In
     @Override
     protected void processSystem() {
         super.processSystem();
-        counter.operateAndLog();
+//        counter.operateAndLog();
     }
 
     @Override

@@ -18,37 +18,6 @@ public class TerrainCreator  {
 
     public TerrainData loadTerrain() {
 
-//        ByteBuffer buffer;
-//        int width;
-//        int height;
-
-//        try (InputStream resourceAsStream = Loader.class.getClassLoader().getResourceAsStream("heightmap.png")) {
-//            PNGDecoder decoder = new PNGDecoder(resourceAsStream);
-//            width = decoder.getWidth();
-//            height = decoder.getHeight();
-//            buffer = ByteBuffer.allocate(4 * width * height);
-//            decoder.decode(buffer, height * 4, PNGDecoder.Format.RGBA);
-//        } catch (IOException e) {
-//            throw new RuntimeException(e);
-//        }
-
-//        int xpoiner = 0;
-//        int ypoiner = 0;
-//        int[][] values = new int[width][height];
-//        for (int i = 0; i < buffer.limit(); i += 4) {
-//            int integer = buffer.get(i) & 0b11111111;
-//            int integer1 = buffer.get(i + 1) & 0b11111111;
-//            int integer2 = buffer.get(i + 2) & 0b11111111;
-//            int integer3 = buffer.get(i + 3) & 0b11111111;
-//
-//            values[xpoiner][ypoiner] = integer + integer1 + integer2;
-//            ypoiner++;
-//            if (ypoiner % width == 0) {
-//                ypoiner = 0;
-//                xpoiner++;
-//            }
-//        }
-
         int VERTICES_PER_SIDE = 2;
         int TOTAL_NUMBER = VERTICES_PER_SIDE * VERTICES_PER_SIDE;
 
@@ -66,26 +35,15 @@ public class TerrainCreator  {
         int vertexesCount = 0;
         int normalsCount = 0;
         int uvsCount = 0;
-        //i==x
-
-//        float[][] heights = new float[width][height];
-        //j==z
         for (int i = 0; i < VERTICES_PER_SIDE; i++) {
             for (int j = 0; j < VERTICES_PER_SIDE; j++) {
                 vertexes[vertexesCount++] = (float) j / ((float) VERTICES_PER_SIDE - 1) * TILE_SIZE;
-//                heights[j][i] = getHight(j, i, values, width, height);
-//                vertexes[vertexesCount++] = heights[j][i];
                 vertexes[vertexesCount++] = 0f;
                 vertexes[vertexesCount++] = (float) i / ((float) VERTICES_PER_SIDE - 1) * TILE_SIZE;
 
                 uvs[uvsCount++] = (float) j / ((float) VERTICES_PER_SIDE - 1);
                 ;
                 uvs[uvsCount++] = (float) i / ((float) VERTICES_PER_SIDE - 1);
-
-//                Vector3f vector3f = calculateNormal(j, i, values, width, height);
-//                normals[normalsCount++] = vector3f.x;
-//                normals[normalsCount++] = vector3f.y;
-//                normals[normalsCount++] = vector3f.z;
             }
         }
 

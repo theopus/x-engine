@@ -39,7 +39,8 @@ public class CameraSystem extends IntervalIteratingSystem implements Subscriber<
         float horiz = (float) (camera.distance * Math.cos(Math.toRadians(transformation.rotation.x)));
         float vert = (float) (camera.distance * Math.sin(Math.toRadians(transformation.rotation.x)));
 
-        float theta = trot.y + camera.angleAround;
+        float theta = camera.angleAround;
+//        float theta = trot.y + camera.angleAround;
         float offsetX = (float) (horiz * Math.sin(Math.toRadians(theta)));
         float offsetZ = (float) (horiz * Math.cos(Math.toRadians(theta)));
 
@@ -47,7 +48,8 @@ public class CameraSystem extends IntervalIteratingSystem implements Subscriber<
         transformation.position.y = tpos.y + vert + camera.yOffset;
         transformation.position.z = tpos.z - offsetZ;
 
-        transformation.rotation.y = 180 - (trot.y + camera.angleAround);
+        transformation.rotation.y = 180 - (camera.angleAround);
+//        transformation.rotation.y = 180 - (trot.y + camera.angleAround);
     }
 
     @Override

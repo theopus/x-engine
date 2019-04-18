@@ -17,9 +17,11 @@ public class GlTerrainModule extends TerrainModule<TexturedVao> {
     @Override
     public void init() {
         super.init();
+        StaticShader shader = new StaticShader("grid/shader.vert", "grid/shader.frag");
         renderCommand = new TexturedVaoRenderCommand(
-                new StaticShader("grid/shader.vert", "grid/shader.frag"),
+                shader,
                 context.getState());
+        shader.bindUniformBlock(context.getMatricesBlock());
         loader = new SimpleLoader(context.getMemoryContext());
     }
 

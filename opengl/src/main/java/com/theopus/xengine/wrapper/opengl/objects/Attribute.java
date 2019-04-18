@@ -19,7 +19,7 @@ public class Attribute {
      * <p>
      * offset + stride * dataIndex -- gives open gl position of data
      * <p>
-     * b 0           12        20          32        40          52        60
+     * b 0        12        20          32        40          52        60
      * |   attr0   |  attr1  |   attr0   |  attr1  |   attr0   |  attr1  |
      * |-----------|---------|-----------|---------|-----------|---------|
      * |px0|py0|pz0|uvx0|uvy0|px1|py1|pz1|uvx1|uvy1|px2|py2|pz2|uvx2|uvy2|
@@ -31,6 +31,7 @@ public class Attribute {
      * |                     |           | <- stride
      * |
      * |-------------------->|
+     * |
      * | <- stride too
      * <p>
      * if stride = 0 -- means that data fully packed could be set 0 if vbo contains data only for one instance;

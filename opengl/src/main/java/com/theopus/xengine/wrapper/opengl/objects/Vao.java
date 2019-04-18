@@ -59,7 +59,7 @@ public class Vao {
         return GL30.glGenVertexArrays();
     }
 
-    private void bind() {
+    public void bind() {
         GL30.glBindVertexArray(id);
     }
 

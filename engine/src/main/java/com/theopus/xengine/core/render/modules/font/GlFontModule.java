@@ -10,10 +10,10 @@ import com.theopus.xengine.core.ecs.components.GLVaoComponent;
 import com.theopus.xengine.core.ecs.components.Transformation2D;
 import com.theopus.xengine.core.render.GLContext;
 import com.theopus.xengine.wrapper.opengl.SimpleLoader;
-import com.theopus.xengine.wrapper.opengl.commands.FontRenderCommand;
+import com.theopus.xengine.core.render.gl.FontRenderCommand;
 import com.theopus.xengine.wrapper.opengl.objects.Texture;
 import com.theopus.xengine.wrapper.opengl.objects.TexturedVao;
-import com.theopus.xengine.wrapper.opengl.shader.FontShader;
+import com.theopus.xengine.core.render.gl.FontShader;
 import com.theopus.xengine.wrapper.text.Font;
 import com.theopus.xengine.wrapper.text.TextMeshData;
 
@@ -56,7 +56,7 @@ public class GlFontModule extends FontModule<Font> {
 
     @Override
     public Font load(FontData d) {
-        Font font = new Font(d.fontName, d.fontFile, Texture.loadTexture(d.fontAtlas), 1);
+        Font font = new Font(d.fontName, d.fontFile, Texture.loadTexture(d.fontAtlas, glContext.getMemoryContext()), 1);
         font.load(16d / 9d);
         return font;
     }

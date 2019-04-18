@@ -8,4 +8,9 @@ public abstract class Ver3Module<D> extends ArtemisRenderModule<Ver3Data, D> {
     public String loadToModule(Ver3Data ver3Data) {
         return super.loadToModule(ver3Data);
     }
+
+    @Override
+    public String loadToModule(String title, Ver3Data ver3Data) {
+        return super.loadToModule(title, ver3Data);
+    }
 }

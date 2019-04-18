@@ -28,6 +28,7 @@ import com.theopus.xengine.core.ecs.systems.ProjectionSystem;
 import com.theopus.xengine.core.ecs.systems.RenderSystem;
 import com.theopus.xengine.core.ecs.systems.scipting.ExecutingEngineContext;
 import com.theopus.xengine.core.ecs.systems.scipting.JavaExecutingSystem;
+import com.theopus.xengine.core.ecs.systems.scipting.JavaScriptExecutingSystem;
 import com.theopus.xengine.core.events.EventBus;
 import com.theopus.xengine.core.platform.GlfwPlatformManager;
 import com.theopus.xengine.core.platform.PlatformManager;
@@ -52,6 +53,7 @@ public class XEngineBuilder {
             TagManager.class,
             EventSystem.class,
             JavaExecutingSystem.class,
+            JavaScriptExecutingSystem.class,
             RenderSystem.class,
             CustomGroupManager.class,
             CameraSystem.class,

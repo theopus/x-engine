@@ -57,11 +57,5 @@ void main(void){
     }
 
     lightIntensity = ambient + diffuse + specular;
-//    lightIntensity = vec3(material.shininess, 0.0 ,0.0);
-//    vector from vertex to viewer
-
-
-    //final intensity
-//    lightIntensity = light.intensity.xyz * max( dot( toLightVector, surfaceNormal), 0.0);
     pass_uv = uv;
 }

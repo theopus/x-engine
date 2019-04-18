@@ -75,6 +75,7 @@ public class State<T> {
         }, true);
     }
 
+
     public void update(T update) {
         if (!predicate.test(update)) {
             onChange.accept(update);

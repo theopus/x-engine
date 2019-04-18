@@ -10,6 +10,7 @@ import org.lwjgl.opengl.GL30;
 import org.lwjgl.system.MemoryUtil;
 
 import com.theopus.xengine.wrapper.opengl.Loader;
+import com.theopus.xengine.wrapper.opengl.MemoryContext;
 
 import de.matthiasmann.twl.utils.PNGDecoder;
 
@@ -25,7 +26,7 @@ public class Texture {
         this.height = height;
     }
 
-    public static Texture loadTexture(String path) {
+    public static Texture loadTexture(String path, MemoryContext context) {
         try (InputStream resourceAsStream = Loader.class.getClassLoader().getResourceAsStream(path);) {
             PNGDecoder decoder = new PNGDecoder(resourceAsStream);
             int width = decoder.getWidth();
@@ -46,7 +47,9 @@ public class Texture {
 
 
             GL11.glBindTexture(GL11.GL_TEXTURE_2D, 0);
-            return new Texture(textureId, width, height);
+            Texture texture = new Texture(textureId, width, height);
+            context.put(texture);
+            return texture;
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

@@ -1,10 +1,14 @@
 package com.theopus.xengine.core.render.modules.v3;
 
+import org.lwjgl.opengl.GL11;
+import org.lwjgl.opengl.GL30;
+
 import com.artemis.ArchetypeBuilder;
 import com.artemis.ComponentMapper;
 import com.artemis.annotations.Wire;
 import com.theopus.xengine.core.ecs.components.TransformationMatrix;
 import com.theopus.xengine.core.render.GLContext;
+import com.theopus.xengine.wrapper.opengl.GlState;
 import com.theopus.xengine.wrapper.opengl.SimpleLoader;
 import com.theopus.xengine.wrapper.opengl.commands.TexturedVaoRenderCommand;
 import com.theopus.xengine.wrapper.opengl.objects.Material;
@@ -13,7 +17,6 @@ import com.theopus.xengine.wrapper.opengl.shader.StaticShader;
 import com.theopus.xengine.wrapper.opengl.shader.ubos.MaterialUniformBlock;
 
 public class GLVer3Module extends Ver3Module<MaterialVao> {
-    private TexturedVaoRenderCommand renderCommand;
     private SimpleLoader loader;
     private MaterialUniformBlock materialBlock;
 
@@ -22,15 +25,17 @@ public class GLVer3Module extends Ver3Module<MaterialVao> {
 
     @Wire
     private GLContext glContext;
+    private GlState state;
+    private StaticShader shader;
 
     public void init() {
-        StaticShader staticShader = new StaticShader("v3/static.vert", "v3/static.frag");
-        renderCommand = new TexturedVaoRenderCommand(staticShader, glContext.getState());
+        shader = new StaticShader("v3/static.vert", "v3/static.frag");
         loader = new SimpleLoader(glContext.getMemoryContext());
         materialBlock = glContext.getMaterialBlock();
-        staticShader.bindUniformBlock(glContext.getMatricesBlock());
-        staticShader.bindUniformBlock(glContext.getLightBlock());
-        staticShader.bindUniformBlock(glContext.getMaterialBlock());
+        shader.bindUniformBlock(glContext.getMatricesBlock());
+        shader.bindUniformBlock(glContext.getLightBlock());
+        shader.bindUniformBlock(glContext.getMaterialBlock());
+        state = glContext.getState();
     }
 
     @Override
@@ -40,8 +45,9 @@ public class GLVer3Module extends Ver3Module<MaterialVao> {
 
     @Override
     public void render(int entityId, MaterialVao vao) {
-        renderCommand.render(vao.texturedVao, mMapper.get(entityId).model);
         materialBlock.loadMaterial(vao.material);
+        shader.transformation().load(mMapper.get(entityId).model);
+        GL30.glDrawElements(GL11.GL_TRIANGLES, vao.texturedVao.vao.getLength(), GL30.GL_UNSIGNED_INT, 0);
     }
 
     @Override
@@ -51,11 +57,25 @@ public class GLVer3Module extends Ver3Module<MaterialVao> {
 
     @Override
     public void prepare(MaterialVao vao) {
-        renderCommand.prepare(vao.texturedVao);
+        vao.texturedVao.vao.bind();
+        vao.texturedVao.texture.bind();
     }
 
     @Override
     public void finish(MaterialVao vao) {
-        renderCommand.finish();
+        vao.texturedVao.vao.unbind();
+        vao.texturedVao.texture.unbind();
+    }
+
+    @Override
+    public void prepareModule() {
+        shader.bind();
+        state.depthTest.update(true);
+        state.backFaceCulling.update(true);
+    }
+
+    @Override
+    public void finishModule() {
+        shader.unbind();
     }
 }
