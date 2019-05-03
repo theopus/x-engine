@@ -6,6 +6,7 @@ import java.nio.ByteBuffer;
 
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL14;
+import org.lwjgl.opengl.GL15;
 import org.lwjgl.opengl.GL30;
 import org.lwjgl.system.MemoryUtil;
 
@@ -35,8 +36,8 @@ public class Texture {
             int textureId = GL11.glGenTextures();
 
             GL11.glBindTexture(GL11.GL_TEXTURE_2D, textureId);
-            GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MIN_FILTER, GL11.GL_NEAREST);
-            GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MAG_FILTER, GL11.GL_NEAREST);
+            GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MIN_FILTER, GL11.GL_LINEAR);
+            GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MAG_FILTER, GL11.GL_LINEAR);
 
             ByteBuffer byteBuffer = MemoryUtil.memAlloc(4 * width * height);
             decoder.decode(byteBuffer, height * 4, PNGDecoder.Format.RGBA);
@@ -55,6 +56,22 @@ public class Texture {
         }
     }
 
+    public static Texture emptyTexture(int width, int height, MemoryContext context){
+
+        int textureId = GL11.glGenTextures();
+
+        bind(textureId);
+        GL11.glBindTexture(GL11.GL_TEXTURE_2D, textureId);
+        GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MIN_FILTER, GL11.GL_LINEAR);
+        GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MAG_FILTER, GL11.GL_LINEAR);
+        GL11.glTexImage2D(GL11.GL_TEXTURE_2D, 0, GL11.GL_RGBA, width, height, 0, GL11.GL_RGBA, GL11.GL_UNSIGNED_BYTE, (int[]) null);
+
+        unbind(textureId);
+        Texture texture = new Texture(textureId, width, height);
+        context.put(texture);
+        return texture;
+    }
+
     public void generateMipmap() {
         bind();
         GL30.glGenerateMipmap(GL11.GL_TEXTURE_2D);
@@ -65,11 +82,19 @@ public class Texture {
     }
 
     public void bind() {
-        GL11.glBindTexture(GL11.GL_TEXTURE_2D, id);
+        bind(id);
     }
 
     public void unbind() {
+        unbind(id);
+    }
+
+    public static void unbind(int id) {
         GL11.glBindTexture(GL11.GL_TEXTURE_2D, 0);
+    }
+
+    public static void bind(int id){
+        GL11.glBindTexture(GL11.GL_TEXTURE_2D, id);
     }
 
     public int getId() {
@@ -96,5 +121,9 @@ public class Texture {
                 ", height=" + height +
                 ", mipmap=" + mipmap +
                 '}';
+    }
+
+    public void close() {
+        GL15.glDeleteTextures(id);
     }
 }

@@ -7,7 +7,7 @@ import org.lwjgl.opengl.GL15;
 import org.lwjgl.opengl.GL30;
 import org.lwjgl.system.MemoryUtil;
 
-import com.theopus.xengine.wrapper.opengl.utils.GlToString;
+import com.theopus.xengine.wrapper.opengl.utils.GL2String;
 
 public class GlBuffer {
     protected final int id;
@@ -104,8 +104,8 @@ public class GlBuffer {
         return "GlBuffer{" +
                 "id=" + id +
                 ", size=" + size +
-                ", type=" + GlToString.bufferType(type) +
-                ", usage=" + GlToString.bufferUsage(usage) +
+                ", type=" + GL2String.bufferType(type) +
+                ", usage=" + GL2String.bufferUsage(usage) +
                 '}';
     }
 }

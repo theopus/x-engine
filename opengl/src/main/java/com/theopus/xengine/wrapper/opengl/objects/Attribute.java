@@ -5,7 +5,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import com.theopus.xengine.wrapper.opengl.utils.GlDataType;
-import com.theopus.xengine.wrapper.opengl.utils.GlToString;
+import com.theopus.xengine.wrapper.opengl.utils.GL2String;
 
 public class Attribute {
 
@@ -77,7 +77,7 @@ public class Attribute {
         return "Attribute{" +
                 "index=" + index +
                 ", size=" + size +
-                ", type=" + GlToString.dataType(type) +
+                ", type=" + GL2String.dataType(type) +
                 ", stride=" + stride +
                 ", pointer=" + pointer +
                 ", vbo=" + vbo +

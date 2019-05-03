@@ -4,6 +4,9 @@ import org.joml.Matrix4f;
 import org.joml.Vector3f;
 import org.lwjgl.opengl.GL11;
 
+import com.theopus.xengine.core.render.modules.m2d.GlModule2D;
+import com.theopus.xengine.core.render.modules.m2d.RenderModule2D;
+
 public class GlRenderer extends BaseRenderer {
     private final GLContext glContext;
 
@@ -26,6 +29,11 @@ public class GlRenderer extends BaseRenderer {
     }
 
     @Override
+    public void render() {
+        super.render();
+    }
+
+    @Override
     public void loadViewMatrix(Matrix4f view) {
         glContext.getMatricesBlock().loadViewMatrix(view);
     }
@@ -33,6 +41,7 @@ public class GlRenderer extends BaseRenderer {
     @Override
     public void loadFramebufferSize(int width, int height) {
         GL11.glViewport(0, 0, width, height);
+        glContext.getFbo().update(width, height);
     }
 
     @Override

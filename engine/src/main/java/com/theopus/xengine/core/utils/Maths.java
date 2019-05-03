@@ -38,6 +38,21 @@ public class Maths {
                 .scale(scale);
     }
 
+    public static Matrix4f applyTransformations(Vector2f translation, Vector2f scale, Matrix4f matrix4f) {
+        return matrix4f
+                .identity()
+                .translate(translation.x, translation.y, 0)
+                .scale(new Vector3f(scale.x, scale.y, 1f));
+    }
+
+    public static Matrix4f applyTransformations(Vector2f translation, float rotationZ, Vector2f scale, Matrix4f matrix4f) {
+        return matrix4f
+                .identity()
+                .translate(translation.x, translation.y, 0)
+                .rotateZ(rotationZ)
+                .scale(new Vector3f(scale.x, scale.y, 1f));
+    }
+
     public static Matrix4f createProjectionMatrix(float FOV, float near, float far, int windowWidth, int windowHeight) {
         Matrix4f result = new Matrix4f().identity();
         float aspectRatio = (float) windowWidth / (float) windowHeight;

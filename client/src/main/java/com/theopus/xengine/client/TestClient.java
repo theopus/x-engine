@@ -2,12 +2,17 @@ package com.theopus.xengine.client;
 
 import java.io.IOException;
 
+import org.joml.Vector2f;
 import org.joml.Vector3f;
 
 import com.theopus.xengine.client.cubemap.CubemapData;
 import com.theopus.xengine.client.cubemap.CubemapModule;
 import com.theopus.xengine.client.cubemap.GLCubemapModule;
+import com.theopus.xengine.core.render.modules.m2d.GlModule2D;
+import com.theopus.xengine.core.render.modules.m2d.RenderModule2D;
 import com.theopus.xengine.core.XEngineBuilder;
+import com.theopus.xengine.core.ecs.components.Transformation2D;
+import com.theopus.xengine.core.ecs.systems.Model2DMatrixSystem;
 import com.theopus.xengine.core.ecs.systems.scipting.JavaExecutionEvent;
 import com.theopus.xengine.core.platform.FramebufferEvent;
 import com.theopus.xengine.core.render.modules.font.GlFontModule;
@@ -32,12 +37,15 @@ public class TestClient {
                 .withModule(GlTerrainModule.class)
                 .withModule(GLCubemapModule.class)
                 .withModule(GlFontModule.class)
+                .withModule(GlModule2D.class)
                 .withSystem(GLTextManager.class)
+                .withSystem(Model2DMatrixSystem.class)
                 .withEvent(new JavaExecutionEvent(eec -> {
                     Ver2Module module2 = eec.renderer.get(Ver2Module.class);
                     Ver3Module module3 = eec.renderer.get(Ver3Module.class);
                     TerrainModule terrainModule = eec.renderer.get(TerrainModule.class);
                     CubemapModule cubemapModule = eec.renderer.get(CubemapModule.class);
+                    RenderModule2D renderModule2D = eec.renderer.get(RenderModule2D.class);
 
                     module2.loadToModule(new Ver2Data("objects/dragon.obj"));
                     String s = module3.loadToModule("dragon", new Ver3Data("objects/dragon.obj", 0, 1f, 1f, 10f));
@@ -50,6 +58,7 @@ public class TestClient {
                             "textures/cubemap/skybox/front.png",
                             "textures/cubemap/skybox/back.png"
                     ));
+                    renderModule2D.loadToModule("textures/chrome.png");
 
 
                     GLTextManager textManager = eec.world.getSystem(GLTextManager.class);
@@ -68,6 +77,8 @@ public class TestClient {
                     module3.bind(s, i);
 
                     eec.factory.createFor(CubemapModule.class, new Vector3f(0,0,0));
+                    int ui = eec.factory.createFor(RenderModule2D.class, new Vector3f(0, 0, 0));
+                    Transformation2D.set(eec.world, ui, new Vector2f(0.8f,0.8f), new Vector2f(), new Vector2f(0.1f, 0.1f));
 
                     int terrain0 = eec.factory.createFor(TerrainModule.class, new Vector3f(0,0,0));
                     int terrain1 = eec.factory.createFor(TerrainModule.class, new Vector3f(0,0,-100));
