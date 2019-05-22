@@ -49,7 +49,7 @@ public class Maths {
         return matrix4f
                 .identity()
                 .translate(translation.x, translation.y, 0)
-                .rotateZ(rotationZ)
+                .rotateZ((float) Math.toRadians(rotationZ))
                 .scale(new Vector3f(scale.x, scale.y, 1f));
     }
 

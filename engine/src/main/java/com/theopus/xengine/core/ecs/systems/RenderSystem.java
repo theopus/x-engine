@@ -17,6 +17,6 @@ public class RenderSystem extends BaseSystem {
         renderer.clearBuffer();
         renderer.render();
 
-//        counter.operateAndLog();
+        counter.operateAndLog();
     }
 }

@@ -12,6 +12,8 @@ import com.artemis.annotations.Wire;
 import com.artemis.utils.ImmutableBag;
 import com.theopus.xengine.core.ecs.managers.CustomGroupManager;
 
+import sun.reflect.generics.reflectiveObjects.NotImplementedException;
+
 public abstract class ArtemisRenderModule<Load, Instance> implements RenderModule<Load> {
 
     private final Map<String, Instance> groupMap;
@@ -103,6 +105,10 @@ public abstract class ArtemisRenderModule<Load, Instance> implements RenderModul
     @Override
     public void init() {
 
+    }
+
+    public void add(String title, Instance instance){
+        groupMap.put(title, instance);
     }
 
     public abstract void render(int entityId, Instance instance);

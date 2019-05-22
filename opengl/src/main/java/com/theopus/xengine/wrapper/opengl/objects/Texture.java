@@ -16,9 +16,9 @@ import com.theopus.xengine.wrapper.opengl.MemoryContext;
 import de.matthiasmann.twl.utils.PNGDecoder;
 
 public class Texture {
-    private final int id;
-    private final int width;
-    private final int height;
+    private int id;
+    private int width;
+    private int height;
     private boolean mipmap;
 
     public Texture(int id, int width, int height) {
@@ -71,6 +71,25 @@ public class Texture {
         context.put(texture);
         return texture;
     }
+
+    public Texture reInitEmptyTexture(int width, int height, MemoryContext context){
+        this.close();
+        int textureId = GL11.glGenTextures();
+
+        bind(textureId);
+        GL11.glBindTexture(GL11.GL_TEXTURE_2D, textureId);
+        GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MIN_FILTER, GL11.GL_LINEAR);
+        GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MAG_FILTER, GL11.GL_LINEAR);
+        GL11.glTexImage2D(GL11.GL_TEXTURE_2D, 0, GL11.GL_RGBA, width, height, 0, GL11.GL_RGBA, GL11.GL_UNSIGNED_BYTE, (int[]) null);
+
+        unbind(textureId);
+        this.id = textureId;
+        this.width = width;
+        this.height = height;
+        context.put(this);
+        return this;
+    }
+
 
     public void generateMipmap() {
         bind();
@@ -125,5 +144,8 @@ public class Texture {
 
     public void close() {
         GL15.glDeleteTextures(id);
+        id = -1;
+        width = -1;
+        height = -1;
     }
 }

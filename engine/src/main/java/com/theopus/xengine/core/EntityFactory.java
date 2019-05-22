@@ -68,6 +68,10 @@ public class EntityFactory {
     }
 
     public int createFor(Class<? extends RenderModule> module, Vector3f position) {
+        return createFor(module, position, (String) renderer.get(module).models().stream().findFirst().get());
+    }
+
+    public int createFor(Class<? extends RenderModule> module, Vector3f position, String model) {
         RenderModule renderModule = renderer.get(module);
 
         int entity = world.create(archetypes.get(module));
@@ -75,7 +79,7 @@ public class EntityFactory {
         Render render = this.render.get(entity);
         render.renderable = true;
         render.renderer = module;
-        render.model = (String) renderModule.models().stream().findFirst().get();
+        render.model = model;
 
         Transformation transformation = this.transformation.get(entity);
         transformation.position.set(position);

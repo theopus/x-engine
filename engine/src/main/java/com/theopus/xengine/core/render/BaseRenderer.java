@@ -8,8 +8,13 @@ import java.util.Map;
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
 
+import com.theopus.xengine.core.render.postprocessing.PostProcessingChain;
+
 public abstract class BaseRenderer {
 
+    public static final String MAIN_SCREEN_TEXTURE = "MAIN_SCREEN_TEXTURE";
+
+    protected PostProcessingChain ppChain;
     protected List<RenderModule<?>> modules;
     protected Map<Class<RenderModule<?>>, RenderModule<?>> renderModuleMap;
 
@@ -22,12 +27,21 @@ public abstract class BaseRenderer {
         return renderModuleMap;
     }
 
+    public void init() {
+
+    }
+
     public void render() {
         for (RenderModule module : modules) {
             module.prepareModule();
             module.renderModule();
             module.finishModule();
         }
+        //
+    }
+
+    public void postprocess(){
+        ppChain.doProcess();
     }
 
     public void add(Class<RenderModule<?>> clazz, RenderModule<?> module) {
@@ -64,7 +78,6 @@ public abstract class BaseRenderer {
     public List<RenderModule<?>> modules() {
         return modules;
     }
-
 
     public abstract void loadLight(Vector3f diffuse, Vector3f position);
 }

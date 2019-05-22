@@ -8,6 +8,7 @@ import org.joml.Vector3f;
 import com.theopus.xengine.client.cubemap.CubemapData;
 import com.theopus.xengine.client.cubemap.CubemapModule;
 import com.theopus.xengine.client.cubemap.GLCubemapModule;
+import com.theopus.xengine.core.render.BaseRenderer;
 import com.theopus.xengine.core.render.modules.m2d.GlModule2D;
 import com.theopus.xengine.core.render.modules.m2d.RenderModule2D;
 import com.theopus.xengine.core.XEngineBuilder;
@@ -77,8 +78,12 @@ public class TestClient {
                     module3.bind(s, i);
 
                     eec.factory.createFor(CubemapModule.class, new Vector3f(0,0,0));
+
                     int ui = eec.factory.createFor(RenderModule2D.class, new Vector3f(0, 0, 0));
                     Transformation2D.set(eec.world, ui, new Vector2f(0.8f,0.8f), new Vector2f(), new Vector2f(0.1f, 0.1f));
+
+                    int mainscreen = eec.factory.createFor(RenderModule2D.class, new Vector3f(0, 0, 0), BaseRenderer.MAIN_SCREEN_TEXTURE);
+                    Transformation2D.set(eec.world, mainscreen, new Vector2f(0.7f,0.7f), new Vector2f(0, 0), new Vector2f(0.5f, 0.5f));
 
                     int terrain0 = eec.factory.createFor(TerrainModule.class, new Vector3f(0,0,0));
                     int terrain1 = eec.factory.createFor(TerrainModule.class, new Vector3f(0,0,-100));

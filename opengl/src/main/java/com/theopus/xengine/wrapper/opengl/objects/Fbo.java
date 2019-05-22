@@ -57,8 +57,7 @@ public class Fbo {
     public void update(int width, int height) {
         bind();
         if (colorAttachment != null){
-            colorAttachment.close();
-            colorAttachment = Texture.emptyTexture(width, height, memoryContext);
+            colorAttachment.reInitEmptyTexture(width, height, memoryContext);
             GL30.glFramebufferTexture2D(GL30.GL_FRAMEBUFFER, GL30.GL_COLOR_ATTACHMENT0, GL30.GL_TEXTURE_2D, colorAttachment.getId(), 0);
         }
         if (depthStencilRbo != null) {

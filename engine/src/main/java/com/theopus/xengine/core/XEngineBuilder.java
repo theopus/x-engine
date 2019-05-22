@@ -37,9 +37,12 @@ import com.theopus.xengine.core.render.BaseRenderer;
 import com.theopus.xengine.core.render.GLContext;
 import com.theopus.xengine.core.render.GlRenderer;
 import com.theopus.xengine.core.render.RenderModule;
+import com.theopus.xengine.core.render.modules.m2d.RenderModule2D;
 import com.theopus.xengine.core.utils.Reflection;
 import com.theopus.xengine.core.utils.WorldAwareCachedInjector;
 import com.theopus.xengine.wrapper.glfw.WindowConfig;
+
+import sun.invoke.empty.Empty;
 
 /**
  * Invokes all init methods before run.
@@ -61,6 +64,9 @@ public class XEngineBuilder {
             MoveSystem.class,
             ModelMatrixSystem.class,
             LightSystem.class
+    ));
+    private Set<Class<? extends RenderModule>> requiredModules = new LinkedHashSet<>(Arrays.asList(
+            RenderModule2D.class
     ));
 
     public XEngine build() {

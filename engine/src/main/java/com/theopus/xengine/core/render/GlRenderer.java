@@ -4,8 +4,10 @@ import org.joml.Matrix4f;
 import org.joml.Vector3f;
 import org.lwjgl.opengl.GL11;
 
+import com.artemis.annotations.Wire;
 import com.theopus.xengine.core.render.modules.m2d.GlModule2D;
 import com.theopus.xengine.core.render.modules.m2d.RenderModule2D;
+import com.theopus.xengine.wrapper.opengl.objects.Fbo;
 
 public class GlRenderer extends BaseRenderer {
     private final GLContext glContext;
@@ -19,6 +21,12 @@ public class GlRenderer extends BaseRenderer {
         GL11.glClear(GL11.GL_COLOR_BUFFER_BIT | GL11.GL_DEPTH_BUFFER_BIT);
     }
 
+    @Override
+    public void init() {
+        GlModule2D renderModule2D = (GlModule2D) get(RenderModule2D.class);
+        renderModule2D.add(BaseRenderer.MAIN_SCREEN_TEXTURE, glContext.getFbo().getColorAttachment());
+    }
+
     public GLContext getGlContext() {
         return glContext;
     }
@@ -30,6 +38,11 @@ public class GlRenderer extends BaseRenderer {
 
     @Override
     public void render() {
+//        Fbo fbo = glContext.getFbo();
+//        fbo.bind();
+//        clearBuffer();
+//        super.render();
+//        fbo.unbind();
         super.render();
     }
 
