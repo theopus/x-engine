@@ -119,9 +119,4 @@ public class GlfwPlatformManager implements PlatformManager {
     public boolean shouldClose() {
         return wrapper.shouldClose();
     }
-
-    @Override
-    public void clearColorBuffer() {
-        wrapper.clearColorBuffer();
-    }
 }

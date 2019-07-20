@@ -16,7 +16,7 @@ public class SimpleVaoRenderCommand {
     }
 
     public void prepare(Vao vao) {
-        GL30.glBindVertexArray(vao.getId());
+        vao.bind();
         shader.bind();
     }
 

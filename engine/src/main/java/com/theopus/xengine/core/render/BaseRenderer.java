@@ -10,7 +10,7 @@ import org.joml.Vector3f;
 
 import com.theopus.xengine.core.render.postprocessing.PostProcessingChain;
 
-public abstract class BaseRenderer {
+public abstract class   BaseRenderer {
 
     public static final String MAIN_SCREEN_TEXTURE = "MAIN_SCREEN_TEXTURE";
 

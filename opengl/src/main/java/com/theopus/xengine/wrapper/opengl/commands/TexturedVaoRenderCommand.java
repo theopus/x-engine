@@ -6,7 +6,9 @@ import org.lwjgl.opengl.GL13;
 import org.lwjgl.opengl.GL30;
 
 import com.theopus.xengine.wrapper.opengl.GlState;
+import com.theopus.xengine.wrapper.opengl.objects.Texture;
 import com.theopus.xengine.wrapper.opengl.objects.TexturedVao;
+import com.theopus.xengine.wrapper.opengl.objects.Vao;
 import com.theopus.xengine.wrapper.opengl.shader.StaticShader;
 
 public class TexturedVaoRenderCommand {
@@ -25,8 +27,8 @@ public class TexturedVaoRenderCommand {
         state.backFaceCulling.update(true);
 
         GL13.glActiveTexture(GL13.GL_TEXTURE0);
-        GL11.glBindTexture(GL11.GL_TEXTURE_2D, obj.texture.getId());
-        GL30.glBindVertexArray(obj.vao.getId());
+        obj.texture.bind();
+        obj.vao.bind();
         shader.bind();
     }
 
@@ -36,8 +38,8 @@ public class TexturedVaoRenderCommand {
     }
 
     public void finish() {
-        GL30.glBindVertexArray(0);
-        GL11.glBindTexture(GL11.GL_TEXTURE_2D, 0);
+        Vao.unbind();
+        Texture.unbind(0);
         shader.unbind();
     }
 

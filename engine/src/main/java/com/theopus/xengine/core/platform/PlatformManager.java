@@ -6,9 +6,7 @@ public interface PlatformManager {
     void createWindow();
 
     boolean shouldClose();
-
-    void clearColorBuffer();
-
+    
     void processEvents();
 
     void refreshWindow();

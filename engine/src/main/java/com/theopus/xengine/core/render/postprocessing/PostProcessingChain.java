@@ -4,7 +4,7 @@ public class PostProcessingChain<T> {
 
 
 
-    void doProcess(){
+    public void doProcess(){
 
     }
 }

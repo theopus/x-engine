@@ -63,7 +63,7 @@ public class Vao {
         GL30.glBindVertexArray(id);
     }
 
-    public void unbind() {
+    public static void unbind() {
         GL30.glBindVertexArray(0);
     }
 

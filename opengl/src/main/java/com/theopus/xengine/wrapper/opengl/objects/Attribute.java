@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.lwjgl.opengl.GL15;
+
 import com.theopus.xengine.wrapper.opengl.utils.GlDataType;
 import com.theopus.xengine.wrapper.opengl.utils.GL2String;
 

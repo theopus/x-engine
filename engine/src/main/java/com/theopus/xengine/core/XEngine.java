@@ -25,12 +25,10 @@ public class XEngine {
         new Loop.Builder()
                 .setCondition(() -> !platformManager.shouldClose())
                 .setRun(elapsed -> {
-                    platformManager.clearColorBuffer();
                     world.setDelta(elapsed);
                     world.process();
 
                     platformManager.processEvents();
-                    platformManager.refreshWindow();
                 })
                 .setOnClose(() -> {
                     platformManager.close();
